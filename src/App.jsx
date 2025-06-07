@@ -462,9 +462,28 @@ export default function TCGCalculator() {
         `}
       </style>
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-center mb-8" style={typography.h1}>
-          FirstDrawGG
-        </h1>
+        <div className="text-center mb-8">
+          <img 
+            src="https://raw.githubusercontent.com/FirstDrawGG/tcg-probabilities-calculator/main/Logo.png" 
+            alt="FirstDrawGG Logo"
+            className="mx-auto"
+            style={{
+              width: '120px',
+              height: '120px',
+              objectFit: 'contain'
+            }}
+            onLoad={() => console.log('Logo loaded successfully')}
+            onError={(e) => {
+              console.log('Logo failed to load, showing fallback text');
+              e.target.style.display = 'none';
+              const fallback = e.target.nextElementSibling;
+              if (fallback) fallback.style.display = 'block';
+            }}
+          />
+          <h1 className="text-center" style={{ ...typography.h1, display: 'none' }}>
+            FirstDrawGG
+          </h1>
+        </div>
         
         {/* Input Fields */}
         <div className="rounded-lg shadow-md p-6 mb-6" style={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }}>
@@ -613,25 +632,48 @@ export default function TCGCalculator() {
                         <div className="flex items-center space-x-3">
                           <button
                             onClick={() => updateCombo(combo.id, cardIndex, 'startersInDeck', Math.max(0, card.startersInDeck - 1))}
-                            className="w-10 h-10 rounded-md flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
-                            style={{ backgroundColor: '#444', color: '#ffffff' }}
+                            className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
+                            style={{ 
+                              backgroundColor: '#282828', 
+                              color: '#ffffff',
+                              width: '40px',
+                              height: '40px',
+                              borderRadius: '999px',
+                              border: 'none',
+                              boxSizing: 'border-box'
+                            }}
                           >
                             -
                           </button>
-                          <div className={`w-16 text-center py-2 border rounded-md ${
+                          <div className={`text-center py-2 border ${
                             errors[`combo-${combo.id}-card-${cardIndex}-startersInDeck`] ? 'border-red-500' : 'border-gray-600'
                           }`}
                           style={{ 
-                            backgroundColor: '#333', 
+                            backgroundColor: '#282828', 
                             color: '#ffffff',
+                            width: '64px',
+                            height: '40px',
+                            borderRadius: '999px',
+                            boxSizing: 'border-box',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
                             ...typography.body
                           }}>
                             {card.startersInDeck}
                           </div>
                           <button
                             onClick={() => updateCombo(combo.id, cardIndex, 'startersInDeck', card.startersInDeck + 1)}
-                            className="w-10 h-10 rounded-md flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
-                            style={{ backgroundColor: '#444', color: '#ffffff' }}
+                            className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
+                            style={{ 
+                              backgroundColor: '#282828', 
+                              color: '#ffffff',
+                              width: '40px',
+                              height: '40px',
+                              borderRadius: '999px',
+                              border: 'none',
+                              boxSizing: 'border-box'
+                            }}
                           >
                             +
                           </button>
@@ -651,25 +693,48 @@ export default function TCGCalculator() {
                           <div className="flex items-center space-x-3">
                             <button
                               onClick={() => updateCombo(combo.id, cardIndex, 'minCopiesInHand', Math.max(0, card.minCopiesInHand - 1))}
-                              className="w-10 h-10 rounded-md flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
-                              style={{ backgroundColor: '#444', color: '#ffffff' }}
+                              className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
+                              style={{ 
+                                backgroundColor: '#282828', 
+                                color: '#ffffff',
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '999px',
+                                border: 'none',
+                                boxSizing: 'border-box'
+                              }}
                             >
                               -
                             </button>
-                            <div className={`w-16 text-center py-2 border rounded-md ${
+                            <div className={`text-center py-2 border ${
                               errors[`combo-${combo.id}-card-${cardIndex}-minCopiesInHand`] ? 'border-red-500' : 'border-gray-600'
                             }`}
                             style={{ 
-                              backgroundColor: '#333', 
+                              backgroundColor: '#282828', 
                               color: '#ffffff',
+                              width: '64px',
+                              height: '40px',
+                              borderRadius: '999px',
+                              boxSizing: 'border-box',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
                               ...typography.body
                             }}>
                               {card.minCopiesInHand}
                             </div>
                             <button
                               onClick={() => updateCombo(combo.id, cardIndex, 'minCopiesInHand', card.minCopiesInHand + 1)}
-                              className="w-10 h-10 rounded-md flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
-                              style={{ backgroundColor: '#444', color: '#ffffff' }}
+                              className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
+                              style={{ 
+                                backgroundColor: '#282828', 
+                                color: '#ffffff',
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '999px',
+                                border: 'none',
+                                boxSizing: 'border-box'
+                              }}
                             >
                               +
                             </button>
@@ -687,25 +752,48 @@ export default function TCGCalculator() {
                           <div className="flex items-center space-x-3">
                             <button
                               onClick={() => updateCombo(combo.id, cardIndex, 'maxCopiesInHand', Math.max(0, card.maxCopiesInHand - 1))}
-                              className="w-10 h-10 rounded-md flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
-                              style={{ backgroundColor: '#444', color: '#ffffff' }}
+                              className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
+                              style={{ 
+                                backgroundColor: '#282828', 
+                                color: '#ffffff',
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '999px',
+                                border: 'none',
+                                boxSizing: 'border-box'
+                              }}
                             >
                               -
                             </button>
-                            <div className={`w-16 text-center py-2 border rounded-md ${
+                            <div className={`text-center py-2 border ${
                               errors[`combo-${combo.id}-card-${cardIndex}-maxCopiesInHand`] ? 'border-red-500' : 'border-gray-600'
                             }`}
                             style={{ 
-                              backgroundColor: '#333', 
+                              backgroundColor: '#282828', 
                               color: '#ffffff',
+                              width: '64px',
+                              height: '40px',
+                              borderRadius: '999px',
+                              boxSizing: 'border-box',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
                               ...typography.body
                             }}>
                               {card.maxCopiesInHand}
                             </div>
                             <button
                               onClick={() => updateCombo(combo.id, cardIndex, 'maxCopiesInHand', card.maxCopiesInHand + 1)}
-                              className="w-10 h-10 rounded-md flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
-                              style={{ backgroundColor: '#444', color: '#ffffff' }}
+                              className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
+                              style={{ 
+                                backgroundColor: '#282828', 
+                                color: '#ffffff',
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '999px',
+                                border: 'none',
+                                boxSizing: 'border-box'
+                              }}
                             >
                               +
                             </button>
@@ -726,7 +814,7 @@ export default function TCGCalculator() {
                     className="font-medium transition-colors hover:bg-gray-700 mt-4"
                     style={{ 
                       boxSizing: 'border-box',
-                      width: '160px',
+                      width: '200px',
                       height: '40px',
                       display: 'block',
                       backgroundColor: '#282828',
@@ -754,7 +842,7 @@ export default function TCGCalculator() {
                   className="font-medium transition-colors hover:bg-gray-700"
                   style={{ 
                     boxSizing: 'border-box',
-                    width: '160px',
+                    width: '200px',
                     height: '40px',
                     display: 'block',
                     backgroundColor: '#282828',
