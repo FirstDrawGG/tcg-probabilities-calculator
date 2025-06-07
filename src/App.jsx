@@ -130,7 +130,7 @@ export default function TCGCalculator() {
       letterSpacing: '-0.04em',
       lineHeight: '1em',
       color: '#ffffff',
-      fontFamily: 'Geist Thin, sans-serif',
+      fontFamily: 'Geist Regular, sans-serif',
       fontWeight: 'normal'
     },
     h2: {
@@ -138,7 +138,7 @@ export default function TCGCalculator() {
       letterSpacing: '-0.04em',
       lineHeight: '1em',
       color: '#ffffff',
-      fontFamily: 'Geist Thin, sans-serif',
+      fontFamily: 'Geist Regular, sans-serif',
       fontWeight: 'normal'
     },
     h3: {
@@ -146,7 +146,7 @@ export default function TCGCalculator() {
       letterSpacing: '-0.02em',
       lineHeight: '1em',
       color: '#ffffff',
-      fontFamily: 'Geist Thin, sans-serif',
+      fontFamily: 'Geist Regular, sans-serif',
       fontWeight: 'normal'
     },
     h4: {
@@ -154,7 +154,7 @@ export default function TCGCalculator() {
       letterSpacing: '-0.02em',
       lineHeight: '1.4em',
       color: '#ffffff',
-      fontFamily: 'Geist Thin, sans-serif',
+      fontFamily: 'Geist Regular, sans-serif',
       fontWeight: 'normal'
     },
     body: {
@@ -973,7 +973,7 @@ export default function TCGCalculator() {
           )}
 
           {/* Monte Carlo Disclaimer */}
-          <div className="mt-6 p-4 rounded-md border" style={{ backgroundColor: '#2a4a6b', borderColor: '#4a6b8a' }}>
+          <div className="mt-6 p-4 rounded-md border" style={{ backgroundColor: '#282828', borderColor: '#444' }}>
             <h3 className="font-semibold mb-3" style={typography.body}>Understanding Your Probability Results</h3>
             
             <h4 className="font-semibold mb-2" style={typography.body}>Why do I see slight variations in percentages?</h4>
