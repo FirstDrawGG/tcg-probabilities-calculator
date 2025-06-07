@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { Analytics } from 'react@vercel/analytics/react'
+import { Analytics } from "@vercel/analytics/react"
 import App from './App'
 import './index.css'
 
