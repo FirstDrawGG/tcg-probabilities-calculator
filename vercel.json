@@ -1,5 +1,4 @@
 {
-  "buildCommand": "npm install --force && npx vite build",
-  "outputDirectory": "dist",
-  "framework": "vite"
+  "framework": "vite",
+  "outputDirectory": "dist"
 }
