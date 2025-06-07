@@ -126,7 +126,7 @@ export default function TCGCalculator() {
   // Typography Design System - FirstDrawGG
   const typography = {
     h1: {
-      fontSize: '48.95px',
+      fontSize: '24px',
       letterSpacing: '-0.04em',
       lineHeight: '1em',
       color: '#ffffff',
@@ -134,7 +134,7 @@ export default function TCGCalculator() {
       fontWeight: 'normal'
     },
     h2: {
-      fontSize: '36.49px',
+      fontSize: '24px',
       letterSpacing: '-0.04em',
       lineHeight: '1em',
       color: '#ffffff',
@@ -142,7 +142,7 @@ export default function TCGCalculator() {
       fontWeight: 'normal'
     },
     h3: {
-      fontSize: '32.44px',
+      fontSize: '18px',
       letterSpacing: '-0.02em',
       lineHeight: '1em',
       color: '#ffffff',
@@ -150,7 +150,7 @@ export default function TCGCalculator() {
       fontWeight: 'normal'
     },
     h4: {
-      fontSize: '18.78px',
+      fontSize: '14px',
       letterSpacing: '-0.02em',
       lineHeight: '1.4em',
       color: '#ffffff',
@@ -723,11 +723,18 @@ export default function TCGCalculator() {
                 {combo.cards.length === 1 && (
                   <button
                     onClick={() => addSecondCard(combo.id)}
-                    className="w-full py-2 px-4 rounded-md font-medium border transition-colors hover:bg-gray-700 mt-4"
+                    className="font-medium transition-colors hover:bg-gray-700 mt-4"
                     style={{ 
-                      backgroundColor: '#333', 
+                      boxSizing: 'border-box',
+                      width: '160px',
+                      height: '40px',
+                      display: 'block',
+                      backgroundColor: '#282828',
+                      overflow: 'visible',
+                      gap: '7px',
+                      borderRadius: '999px',
                       color: '#ffffff',
-                      borderColor: '#666',
+                      border: 'none',
                       ...typography.body
                     }}
                   >
@@ -744,11 +751,18 @@ export default function TCGCalculator() {
                 <hr className="my-4" style={{ borderColor: '#444', borderTop: '1px solid #444' }} />
                 <button
                   onClick={addCombo}
-                  className="w-full py-2 px-4 rounded-md font-medium border transition-colors hover:bg-gray-700"
+                  className="font-medium transition-colors hover:bg-gray-700"
                   style={{ 
-                    backgroundColor: '#333', 
+                    boxSizing: 'border-box',
+                    width: '160px',
+                    height: '40px',
+                    display: 'block',
+                    backgroundColor: '#282828',
+                    overflow: 'visible',
+                    gap: '7px',
+                    borderRadius: '999px',
                     color: '#ffffff',
-                    borderColor: '#666',
+                    border: 'none',
                     ...typography.body
                   }}
                 >
@@ -763,26 +777,49 @@ export default function TCGCalculator() {
             <button
               onClick={runCalculation}
               disabled={!allFieldsFilled}
-              className={`flex-1 py-3 px-4 rounded-md font-semibold transition-colors ${
+              className={`flex-1 font-semibold transition-colors ${
                 allFieldsFilled
                   ? 'hover:bg-gray-100'
                   : 'cursor-not-allowed opacity-50'
               }`}
               style={{ 
-                backgroundColor: allFieldsFilled ? '#FFFFFF' : '#666666',
+                backgroundColor: allFieldsFilled ? '#ffffff' : '#666666',
                 color: allFieldsFilled ? '#000000' : '#999999',
-                ...typography.body
+                fontFamily: 'Geist Regular, sans-serif',
+                fontSize: '14px',
+                lineHeight: '20px',
+                borderRadius: '999px',
+                border: 'none',
+                height: '40px',
+                minWidth: '160px',
+                paddingLeft: '16px',
+                paddingRight: '16px',
+                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
               Calculate
             </button>
             <button
               onClick={handleReset}
-              className="py-3 px-4 rounded-md font-semibold transition-colors hover:bg-gray-700"
+              className="font-semibold transition-colors hover:bg-gray-700"
               style={{ 
-                backgroundColor: '#444', 
+                backgroundColor: '#282828', 
                 color: '#ffffff',
-                ...typography.body
+                fontFamily: 'Geist Regular, sans-serif',
+                fontSize: '14px',
+                lineHeight: '20px',
+                borderRadius: '999px',
+                border: 'none',
+                height: '40px',
+                paddingLeft: '16px',
+                paddingRight: '16px',
+                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
               Reset
