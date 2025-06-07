@@ -459,6 +459,12 @@ export default function TCGCalculator() {
           input[type="number"] {
             -moz-appearance: textfield;
           }
+          
+          /* Custom focus ring color */
+          input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #282828;
+          }
         `}
       </style>
       <div className="max-w-2xl mx-auto">
@@ -499,12 +505,13 @@ export default function TCGCalculator() {
                 type="number"
                 value={deckSize}
                 onChange={(e) => setDeckSize(parseInt(e.target.value) || 0)}
-                className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${
+                className={`w-full px-3 py-2 border ${
                   errors.deckSize ? 'border-red-500' : 'border-gray-600'
                 }`}
                 style={{ 
                   backgroundColor: '#333', 
                   color: '#ffffff',
+                  borderRadius: '999px',
                   ...typography.body
                 }}
               />
@@ -522,12 +529,13 @@ export default function TCGCalculator() {
                 type="number"
                 value={handSize}
                 onChange={(e) => setHandSize(parseInt(e.target.value) || 0)}
-                className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${
+                className={`w-full px-3 py-2 border ${
                   errors.handSize ? 'border-red-500' : 'border-gray-600'
                 }`}
                 style={{ 
                   backgroundColor: '#333', 
                   color: '#ffffff',
+                  borderRadius: '999px',
                   ...typography.body
                 }}
               />
@@ -547,11 +555,12 @@ export default function TCGCalculator() {
                       onChange={handleComboNameChange}
                       onBlur={saveComboName}
                       onKeyDown={handleComboNameKeyDown}
-                      className="font-medium px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="font-medium px-2 py-1 border"
                       style={{ 
                         backgroundColor: '#333', 
                         color: '#ffffff',
                         borderColor: '#666',
+                        borderRadius: '999px',
                         ...typography.body
                       }}
                       autoFocus
@@ -609,12 +618,13 @@ export default function TCGCalculator() {
                         value={card.starterCard}
                         onChange={(e) => updateCombo(combo.id, cardIndex, 'starterCard', e.target.value)}
                         maxLength={50}
-                        className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${
+                        className={`w-full px-3 py-2 border ${
                           errors[`combo-${combo.id}-card-${cardIndex}-starterCard`] ? 'border-red-500' : 'border-gray-600'
                         }`}
                         style={{ 
                           backgroundColor: '#333', 
                           color: '#ffffff',
+                          borderRadius: '999px',
                           ...typography.body
                         }}
                       />
