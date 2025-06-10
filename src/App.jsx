@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 
 // Probability calculation service
 const ProbabilityService = {
@@ -1010,6 +1011,8 @@ export default function TCGCalculator() {
           </div>
         </div>
       </div>
+      <Analytics />
+      {process.env.NODE_ENV === 'production' && <Analytics />}
     </div>
   );
 }
