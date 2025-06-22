@@ -748,7 +748,8 @@ export default function TCGCalculator() {
           }
         `}
       </style>
-      <div className="max-w-2xl mx-auto">
+      {/* Updated main container with your requested changes */}
+      <div className="w-full mx-auto" style={{ maxWidth: '580px' }}>
         <div className="text-center mb-8">
           <img 
             src="https://raw.githubusercontent.com/FirstDrawGG/tcg-probabilities-calculator/main/Logo.png" 
@@ -770,7 +771,7 @@ export default function TCGCalculator() {
           </h1>
         </div>
         
-        <div className="rounded-lg shadow-md p-6 mb-6" style={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }}>
+        <div className="p-6 mb-6">
           <h2 className="mb-4" style={typography.h2}>Define a Combo</h2>
           
           <div className="space-y-4">
@@ -1184,7 +1185,7 @@ export default function TCGCalculator() {
           </div>
         </div>
 
-        <div className="rounded-lg shadow-md p-6" style={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }}>
+        <div className="p-6">
           <h2 className="mb-4" style={typography.h2}>Calculation Dashboard</h2>
           
           <div className="space-y-2">
@@ -1230,7 +1231,7 @@ export default function TCGCalculator() {
             </div>
           )}
 
-          <div className="mt-6 p-4 rounded-md border" style={{ backgroundColor: '#282828', borderColor: '#444' }}>
+          <div className="mt-6 p-4">
             <h3 className="font-semibold mb-3" style={typography.body}>Understanding Your Probability Results</h3>
             
             <h4 className="font-semibold mb-2" style={typography.body}>Why do I see slight variations in percentages?</h4>
