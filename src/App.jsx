@@ -1,17 +1,71 @@
-import React, { useState, useEffect } from 'react';
-import { Analytics } from '@vercel/analytics/react';
+import React, { useState, useEffect, useRef } from 'react';
+
+// Card database service
+const CardDatabaseService = {
+  CACHE_KEY: 'yugioh_cards_cache',
+  CACHE_DURATION: 7 * 24 * 60 * 60 * 1000, // 7 days
+  
+  async fetchCards() {
+    try {
+      console.log('Fetching cards from API...');
+      const response = await fetch('https://db.ygoprodeck.com/api/v7/cardinfo.php');
+      console.log('API response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`API returned ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('API response:', data);
+      console.log('Number of cards:', data.data ? data.data.length : 0);
+      console.log('First card example:', data.data ? data.data[0] : 'No cards');
+      
+      return data.data || [];
+    } catch (error) {
+      console.error('Failed to fetch cards:', error);
+      return [];
+    }
+  },
+  
+  loadFromCache() {
+    try {
+      const cached = localStorage.getItem(this.CACHE_KEY);
+      if (!cached) return null;
+      
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp > this.CACHE_DURATION) {
+        localStorage.removeItem(this.CACHE_KEY);
+        return null;
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Cache load error:', error);
+      return null;
+    }
+  },
+  
+  saveToCache(cards) {
+    try {
+      const cacheData = {
+        data: cards,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(this.CACHE_KEY, JSON.stringify(cacheData));
+    } catch (error) {
+      console.error('Cache save error:', error);
+    }
+  }
+};
 
 // Probability calculation service
 const ProbabilityService = {
-  // Result cache for reusing identical combo results
   resultCache: new Map(),
   
-  // Clear the cache
   clearCache: function() {
     this.resultCache.clear();
   },
   
-  // Generate cache key from combo parameters
   getCacheKey: function(combo, deckSize, handSize) {
     const cardsKey = combo.cards.map(card => 
       `${card.startersInDeck}-${card.minCopiesInHand}-${card.maxCopiesInHand}`
@@ -19,51 +73,42 @@ const ProbabilityService = {
     return `${cardsKey}-${deckSize}-${handSize}`;
   },
   
-  // Monte Carlo strategy for probability calculation
   monteCarloSimulation: (combo, deckSize, handSize, simulations = 100000) => {
-    // Check cache first
     const cacheKey = ProbabilityService.getCacheKey(combo, deckSize, handSize);
     
     if (ProbabilityService.resultCache.has(cacheKey)) {
       return ProbabilityService.resultCache.get(cacheKey);
     }
     
-    // Run simulation if not in cache
     let successes = 0;
     
     for (let i = 0; i < simulations; i++) {
-      // Create deck array with all card types
       const deck = [];
       let currentPosition = 0;
       
-      // Add each card type to deck
       combo.cards.forEach((card, cardIndex) => {
         for (let j = 0; j < card.startersInDeck; j++) {
-          deck.push(cardIndex); // Use card index as identifier
+          deck.push(cardIndex);
         }
         currentPosition += card.startersInDeck;
       });
       
-      // Fill remaining deck with non-combo cards
       for (let j = currentPosition; j < deckSize; j++) {
-        deck.push(-1); // -1 represents non-combo cards
+        deck.push(-1);
       }
       
-      // Shuffle deck (Fisher-Yates)
       for (let j = deck.length - 1; j > 0; j--) {
         const k = Math.floor(Math.random() * (j + 1));
         [deck[j], deck[k]] = [deck[k], deck[j]];
       }
       
-      // Draw hand and count each card type
       const cardCounts = new Array(combo.cards.length).fill(0);
       for (let j = 0; j < handSize; j++) {
-        if (deck[j] >= 0) { // If it's a combo card
+        if (deck[j] >= 0) {
           cardCounts[deck[j]]++;
         }
       }
       
-      // Check if ALL cards meet their criteria (AND logic)
       let allCardsCriteriaMet = true;
       for (let cardIndex = 0; cardIndex < combo.cards.length; cardIndex++) {
         const card = combo.cards[cardIndex];
@@ -81,14 +126,11 @@ const ProbabilityService = {
     }
     
     const probability = (successes / simulations) * 100;
-    
-    // Cache the result
     ProbabilityService.resultCache.set(cacheKey, probability);
     
     return probability;
   },
   
-  // Calculate probabilities for multiple combos
   calculateMultipleCombos: (combos, deckSize, handSize) => {
     return combos.map(combo => ({
       id: combo.id,
@@ -98,12 +140,233 @@ const ProbabilityService = {
   }
 };
 
-// Combo data structure - now supports multiple cards
+// Searchable dropdown component
+const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, cardIndex, cardDatabase }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredCards, setFilteredCards] = useState([]);
+  const [isEditing, setIsEditing] = useState(!value);
+  const dropdownRef = useRef(null);
+  const inputRef = useRef(null);
+  const debounceTimerRef = useRef(null);
+  
+  // Handle click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+  
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+    
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen]);
+  
+  // Search logic with debounce
+  useEffect(() => {
+    if (searchTerm.length < 3) {
+      setFilteredCards([]);
+      return;
+    }
+    
+    clearTimeout(debounceTimerRef.current);
+    debounceTimerRef.current = setTimeout(() => {
+      console.log('Searching for:', searchTerm);
+      console.log('Card database length:', cardDatabase ? cardDatabase.length : 0);
+      
+      const searchLower = searchTerm.toLowerCase();
+      const matches = (cardDatabase || [])
+        .filter(card => card.name && card.name.toLowerCase().includes(searchLower))
+        .slice(0, 50)
+        .map(card => ({
+          name: card.name,
+          id: card.id,
+          isCustom: false
+        }));
+      
+      console.log('Found matches:', matches.length);
+      console.log('First few matches:', matches.slice(0, 3));
+      
+      setFilteredCards(matches);
+    }, 300);
+    
+    return () => clearTimeout(debounceTimerRef.current);
+  }, [searchTerm, cardDatabase]);
+  
+  const handleInputClick = () => {
+    if (!value || isEditing) {
+      setIsOpen(true);
+    }
+  };
+  
+  const handleInputChange = (e) => {
+    setSearchTerm(e.target.value);
+    if (!isOpen) setIsOpen(true);
+  };
+  
+  const handleCardSelect = (card) => {
+    onChange({
+      starterCard: card.name,
+      cardId: card.id,
+      isCustom: card.isCustom
+    });
+    setSearchTerm('');
+    setIsOpen(false);
+    setIsEditing(false);
+  };
+  
+  const handleCustomName = () => {
+    handleCardSelect({
+      name: searchTerm,
+      id: null,
+      isCustom: true
+    });
+  };
+  
+  const handleClear = () => {
+    onChange({
+      starterCard: '',
+      cardId: null,
+      isCustom: false
+    });
+    setSearchTerm('');
+    setIsEditing(true);
+  };
+  
+  const handleEdit = () => {
+    setSearchTerm(value);
+    setIsEditing(true);
+    setIsOpen(true);
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
+  
+  const typography = {
+    body: {
+      fontSize: '14px',
+      letterSpacing: '0.1px',
+      lineHeight: '1em',
+      color: '#ffffff',
+      fontFamily: 'Geist Regular, sans-serif'
+    }
+  };
+  
+  return (
+    <div ref={dropdownRef} style={{ position: 'relative' }}>
+      {isEditing ? (
+        <input
+          ref={inputRef}
+          type="text"
+          value={searchTerm}
+          onChange={handleInputChange}
+          onClick={handleInputClick}
+          placeholder={placeholder}
+          className={`w-full px-3 py-2 border ${errors ? 'border-red-500' : 'border-gray-600'}`}
+          style={{ 
+            backgroundColor: '#333', 
+            color: '#ffffff',
+            borderRadius: '999px',
+            ...typography.body
+          }}
+        />
+      ) : (
+        <div 
+          className={`w-full px-3 py-2 border ${errors ? 'border-red-500' : 'border-gray-600'} flex justify-between items-center`}
+          style={{ 
+            backgroundColor: '#333', 
+            color: '#ffffff',
+            borderRadius: '999px',
+            ...typography.body
+          }}
+        >
+          <span>{value}</span>
+          <div className="flex items-center space-x-2">
+            <button
+              type="button"
+              onClick={handleEdit}
+              className="text-gray-400 hover:text-white"
+              style={{ fontSize: '12px' }}
+            >
+              Edit
+            </button>
+            <button
+              type="button"
+              onClick={handleClear}
+              className="text-gray-400 hover:text-white"
+              style={{ fontSize: '16px' }}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+      
+      {isOpen && isEditing && (
+        <div 
+          className="absolute z-10 w-full mt-1 border border-gray-600 rounded-md shadow-lg"
+          style={{ backgroundColor: '#282828' }}
+        >
+          {searchTerm.length < 3 ? (
+            <div className="p-3" style={typography.body}>
+              Type at least 3 characters to search or use your custom name
+            </div>
+          ) : filteredCards.length > 0 ? (
+            <>
+              <div className="max-h-60 overflow-y-auto">
+                {filteredCards.map((card, index) => (
+                  <div
+                    key={`${card.id}-${index}`}
+                    className="px-3 py-2 hover:bg-gray-700 cursor-pointer"
+                    style={typography.body}
+                    onClick={() => handleCardSelect(card)}
+                  >
+                    {card.name}
+                  </div>
+                ))}
+              </div>
+              {filteredCards.length === 50 && (
+                <div className="px-3 py-2 border-t border-gray-600 text-gray-400" style={typography.body}>
+                  Type for more results
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="p-3" style={typography.body}>
+              <div>No matching results. Use custom name?</div>
+              <button
+                onClick={handleCustomName}
+                className="mt-2 px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded"
+                style={typography.body}
+              >
+                Use custom name
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Combo data structure
 const createCombo = (id, index) => ({
   id,
   name: `Combo ${index + 1}`,
   cards: [{
     starterCard: '',
+    cardId: null,
+    isCustom: false,
     startersInDeck: 3,
     minCopiesInHand: 1,
     maxCopiesInHand: 3
@@ -123,8 +386,41 @@ export default function TCGCalculator() {
   });
   const [editingComboId, setEditingComboId] = useState(null);
   const [tempComboName, setTempComboName] = useState('');
+  const [cardDatabase, setCardDatabase] = useState([]);
+  
+  // Load card database on mount
+  useEffect(() => {
+    const loadCardDatabase = async () => {
+      console.log('Starting card database load...');
+      
+      // Try cache first
+      const cached = CardDatabaseService.loadFromCache();
+      if (cached) {
+        console.log('Loaded from cache:', cached.length, 'cards');
+        setCardDatabase(cached);
+        window.cardDatabase = cached;
+        return;
+      }
+      
+      console.log('Cache not found or expired, fetching from API...');
+      
+      // Fetch from API
+      const cards = await CardDatabaseService.fetchCards();
+      console.log('Fetched cards:', cards.length);
+      
+      if (cards.length > 0) {
+        setCardDatabase(cards);
+        window.cardDatabase = cards;
+        CardDatabaseService.saveToCache(cards);
+        console.log('Cards saved to state and cache');
+      } else {
+        console.log('No cards received from API');
+      }
+    };
+    
+    loadCardDatabase();
+  }, []);
 
-  // Typography Design System - FirstDrawGG
   const typography = {
     h1: {
       fontSize: '24px',
@@ -167,17 +463,14 @@ export default function TCGCalculator() {
     }
   };
 
-  // Validation function
   const validate = () => {
     const newErrors = {};
     
     if (deckSize < 1) newErrors.deckSize = 'Please enter valid value';
     if (handSize < 1) newErrors.handSize = 'Please enter valid value';
     
-    // Validation rules
     if (handSize > deckSize) newErrors.handSize = 'Please enter valid value';
     
-    // Validate each combo
     combos.forEach((combo, index) => {
       combo.cards.forEach((card, cardIndex) => {
         const cardPrefix = `combo-${combo.id}-card-${cardIndex}`;
@@ -195,7 +488,6 @@ export default function TCGCalculator() {
         if (card.startersInDeck > deckSize) newErrors[`${cardPrefix}-startersInDeck`] = 'Please enter valid value';
       });
       
-      // Check total cards across all cards in combo don't exceed deck size
       const totalCards = combo.cards.reduce((sum, card) => sum + card.startersInDeck, 0);
       if (totalCards > deckSize) {
         combo.cards.forEach((card, cardIndex) => {
@@ -208,23 +500,19 @@ export default function TCGCalculator() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Check if all fields are filled for button enable/disable
   const allFieldsFilled = combos.every(combo => 
     combo.cards.every(card => card.starterCard.trim() !== '')
   );
 
-  // Calculate probabilities
   const runCalculation = () => {
     if (!validate()) return;
     
-    // Update dashboard values
     setDashboardValues({
       deckSize,
       handSize,
       combos: combos.map(c => ({ ...c }))
     });
     
-    // Calculate probabilities for all combos
     const calculatedResults = ProbabilityService.calculateMultipleCombos(combos, deckSize, handSize);
     setResults(calculatedResults);
   };
@@ -242,11 +530,9 @@ export default function TCGCalculator() {
     });
     setEditingComboId(null);
     setTempComboName('');
-    // Clear the result cache
     ProbabilityService.clearCache();
   };
 
-  // Combo management functions
   const addCombo = () => {
     if (combos.length < 10) {
       const newId = Math.max(...combos.map(c => c.id)) + 1;
@@ -256,7 +542,6 @@ export default function TCGCalculator() {
 
   const removeCombo = (id) => {
     const newCombos = combos.filter(combo => combo.id !== id);
-    // Update combo names to maintain sequential order
     const updatedCombos = newCombos.map((combo, index) => ({
       ...combo,
       name: combo.name.startsWith('Combo ') ? `Combo ${index + 1}` : combo.name
@@ -270,9 +555,20 @@ export default function TCGCalculator() {
       
       const updatedCombo = { ...combo };
       updatedCombo.cards = [...combo.cards];
-      updatedCombo.cards[cardIndex] = { ...combo.cards[cardIndex], [field]: value };
       
-      // Auto-adjust max if min is set higher
+      if (field === 'starterCard' && typeof value === 'object') {
+        // Handle card selection from dropdown
+        updatedCombo.cards[cardIndex] = { 
+          ...combo.cards[cardIndex], 
+          starterCard: value.starterCard,
+          cardId: value.cardId,
+          isCustom: value.isCustom
+        };
+      } else {
+        // Handle other field updates
+        updatedCombo.cards[cardIndex] = { ...combo.cards[cardIndex], [field]: value };
+      }
+      
       if (field === 'minCopiesInHand' && value > combo.cards[cardIndex].maxCopiesInHand) {
         updatedCombo.cards[cardIndex].maxCopiesInHand = value;
       }
@@ -281,7 +577,6 @@ export default function TCGCalculator() {
     }));
   };
 
-  // Update combo-level properties (like name)
   const updateComboProperty = (id, field, value) => {
     setCombos(combos.map(combo => {
       if (combo.id !== id) return combo;
@@ -289,7 +584,6 @@ export default function TCGCalculator() {
     }));
   };
 
-  // Add second card to combo
   const addSecondCard = (comboId) => {
     setCombos(combos.map(combo => {
       if (combo.id !== comboId) return combo;
@@ -300,6 +594,8 @@ export default function TCGCalculator() {
           ...combo.cards,
           {
             starterCard: '',
+            cardId: null,
+            isCustom: false,
             startersInDeck: 3,
             minCopiesInHand: 1,
             maxCopiesInHand: 3
@@ -309,23 +605,20 @@ export default function TCGCalculator() {
     }));
   };
 
-  // Remove second card from combo
   const removeSecondCard = (comboId) => {
     setCombos(combos.map(combo => {
       if (combo.id !== comboId) return combo;
       
       return {
         ...combo,
-        cards: [combo.cards[0]] // Keep only first card
+        cards: [combo.cards[0]]
       };
     }));
   };
 
-  // Combo name editing functions
   const startEditingComboName = (combo) => {
     setEditingComboId(combo.id);
     setTempComboName(combo.name);
-    // Clear any existing combo name errors
     setErrors(prev => {
       const newErrors = { ...prev };
       delete newErrors[`combo-${combo.id}-name`];
@@ -336,10 +629,8 @@ export default function TCGCalculator() {
   const handleComboNameChange = (e) => {
     const value = e.target.value;
     
-    // Limit to 50 characters
     if (value.length > 50) return;
     
-    // Check for invalid characters (allow only alphanumeric and spaces)
     const isValid = /^[a-zA-Z0-9 ]*$/.test(value);
     
     if (!isValid && value !== '') {
@@ -364,12 +655,10 @@ export default function TCGCalculator() {
     const comboIndex = combos.findIndex(c => c.id === editingComboId);
     let finalName = tempComboName.trim();
     
-    // If empty, revert to default
     if (finalName === '') {
       finalName = `Combo ${comboIndex + 1}`;
     }
     
-    // Check uniqueness (case-sensitive)
     const isDuplicate = combos.some(combo => 
       combo.id !== editingComboId && combo.name === finalName
     );
@@ -382,13 +671,11 @@ export default function TCGCalculator() {
       return;
     }
     
-    // Only save if valid (no non-alphanumeric characters)
     const isValid = /^[a-zA-Z0-9 ]*$/.test(finalName);
     if (isValid) {
       updateComboProperty(editingComboId, 'name', finalName);
       setEditingComboId(null);
       setTempComboName('');
-      // Clear any errors
       setErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[`combo-${editingComboId}-name`];
@@ -403,7 +690,6 @@ export default function TCGCalculator() {
     }
   };
 
-  // Generate result text based on card min/max equality scenarios
   const generateResultText = (result) => {
     const cards = result.cards;
     const probability = result.probability;
@@ -413,7 +699,6 @@ export default function TCGCalculator() {
     }
     
     if (cards.length === 1) {
-      // Single card scenario
       const card = cards[0];
       if (card.minCopiesInHand === card.maxCopiesInHand) {
         return `Chances of seeing exactly ${card.minCopiesInHand} copies of ${card.starterCard} in your opening hand: ${probability.toFixed(2)}%`;
@@ -421,7 +706,6 @@ export default function TCGCalculator() {
         return `Chances of seeing between ${card.minCopiesInHand} and ${card.maxCopiesInHand} copies of ${card.starterCard} in your opening hand: ${probability.toFixed(2)}%`;
       }
     } else {
-      // Two card scenario - handle all 4 combinations
       const card1 = cards[0];
       const card2 = cards[1];
       
@@ -437,12 +721,10 @@ export default function TCGCalculator() {
     }
   };
 
-  // Clear cache when deck size or hand size changes
   useEffect(() => {
     ProbabilityService.clearCache();
   }, [deckSize, handSize]);
 
-  // Validate on change
   useEffect(() => {
     if (results.length > 0) validate();
   }, [deckSize, handSize, combos]);
@@ -451,7 +733,6 @@ export default function TCGCalculator() {
     <div className="min-h-screen p-4" style={{ backgroundColor: '#000000', fontFamily: 'Geist Regular, sans-serif' }}>
       <style>
         {`
-          /* Remove chevrons/spinners from number inputs */
           input[type="number"]::-webkit-outer-spin-button,
           input[type="number"]::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -461,7 +742,6 @@ export default function TCGCalculator() {
             -moz-appearance: textfield;
           }
           
-          /* Custom focus ring color */
           input:focus {
             outline: none;
             box-shadow: 0 0 0 2px #282828;
@@ -479,9 +759,7 @@ export default function TCGCalculator() {
               height: '120px',
               objectFit: 'contain'
             }}
-            onLoad={() => console.log('Logo loaded successfully')}
             onError={(e) => {
-              console.log('Logo failed to load, showing fallback text');
               e.target.style.display = 'none';
               const fallback = e.target.nextElementSibling;
               if (fallback) fallback.style.display = 'block';
@@ -492,12 +770,10 @@ export default function TCGCalculator() {
           </h1>
         </div>
         
-        {/* Input Fields */}
         <div className="rounded-lg shadow-md p-6 mb-6" style={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }}>
           <h2 className="mb-4" style={typography.h2}>Define a Combo</h2>
           
           <div className="space-y-4">
-            {/* Deck Size */}
             <div>
               <label className="block font-medium mb-1" style={typography.body}>
                 Deck size:
@@ -521,7 +797,6 @@ export default function TCGCalculator() {
               )}
             </div>
 
-            {/* Hand Size */}
             <div>
               <label className="block font-medium mb-1" style={typography.body}>
                 Hand size:
@@ -545,7 +820,6 @@ export default function TCGCalculator() {
               )}
             </div>
 
-            {/* Combo sections */}
             {combos.map((combo, index) => (
               <div key={combo.id} className="border-t pt-4" style={{ borderColor: '#444' }}>
                 <div className="flex justify-between items-center mb-2">
@@ -591,7 +865,6 @@ export default function TCGCalculator() {
                   <p className="text-red-500 mb-2" style={typography.body}>{errors[`combo-${combo.id}-name`]}</p>
                 )}
                 
-                {/* Cards in this combo */}
                 {combo.cards.map((card, cardIndex) => (
                   <div key={cardIndex} className={`${cardIndex > 0 ? 'border-t mt-4 pt-4' : ''}`} style={{ borderColor: '#666' }}>
                     <div className="flex justify-between items-center mb-2">
@@ -609,25 +882,18 @@ export default function TCGCalculator() {
                       )}
                     </div>
                     
-                    {/* Card Name */}
                     <div className="mb-3">
                       <label className="block font-medium mb-1" style={typography.body}>
                         Card name:
                       </label>
-                      <input
-                        type="text"
+                      <SearchableCardInput
                         value={card.starterCard}
-                        onChange={(e) => updateCombo(combo.id, cardIndex, 'starterCard', e.target.value)}
-                        maxLength={50}
-                        className={`w-full px-3 py-2 border ${
-                          errors[`combo-${combo.id}-card-${cardIndex}-starterCard`] ? 'border-red-500' : 'border-gray-600'
-                        }`}
-                        style={{ 
-                          backgroundColor: '#333', 
-                          color: '#ffffff',
-                          borderRadius: '999px',
-                          ...typography.body
-                        }}
+                        onChange={(value) => updateCombo(combo.id, cardIndex, 'starterCard', value)}
+                        placeholder="Search card name"
+                        errors={errors[`combo-${combo.id}-card-${cardIndex}-starterCard`]}
+                        comboId={combo.id}
+                        cardIndex={cardIndex}
+                        cardDatabase={cardDatabase}
                       />
                       {errors[`combo-${combo.id}-card-${cardIndex}-starterCard`] && (
                         <p className="text-red-500 mt-1" style={typography.body}>{errors[`combo-${combo.id}-card-${cardIndex}-starterCard`]}</p>
@@ -635,7 +901,6 @@ export default function TCGCalculator() {
                     </div>
 
                     <div className="space-y-4">
-                      {/* Copies in Deck */}
                       <div>
                         <label className="block font-medium mb-1" style={typography.body}>
                           Copies in deck:
@@ -694,9 +959,7 @@ export default function TCGCalculator() {
                         )}
                       </div>
 
-                      {/* Min and Max Copies Row */}
                       <div className="flex">
-                        {/* Min in Hand */}
                         <div className="flex-1">
                           <label className="block font-medium mb-1" style={typography.body}>
                             Min in hand:
@@ -755,7 +1018,6 @@ export default function TCGCalculator() {
                           )}
                         </div>
 
-                        {/* Max in Hand */}
                         <div className="flex-1" style={{ marginLeft: '16px' }}>
                           <label className="block font-medium mb-1" style={typography.body}>
                             Max in hand:
@@ -818,7 +1080,6 @@ export default function TCGCalculator() {
                   </div>
                 ))}
                 
-                {/* Add 2nd Card Button */}
                 {combo.cards.length === 1 && (
                   <button
                     onClick={() => addSecondCard(combo.id)}
@@ -843,10 +1104,8 @@ export default function TCGCalculator() {
               </div>
             ))}
 
-            {/* Add Combo Button */}
             {combos.length < 10 && (
               <div>
-                {/* Line separator */}
                 <hr className="my-4" style={{ borderColor: '#444', borderTop: '1px solid #444' }} />
                 <button
                   onClick={addCombo}
@@ -871,7 +1130,6 @@ export default function TCGCalculator() {
             )}
           </div>
 
-          {/* Buttons */}
           <div className="flex space-x-4 mt-6">
             <button
               onClick={runCalculation}
@@ -926,7 +1184,6 @@ export default function TCGCalculator() {
           </div>
         </div>
 
-        {/* Calculation Dashboard */}
         <div className="rounded-lg shadow-md p-6" style={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }}>
           <h2 className="mb-4" style={typography.h2}>Calculation Dashboard</h2>
           
@@ -973,7 +1230,6 @@ export default function TCGCalculator() {
             </div>
           )}
 
-          {/* Monte Carlo Disclaimer */}
           <div className="mt-6 p-4 rounded-md border" style={{ backgroundColor: '#282828', borderColor: '#444' }}>
             <h3 className="font-semibold mb-3" style={typography.body}>Understanding Your Probability Results</h3>
             
@@ -1011,8 +1267,6 @@ export default function TCGCalculator() {
           </div>
         </div>
       </div>
-      <Analytics />
-      {process.env.NODE_ENV === 'production' && <Analytics />}
     </div>
   );
 }
