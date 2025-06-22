@@ -1230,42 +1230,42 @@ export default function TCGCalculator() {
               ))}
             </div>
           )}
+        </div>
 
-          <div className="mt-6 p-4">
-            <h3 className="font-semibold mb-3" style={typography.body}>Understanding Your Probability Results</h3>
-            
-            <h4 className="font-semibold mb-2" style={typography.body}>Why do I see slight variations in percentages?</h4>
-            <p className="mb-3" style={typography.body}>
-              You might notice that running the same deck configuration multiple times can show minor differences in probabilities (like 47.3% vs 47.5%). This is completely normal and expected!
-            </p>
-            
-            <h4 className="font-semibold mb-2" style={typography.body}>The Monte Carlo Method</h4>
-            <p className="mb-2" style={typography.body}>
-              FirstDrawGG uses Monte Carlo simulation - the same proven method used by financial analysts, game developers, and engineers worldwide. Think of it like shuffling and drawing from your deck 100,000 times to see what actually happens, rather than just calculating theoretical odds.
-            </p>
-            
-            <p className="mb-2" style={typography.body}>Here's how it works:</p>
-            <ul className="list-disc pl-5 space-y-1 mb-3" style={typography.body}>
-              <li>We simulate <span className="font-semibold">100,000 test hands</span> for each calculation</li>
-              <li>Each simulation randomly shuffles your deck and draws cards</li>
-              <li>The results show you what percentage of those hands met your criteria</li>
-              <li>Just like real shuffling, each set of 100,000 tests will be slightly different</li>
-            </ul>
-            
-            <h4 className="font-semibold mb-2" style={typography.body}>Why This Matters for Deck Building</h4>
-            <p className="mb-3" style={typography.body}>
-              These small variations (typically less than 0.5%) are actually a strength, not a weakness. They reflect the real randomness you'll experience at tournaments. A combo showing 43.2% one time and 43.5% another time tells you it's consistently in that 43-44% range - exactly the confidence level you need for competitive decisions.
-            </p>
-            
-            <h4 className="font-semibold mb-2" style={typography.body}>The Bottom Line</h4>
-            <p className="mb-3" style={typography.body}>
-              With 100,000 simulations per calculation, our results are statistically robust. Whether you're optimizing your competitive deck's hand trap ratios or testing that spicy rogue combo, you can trust these probabilities to guide your deck building decisions. The minor variations you see are proof the system is working correctly, not a flaw.
-            </p>
-            
-            <p className="italic" style={{ ...typography.body, color: '#cccccc' }}>
-              Remember: In Yu-Gi-Oh, even a 1-2% improvement in consistency can be the difference between topping and bricking!
-            </p>
-          </div>
+        <div className="p-6" style={{ marginTop: '1.5rem' }}>
+          <h3 className="font-semibold mb-3" style={{ ...typography.body, color: '#ffffff' }}>Understanding Your Probability Results</h3>
+          
+          <h4 className="font-semibold mb-2" style={{ ...typography.body, color: '#ffffff' }}>Why do I see slight variations in percentages?</h4>
+          <p className="mb-3" style={{ ...typography.body, color: '#cccccc' }}>
+            You might notice that running the same deck configuration multiple times can show minor differences in probabilities (like 47.3% vs 47.5%). This is completely normal and expected!
+          </p>
+          
+          <h4 className="font-semibold mb-2" style={{ ...typography.body, color: '#ffffff' }}>The Monte Carlo Method</h4>
+          <p className="mb-2" style={{ ...typography.body, color: '#cccccc' }}>
+            FirstDrawGG uses Monte Carlo simulation - the same proven method used by financial analysts, game developers, and engineers worldwide. Think of it like shuffling and drawing from your deck 100,000 times to see what actually happens, rather than just calculating theoretical odds.
+          </p>
+          
+          <p className="mb-2" style={{ ...typography.body, color: '#cccccc' }}>Here's how it works:</p>
+          <ul className="list-disc pl-5 space-y-1 mb-3" style={{ ...typography.body, color: '#cccccc' }}>
+            <li>We simulate <span className="font-semibold">100,000 test hands</span> for each calculation</li>
+            <li>Each simulation randomly shuffles your deck and draws cards</li>
+            <li>The results show you what percentage of those hands met your criteria</li>
+            <li>Just like real shuffling, each set of 100,000 tests will be slightly different</li>
+          </ul>
+          
+          <h4 className="font-semibold mb-2" style={{ ...typography.body, color: '#ffffff' }}>Why This Matters for Deck Building</h4>
+          <p className="mb-3" style={{ ...typography.body, color: '#cccccc' }}>
+            These small variations (typically less than 0.5%) are actually a strength, not a weakness. They reflect the real randomness you'll experience at tournaments. A combo showing 43.2% one time and 43.5% another time tells you it's consistently in that 43-44% range - exactly the confidence level you need for competitive decisions.
+          </p>
+          
+          <h4 className="font-semibold mb-2" style={{ ...typography.body, color: '#ffffff' }}>The Bottom Line</h4>
+          <p className="mb-3" style={{ ...typography.body, color: '#cccccc' }}>
+            With 100,000 simulations per calculation, our results are statistically robust. Whether you're optimizing your competitive deck's hand trap ratios or testing that spicy rogue combo, you can trust these probabilities to guide your deck building decisions. The minor variations you see are proof the system is working correctly, not a flaw.
+          </p>
+          
+          <p className="italic" style={{ ...typography.body, color: '#cccccc' }}>
+            Remember: In Yu-Gi-Oh, even a 1-2% improvement in consistency can be the difference between topping and bricking!
+          </p>
         </div>
       </div>
     </div>
