@@ -219,10 +219,15 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCards, setFilteredCards] = useState([]);
-  const [isEditing, setIsEditing] = useState(!value);
+  const [isEditing, setIsEditing] = useState(!value);  // <-- This is the problem
   const dropdownRef = useRef(null);
   const inputRef = useRef(null);
   const debounceTimerRef = useRef(null);
+  useEffect(() => {
+    if (value && isEditing) {
+      setIsEditing(false);
+    }
+  }, [value]);
   
   // Handle click outside
   useEffect(() => {
