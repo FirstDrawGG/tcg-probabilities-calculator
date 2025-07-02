@@ -1,5 +1,79 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+// URL encoding/decoding utilities
+const URLService = {
+  encodeCalculation: (deckSize, handSize, combos) => {
+    try {
+      const data = {
+        d: deckSize,
+        h: handSize,
+        c: combos.map(combo => ({
+          i: combo.id,
+          n: combo.name,
+          cards: combo.cards.map(card => ({
+            s: card.starterCard,
+            cId: card.cardId,
+            iC: card.isCustom,
+            deck: card.startersInDeck,
+            min: card.minCopiesInHand,
+            max: card.maxCopiesInHand
+          }))
+        }))
+      };
+      
+      const jsonString = JSON.stringify(data);
+      const encoded = btoa(jsonString);
+      return encoded;
+    } catch (error) {
+      console.error('Failed to encode calculation:', error);
+      return null;
+    }
+  },
+
+  decodeCalculation: () => {
+    try {
+      const hash = window.location.hash;
+      const match = hash.match(/#calc=(.+)/);
+      if (!match) return null;
+      
+      const decoded = atob(match[1]);
+      const data = JSON.parse(decoded);
+      
+      // Validate basic structure
+      if (!data.d || !data.h || !data.c || !Array.isArray(data.c)) {
+        return null;
+      }
+      
+      return {
+        deckSize: data.d,
+        handSize: data.h,
+        combos: data.c.map(combo => ({
+          id: combo.i,
+          name: combo.n,
+          cards: combo.cards.map(card => ({
+            starterCard: card.s || '',
+            cardId: card.cId || null,
+            isCustom: card.iC || false,
+            startersInDeck: card.deck,
+            minCopiesInHand: card.min,
+            maxCopiesInHand: card.max
+          }))
+        }))
+      };
+    } catch (error) {
+      console.error('Failed to decode calculation:', error);
+      return null;
+    }
+  },
+
+  updateURL: (deckSize, handSize, combos) => {
+    const encoded = URLService.encodeCalculation(deckSize, handSize, combos);
+    if (encoded) {
+      window.history.replaceState(null, '', `#calc=${encoded}`);
+    }
+  }
+};
+
 // Card database service
 const CardDatabaseService = {
   CACHE_KEY: 'yugioh_cards_cache',
@@ -387,6 +461,35 @@ export default function TCGCalculator() {
   const [editingComboId, setEditingComboId] = useState(null);
   const [tempComboName, setTempComboName] = useState('');
   const [cardDatabase, setCardDatabase] = useState([]);
+  const [isRestoringFromURL, setIsRestoringFromURL] = useState(false);
+
+  // Restore calculation from URL on mount
+  useEffect(() => {
+    const restoreFromURL = () => {
+      const urlData = URLService.decodeCalculation();
+      if (urlData) {
+        console.log('Restoring calculation from URL:', urlData);
+        setIsRestoringFromURL(true);
+        setDeckSize(urlData.deckSize);
+        setHandSize(urlData.handSize);
+        setCombos(urlData.combos);
+        
+        // Auto-calculate after state is set
+        setTimeout(() => {
+          const calculatedResults = ProbabilityService.calculateMultipleCombos(urlData.combos, urlData.deckSize, urlData.handSize);
+          setResults(calculatedResults);
+          setDashboardValues({
+            deckSize: urlData.deckSize,
+            handSize: urlData.handSize,
+            combos: urlData.combos.map(c => ({ ...c }))
+          });
+          setIsRestoringFromURL(false);
+        }, 100);
+      }
+    };
+
+    restoreFromURL();
+  }, []);
   
   // Load card database on mount
   useEffect(() => {
@@ -515,6 +618,9 @@ export default function TCGCalculator() {
     
     const calculatedResults = ProbabilityService.calculateMultipleCombos(combos, deckSize, handSize);
     setResults(calculatedResults);
+    
+    // Generate shareable URL after successful calculation
+    URLService.updateURL(deckSize, handSize, combos);
   };
 
   const handleReset = () => {
@@ -531,6 +637,9 @@ export default function TCGCalculator() {
     setEditingComboId(null);
     setTempComboName('');
     ProbabilityService.clearCache();
+    
+    // Clear URL when resetting
+    window.history.replaceState(null, '', window.location.pathname);
   };
 
   const addCombo = () => {
@@ -748,6 +857,14 @@ export default function TCGCalculator() {
           }
         `}
       </style>
+      {/* Loading state for URL restoration */}
+      {isRestoringFromURL && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg">
+            <p style={typography.body}>Loading shared calculation...</p>
+          </div>
+        </div>
+      )}
       {/* Updated main container with your requested changes */}
       <div className="w-full mx-auto" style={{ maxWidth: '580px' }}>
         <div className="text-center mb-8">
