@@ -39,7 +39,6 @@ const URLService = {
       const decoded = atob(match[1]);
       const data = JSON.parse(decoded);
       
-      // Validate basic structure
       if (!data.d || !data.h || !data.c || !Array.isArray(data.c)) {
         return null;
       }
@@ -77,7 +76,7 @@ const URLService = {
 // Card database service
 const CardDatabaseService = {
   CACHE_KEY: 'yugioh_cards_cache',
-  CACHE_DURATION: 7 * 24 * 60 * 60 * 1000, // 7 days
+  CACHE_DURATION: 7 * 24 * 60 * 60 * 1000,
   
   async fetchCards() {
     try {
@@ -214,22 +213,80 @@ const ProbabilityService = {
   }
 };
 
+// Title generation service
+const TitleGeneratorService = {
+  generateFunTitle: (combos, deckSize, results) => {
+    const cardNames = combos.flatMap(combo =>
+      combo.cards.map(card => card.starterCard)
+    ).filter(name => name.trim() !== '');
+
+    // Calculate average probability for multiple combos
+    const avgProbability = results.reduce((sum, r) => sum + r.probability, 0) / results.length;
+    
+    // Probability-based emoji selection
+    const probEmoji = avgProbability > 80 ? "🔥" :
+                     avgProbability > 60 ? "⚡" :
+                     avgProbability > 40 ? "🎲" : "💀";
+
+    // Fun suffixes based on card count
+    const suffixes = {
+      1: ["Hunt", "Check", "Math", "Dreams"],
+      2: ["Combo", "Engine", "Pair", "Duo"],
+      multi: ["Analysis", "Package", "Study", "Report"]
+    };
+
+    const flavorTexts = {
+      high: ["Going Off!", "Maximum Consistency", "Trust the Math", "Opening Hand Magic"],
+      medium: ["Solid Chances", "Decent Odds", "Making It Work", "The Sweet Spot"],
+      low: ["Brick City?", "Pray to RNGesus", "Heart of the Cards", "Bold Strategy"]
+    };
+
+    let title = "";
+
+    if (cardNames.length === 0) {
+      // Edge case: no cards
+      title = `${probEmoji} Mystery Deck Analysis (${deckSize} Cards)`;
+    } else if (cardNames.length === 1) {
+      const suffix = suffixes[1][Math.floor(Math.random() * suffixes[1].length)];
+      title = `${probEmoji} ${cardNames[0]} ${suffix}: `;
+      
+      if (avgProbability > 80) {
+        title += flavorTexts.high[Math.floor(Math.random() * flavorTexts.high.length)];
+      } else if (avgProbability > 40) {
+        title += flavorTexts.medium[Math.floor(Math.random() * flavorTexts.medium.length)];
+      } else {
+        title += flavorTexts.low[Math.floor(Math.random() * flavorTexts.low.length)];
+      }
+      
+      title += ` (${deckSize} Cards)`;
+    } else if (cardNames.length === 2) {
+      const suffix = suffixes[2][Math.floor(Math.random() * suffixes[2].length)];
+      title = `✨ ${cardNames[0]} + ${cardNames[1]}: The ${suffix}`;
+    } else {
+      const suffix = suffixes.multi[Math.floor(Math.random() * suffixes.multi.length)];
+      title = `🧮 ${cardNames.length}-Card ${suffix}: Tournament Ready?`;
+    }
+
+    return title;
+  }
+};
+
 // Searchable dropdown component
 const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, cardIndex, cardDatabase }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCards, setFilteredCards] = useState([]);
-  const [isEditing, setIsEditing] = useState(!value);  // <-- This is the problem
+  const [isEditing, setIsEditing] = useState(!value);
   const dropdownRef = useRef(null);
   const inputRef = useRef(null);
   const debounceTimerRef = useRef(null);
+  
   useEffect(() => {
     if (value && isEditing) {
       setIsEditing(false);
     }
   }, [value]);
   
-  // Handle click outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -241,7 +298,6 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
   
-  // Handle escape key
   useEffect(() => {
     const handleEscape = (event) => {
       if (event.key === 'Escape' && isOpen) {
@@ -253,7 +309,6 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen]);
   
-  // Search logic with debounce
   useEffect(() => {
     if (searchTerm.length < 3) {
       setFilteredCards([]);
@@ -438,6 +493,38 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
   );
 };
 
+// Typing animation component
+const TypewriterText = ({ text, onComplete }) => {
+  const [displayedText, setDisplayedText] = useState('');
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    // Reset when text changes
+    setDisplayedText('');
+    setCurrentIndex(0);
+  }, [text]);
+
+  useEffect(() => {
+    if (currentIndex < text.length) {
+      intervalRef.current = setTimeout(() => {
+        setDisplayedText(prev => prev + text[currentIndex]);
+        setCurrentIndex(prev => prev + 1);
+      }, 50);
+    } else if (onComplete) {
+      onComplete();
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearTimeout(intervalRef.current);
+      }
+    };
+  }, [currentIndex, text, onComplete]);
+
+  return <span>{displayedText}</span>;
+};
+
 // Combo data structure
 const createCombo = (id, index) => ({
   id,
@@ -467,6 +554,8 @@ export default function TCGCalculator() {
   const [tempComboName, setTempComboName] = useState('');
   const [cardDatabase, setCardDatabase] = useState([]);
   const [isRestoringFromURL, setIsRestoringFromURL] = useState(false);
+  const [generatedTitle, setGeneratedTitle] = useState('');
+  const [shareableUrl, setShareableUrl] = useState('');
 
   // Restore calculation from URL on mount
   useEffect(() => {
@@ -479,7 +568,6 @@ export default function TCGCalculator() {
         setHandSize(urlData.handSize);
         setCombos(urlData.combos);
         
-        // Auto-calculate after state is set
         setTimeout(() => {
           const calculatedResults = ProbabilityService.calculateMultipleCombos(urlData.combos, urlData.deckSize, urlData.handSize);
           setResults(calculatedResults);
@@ -501,7 +589,6 @@ export default function TCGCalculator() {
     const loadCardDatabase = async () => {
       console.log('Starting card database load...');
       
-      // Try cache first
       const cached = CardDatabaseService.loadFromCache();
       if (cached) {
         console.log('Loaded from cache:', cached.length, 'cards');
@@ -512,7 +599,6 @@ export default function TCGCalculator() {
       
       console.log('Cache not found or expired, fetching from API...');
       
-      // Fetch from API
       const cards = await CardDatabaseService.fetchCards();
       console.log('Fetched cards:', cards.length);
       
@@ -624,8 +710,14 @@ export default function TCGCalculator() {
     const calculatedResults = ProbabilityService.calculateMultipleCombos(combos, deckSize, handSize);
     setResults(calculatedResults);
     
-    // Generate shareable URL after successful calculation
+    // Generate shareable URL
     URLService.updateURL(deckSize, handSize, combos);
+    const url = window.location.href;
+    setShareableUrl(url);
+    
+    // Generate title
+    const title = TitleGeneratorService.generateFunTitle(combos, deckSize, calculatedResults);
+    setGeneratedTitle(title);
   };
 
   const handleReset = () => {
@@ -641,9 +733,10 @@ export default function TCGCalculator() {
     });
     setEditingComboId(null);
     setTempComboName('');
+    setGeneratedTitle('');
+    setShareableUrl('');
     ProbabilityService.clearCache();
     
-    // Clear URL when resetting
     window.history.replaceState(null, '', window.location.pathname);
   };
 
@@ -671,7 +764,6 @@ export default function TCGCalculator() {
       updatedCombo.cards = [...combo.cards];
       
       if (field === 'starterCard' && typeof value === 'object') {
-        // Handle card selection from dropdown
         updatedCombo.cards[cardIndex] = { 
           ...combo.cards[cardIndex], 
           starterCard: value.starterCard,
@@ -679,7 +771,6 @@ export default function TCGCalculator() {
           isCustom: value.isCustom
         };
       } else {
-        // Handle other field updates
         updatedCombo.cards[cardIndex] = { ...combo.cards[cardIndex], [field]: value };
       }
       
@@ -862,7 +953,6 @@ export default function TCGCalculator() {
           }
         `}
       </style>
-      {/* Loading state for URL restoration */}
       {isRestoringFromURL && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg">
@@ -870,7 +960,6 @@ export default function TCGCalculator() {
           </div>
         </div>
       )}
-      {/* Updated main container with your requested changes */}
       <div className="w-full mx-auto" style={{ maxWidth: '580px' }}>
         <div className="text-center mb-8">
           <img 
@@ -1354,6 +1443,48 @@ export default function TCGCalculator() {
           )}
         </div>
 
+        {results.length > 0 && generatedTitle && (
+          <div className="p-6">
+            <h2 className="mb-4" style={typography.h2}>Deck list link</h2>
+            
+            <div className="mb-4">
+              <h3 className="mb-2" style={typography.h3}>
+                <TypewriterText text={generatedTitle} />
+              </h3>
+            </div>
+            
+            <div className="p-4 rounded-md" style={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }}>
+              <p className="mb-2" style={typography.body}>Shareable link:</p>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={shareableUrl}
+                  readOnly
+                  className="flex-1 px-3 py-2 border border-gray-600"
+                  style={{ 
+                    backgroundColor: '#333', 
+                    color: '#ffffff',
+                    borderRadius: '999px',
+                    ...typography.body
+                  }}
+                />
+                <button
+                  onClick={() => navigator.clipboard.writeText(shareableUrl)}
+                  className="px-4 py-2 font-medium transition-colors hover:bg-gray-700"
+                  style={{ 
+                    backgroundColor: '#282828', 
+                    color: '#ffffff',
+                    borderRadius: '999px',
+                    ...typography.body
+                  }}
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="p-6" style={{ marginTop: '1.5rem' }}>
           <h3 className="font-semibold mb-3" style={{ ...typography.body, color: '#ffffff' }}>Understanding Your Probability Results</h3>
           
@@ -1386,7 +1517,7 @@ export default function TCGCalculator() {
           </p>
           
           <p className="italic" style={{ ...typography.body, color: '#cccccc' }}>
-            Remember: In Yu-Gi-Oh, even a 1-2% improvement in consistency can be the difference between topping and bricking!
+            Remember: In Yu-Gi-Oh!, understanding whether your combo is at 43% or 83% is what separates consistent decks from inconsistent ones. Happy deck building!
           </p>
         </div>
       </div>
