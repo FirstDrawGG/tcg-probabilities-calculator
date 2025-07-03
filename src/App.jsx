@@ -146,6 +146,15 @@ const ProbabilityService = {
     return `${cardsKey}-${deckSize}-${handSize}`;
   },
   
+  getCombinedCacheKey: function(combos, deckSize, handSize) {
+    const combosKey = combos.map(combo => 
+      combo.cards.map(card => 
+        `${card.startersInDeck}-${card.minCopiesInHand}-${card.maxCopiesInHand}`
+      ).join('|')
+    ).join('||');
+    return `combined-${combosKey}-${deckSize}-${handSize}`;
+  },
+  
   monteCarloSimulation: (combo, deckSize, handSize, simulations = 100000) => {
     const cacheKey = ProbabilityService.getCacheKey(combo, deckSize, handSize);
     
@@ -204,12 +213,120 @@ const ProbabilityService = {
     return probability;
   },
   
+  combinedMonteCarloSimulation: (combos, deckSize, handSize, simulations = 100000) => {
+    const cacheKey = ProbabilityService.getCombinedCacheKey(combos, deckSize, handSize);
+    
+    if (ProbabilityService.resultCache.has(cacheKey)) {
+      return ProbabilityService.resultCache.get(cacheKey);
+    }
+    
+    let successes = 0;
+    
+    // Create a unified card mapping for all combos
+    const allUniqueCards = new Map();
+    let cardIdCounter = 0;
+    
+    combos.forEach(combo => {
+      combo.cards.forEach(card => {
+        const cardKey = `${card.starterCard}-${card.cardId || 'custom'}`;
+        if (!allUniqueCards.has(cardKey)) {
+          allUniqueCards.set(cardKey, {
+            id: cardIdCounter++,
+            name: card.starterCard,
+            totalInDeck: 0
+          });
+        }
+        allUniqueCards.get(cardKey).totalInDeck = Math.max(
+          allUniqueCards.get(cardKey).totalInDeck,
+          card.startersInDeck
+        );
+      });
+    });
+    
+    for (let i = 0; i < simulations; i++) {
+      const deck = [];
+      
+      // Build deck with all unique cards
+      allUniqueCards.forEach((cardInfo, cardKey) => {
+        for (let j = 0; j < cardInfo.totalInDeck; j++) {
+          deck.push(cardInfo.id);
+        }
+      });
+      
+      // Fill remaining deck slots
+      for (let j = deck.length; j < deckSize; j++) {
+        deck.push(-1);
+      }
+      
+      // Shuffle deck
+      for (let j = deck.length - 1; j > 0; j--) {
+        const k = Math.floor(Math.random() * (j + 1));
+        [deck[j], deck[k]] = [deck[k], deck[j]];
+      }
+      
+      // Count cards in hand
+      const handCounts = new Map();
+      allUniqueCards.forEach((cardInfo) => {
+        handCounts.set(cardInfo.id, 0);
+      });
+      
+      for (let j = 0; j < handSize; j++) {
+        if (deck[j] >= 0) {
+          handCounts.set(deck[j], (handCounts.get(deck[j]) || 0) + 1);
+        }
+      }
+      
+      // Check if ANY combo succeeds
+      let anyComboSucceeds = false;
+      
+      for (const combo of combos) {
+        let comboSucceeds = true;
+        
+        for (const card of combo.cards) {
+          const cardKey = `${card.starterCard}-${card.cardId || 'custom'}`;
+          const cardInfo = allUniqueCards.get(cardKey);
+          const drawnCount = handCounts.get(cardInfo.id) || 0;
+          
+          if (drawnCount < card.minCopiesInHand || drawnCount > card.maxCopiesInHand) {
+            comboSucceeds = false;
+            break;
+          }
+        }
+        
+        if (comboSucceeds) {
+          anyComboSucceeds = true;
+          break;
+        }
+      }
+      
+      if (anyComboSucceeds) {
+        successes++;
+      }
+    }
+    
+    const probability = (successes / simulations) * 100;
+    ProbabilityService.resultCache.set(cacheKey, probability);
+    
+    return probability;
+  },
+  
   calculateMultipleCombos: (combos, deckSize, handSize) => {
-    return combos.map(combo => ({
+    const individualResults = combos.map(combo => ({
       id: combo.id,
       probability: ProbabilityService.monteCarloSimulation(combo, deckSize, handSize),
       cards: combo.cards
     }));
+    
+    // Calculate combined probability only if there are multiple combos
+    let combinedProbability = null;
+    if (combos.length > 1) {
+      combinedProbability = ProbabilityService.combinedMonteCarloSimulation(combos, deckSize, handSize);
+    }
+    
+    return {
+      individual: individualResults,
+      combined: combinedProbability
+    };
   }
 };
 
@@ -543,7 +660,7 @@ export default function TCGCalculator() {
   const [deckSize, setDeckSize] = useState(40);
   const [handSize, setHandSize] = useState(5);
   const [combos, setCombos] = useState([createCombo(1, 0)]);
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState({ individual: [], combined: null });
   const [errors, setErrors] = useState({});
   const [dashboardValues, setDashboardValues] = useState({
     deckSize: 40,
@@ -715,8 +832,8 @@ export default function TCGCalculator() {
     const url = window.location.href;
     setShareableUrl(url);
     
-    // Generate title
-    const title = TitleGeneratorService.generateFunTitle(combos, deckSize, calculatedResults);
+    // Generate title using individual results for compatibility
+    const title = TitleGeneratorService.generateFunTitle(combos, deckSize, calculatedResults.individual);
     setGeneratedTitle(title);
   };
 
@@ -724,7 +841,7 @@ export default function TCGCalculator() {
     setDeckSize(40);
     setHandSize(5);
     setCombos([createCombo(1, 0)]);
-    setResults([]);
+    setResults({ individual: [], combined: null });
     setErrors({});
     setDashboardValues({
       deckSize: 40,
@@ -931,7 +1048,7 @@ export default function TCGCalculator() {
   }, [deckSize, handSize]);
 
   useEffect(() => {
-    if (results.length > 0) validate();
+    if (results.individual.length > 0) validate();
   }, [deckSize, handSize, combos]);
 
   return (
@@ -1430,9 +1547,19 @@ export default function TCGCalculator() {
             ))}
           </div>
 
-          {results.length > 0 && (
+          {results.individual.length > 0 && (
             <div className="mt-6 space-y-2">
-              {results.map((result, index) => (
+              {/* Combined probability result - only show if multiple combos */}
+              {results.combined !== null && (
+                <div className="p-4 rounded-md" style={{ backgroundColor: '#1a5a3a' }}>
+                  <p className="font-semibold" style={typography.body}>
+                    Chances of opening any of the desired combos: {results.combined.toFixed(2)}%
+                  </p>
+                </div>
+              )}
+              
+              {/* Individual combo results */}
+              {results.individual.map((result, index) => (
                 <div key={result.id} className="p-4 rounded-md" style={{ backgroundColor: '#2a4a6b' }}>
                   <p className="font-semibold" style={typography.body}>
                     {generateResultText(result)}
@@ -1443,7 +1570,7 @@ export default function TCGCalculator() {
           )}
         </div>
 
-        {results.length > 0 && generatedTitle && (
+        {results.individual.length > 0 && generatedTitle && (
           <div className="p-6">
             <h2 className="mb-4" style={typography.h2}>Deck list link</h2>
             
