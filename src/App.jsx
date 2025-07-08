@@ -641,7 +641,82 @@ const TypewriterText = ({ text, onComplete }) => {
 
   return <span>{displayedText}</span>;
 };
+const Toast = ({ message, onClose }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
+  const timerRef = useRef(null);
 
+  useEffect(() => {
+    // Trigger entrance animation
+    setTimeout(() => setIsVisible(true), 10);
+
+    // Auto-dismiss after 3 seconds
+    timerRef.current = setTimeout(() => {
+      handleClose();
+    }, 3000);
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
+  const handleClose = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    setIsExiting(true);
+    setTimeout(() => {
+      onClose();
+    }, 300);
+  };
+
+  return (
+    <div
+      onClick={handleClose}
+      className="fixed top-4 right-4 z-50 cursor-pointer"
+      style={{
+        transform: `translateX(${isVisible && !isExiting ? '0' : '120%'})`,
+        opacity: isVisible && !isExiting ? '1' : '0',
+        transition: 'transform 0.3s ease-out, opacity 0.3s ease-out'
+      }}
+    >
+      <div
+        className="relative flex items-center px-4 py-3 rounded-lg shadow-lg"
+        style={{
+          backgroundColor: '#1a1a1a',
+          border: '1px solid #333',
+          boxShadow: '0 4px 12px rgba(255, 255, 255, 0.05)',
+          minWidth: '200px'
+        }}
+      >
+        <span style={{
+          color: '#ffffff',
+          fontSize: '14px',
+          fontFamily: 'Geist Regular, sans-serif',
+          marginRight: '24px'
+        }}>
+          {message}
+        </span>
+        <button
+          className="absolute top-2 right-2 text-gray-400 hover:text-white transition-colors"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleClose();
+          }}
+          style={{
+            fontSize: '16px',
+            lineHeight: '16px',
+            padding: '4px'
+          }}
+        >
+          ×
+        </button>
+      </div>
+    </div>
+  );
+};
 // Combo data structure
 const createCombo = (id, index) => ({
   id,
@@ -673,6 +748,7 @@ export default function TCGCalculator() {
   const [isRestoringFromURL, setIsRestoringFromURL] = useState(false);
   const [generatedTitle, setGeneratedTitle] = useState('');
   const [shareableUrl, setShareableUrl] = useState('');
+  const [showToast, setShowToast] = useState(false);
 
   // Restore calculation from URL on mount
   useEffect(() => {
@@ -1042,6 +1118,16 @@ export default function TCGCalculator() {
       return `Chances of seeing ${card1Text}, and ${card2Text} in your opening hand: ${probability.toFixed(2)}%`;
     }
   };
+  const handleCopyLink = () => {
+  if (!showToast) { // Prevent multiple toasts
+    navigator.clipboard.writeText(shareableUrl);
+    setShowToast(true);
+  }
+};
+
+useEffect(() => {
+  ProbabilityService.clearCache();
+}, [deckSize, handSize]);
 
   useEffect(() => {
     ProbabilityService.clearCache();
@@ -1596,7 +1682,17 @@ export default function TCGCalculator() {
                   }}
                 />
                 <button
-                  onClick={() => navigator.clipboard.writeText(shareableUrl)}
+                  onClick={handleCopyLink}
+                  className="px-4 py-2 font-medium transition-colors hover:bg-gray-700"
+                  style={{ 
+                    backgroundColor: '#282828', 
+                   color: '#ffffff',
+                   borderRadius: '999px',
+                   ...typography.body
+                    }}
+                  >
+                  Copy
+                </button>
                   className="px-4 py-2 font-medium transition-colors hover:bg-gray-700"
                   style={{ 
                     backgroundColor: '#282828', 
@@ -1649,5 +1745,16 @@ export default function TCGCalculator() {
         </div>
       </div>
     </div>
+    </div>
+      </div>
+      {showToast && (
+        <Toast 
+          message="Link copied ✅" 
+          onClose={() => setShowToast(false)} 
+        />
+      )}
+    </div>
+  );
+}
   );
 }
