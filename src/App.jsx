@@ -1686,16 +1686,6 @@ useEffect(() => {
                   className="px-4 py-2 font-medium transition-colors hover:bg-gray-700"
                   style={{ 
                     backgroundColor: '#282828', 
-                   color: '#ffffff',
-                   borderRadius: '999px',
-                   ...typography.body
-                    }}
-                  >
-                  Copy
-                </button>
-                  className="px-4 py-2 font-medium transition-colors hover:bg-gray-700"
-                  style={{ 
-                    backgroundColor: '#282828', 
                     color: '#ffffff',
                     borderRadius: '999px',
                     ...typography.body
@@ -1744,9 +1734,6 @@ useEffect(() => {
           </p>
         </div>
       </div>
-    </div>
-    </div>
-      </div>
       {showToast && (
         <Toast 
           message="Link copied ✅" 
@@ -1754,7 +1741,5 @@ useEffect(() => {
         />
       )}
     </div>
-  );
-}
   );
 }
