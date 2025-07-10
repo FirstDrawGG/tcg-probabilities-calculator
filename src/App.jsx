@@ -523,21 +523,23 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
           onChange={handleInputChange}
           onClick={handleInputClick}
           placeholder={placeholder}
-          className={`w-full px-3 py-2 border ${errors ? 'border-red-500' : 'border-gray-600'}`}
+          className={`w-full px-3 border ${errors ? 'border-red-500' : 'border-gray-600'}`}
           style={{ 
             backgroundColor: '#333', 
             color: '#ffffff',
             borderRadius: '999px',
+            height: '40px',
             ...typography.body
           }}
         />
       ) : (
         <div 
-          className={`w-full px-3 py-2 border ${errors ? 'border-red-500' : 'border-gray-600'} flex justify-between items-center`}
+          className={`w-full px-3 border ${errors ? 'border-red-500' : 'border-gray-600'} flex justify-between items-center`}
           style={{ 
             backgroundColor: '#333', 
             color: '#ffffff',
             borderRadius: '999px',
+            height: '40px',
             ...typography.body
           }}
         >
