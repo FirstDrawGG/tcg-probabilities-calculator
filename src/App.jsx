@@ -501,7 +501,11 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
     setSearchTerm(value);
     setIsEditing(true);
     setIsOpen(true);
-    setTimeout(() => inputRef.current?.focus(), 0);
+    requestAnimationFrame(() => {
+     if (inputRef.current) {
+      inputRef.current.focus();
+     }
+     });
   };
   
   const typography = {
@@ -544,7 +548,10 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
             cursor: 'pointer',
             ...typography.body
           }}
-          onClick={handleEdit}
+          onClick={(e) => {     
+            e.stopPropagation(); 
+            handleEdit();        
+          }}      
         >
           <span>{value}</span>
           <div className="flex items-center space-x-2">
