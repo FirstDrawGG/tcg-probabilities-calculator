@@ -1199,13 +1199,14 @@ useEffect(() => {
                 type="number"
                 value={deckSize}
                 onChange={(e) => setDeckSize(parseInt(e.target.value) || 0)}
-                className={`w-full px-3 py-2 border ${
+                className={`w-full px-3 border ${
                   errors.deckSize ? 'border-red-500' : 'border-gray-600'
                 }`}
                 style={{ 
                   backgroundColor: '#333', 
                   color: '#ffffff',
                   borderRadius: '999px',
+                  height: '40px',
                   ...typography.body
                 }}
               />
@@ -1675,11 +1676,12 @@ useEffect(() => {
                   type="text"
                   value={shareableUrl}
                   readOnly
-                  className="flex-1 px-3 py-2 border border-gray-600"
+                  className="flex-1 px-3 border border-gray-600"
                   style={{ 
                     backgroundColor: '#333', 
                     color: '#ffffff',
                     borderRadius: '999px',
+                    height: '40px',
                     ...typography.body
                   }}
                 />
