@@ -1,13 +1,392 @@
-// src/App.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { Analytics } from "@vercel/analytics/react";
-import './index.css';
 
-// Import all services
-import { ProbabilityService } from './services/ProbabilityService.js';
-import { CardDatabaseService } from './services/CardDatabaseService.js';
-import { TitleGeneratorService } from './services/TitleGeneratorService.js';
-import { URLService } from './services/URLService.js';
+// URL encoding/decoding utilities
+const URLService = {
+  encodeCalculation: (deckSize, handSize, combos) => {
+    try {
+      const data = {
+        d: deckSize,
+        h: handSize,
+        c: combos.map(combo => ({
+          i: combo.id,
+          n: combo.name,
+          cards: combo.cards.map(card => ({
+            s: card.starterCard,
+            cId: card.cardId,
+            iC: card.isCustom,
+            deck: card.startersInDeck,
+            min: card.minCopiesInHand,
+            max: card.maxCopiesInHand
+          }))
+        }))
+      };
+      
+      const jsonString = JSON.stringify(data);
+      const encoded = btoa(jsonString);
+      return encoded;
+    } catch (error) {
+      console.error('Failed to encode calculation:', error);
+      return null;
+    }
+  },
+
+  decodeCalculation: () => {
+    try {
+      const hash = window.location.hash;
+      const match = hash.match(/#calc=(.+)/);
+      if (!match) return null;
+      
+      const decoded = atob(match[1]);
+      const data = JSON.parse(decoded);
+      
+      if (!data.d || !data.h || !data.c || !Array.isArray(data.c)) {
+        return null;
+      }
+      
+      return {
+        deckSize: data.d,
+        handSize: data.h,
+        combos: data.c.map(combo => ({
+          id: combo.i,
+          name: combo.n,
+          cards: combo.cards.map(card => ({
+            starterCard: card.s || '',
+            cardId: card.cId || null,
+            isCustom: card.iC || false,
+            startersInDeck: card.deck,
+            minCopiesInHand: card.min,
+            maxCopiesInHand: card.max
+          }))
+        }))
+      };
+    } catch (error) {
+      console.error('Failed to decode calculation:', error);
+      return null;
+    }
+  },
+
+  updateURL: (deckSize, handSize, combos) => {
+    const encoded = URLService.encodeCalculation(deckSize, handSize, combos);
+    if (encoded) {
+      window.history.replaceState(null, '', `#calc=${encoded}`);
+    }
+  }
+};
+
+// Card database service
+const CardDatabaseService = {
+  CACHE_KEY: 'yugioh_cards_cache',
+  CACHE_DURATION: 7 * 24 * 60 * 60 * 1000,
+  
+  async fetchCards() {
+    try {
+      console.log('Fetching cards from API...');
+      const response = await fetch('https://db.ygoprodeck.com/api/v7/cardinfo.php');
+      console.log('API response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`API returned ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('API response:', data);
+      console.log('Number of cards:', data.data ? data.data.length : 0);
+      console.log('First card example:', data.data ? data.data[0] : 'No cards');
+      
+      return data.data || [];
+    } catch (error) {
+      console.error('Failed to fetch cards:', error);
+      return [];
+    }
+  },
+  
+  loadFromCache() {
+    try {
+      const cached = localStorage.getItem(this.CACHE_KEY);
+      if (!cached) return null;
+      
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp > this.CACHE_DURATION) {
+        localStorage.removeItem(this.CACHE_KEY);
+        return null;
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Cache load error:', error);
+      return null;
+    }
+  },
+  
+  saveToCache(cards) {
+    try {
+      const cacheData = {
+        data: cards,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(this.CACHE_KEY, JSON.stringify(cacheData));
+    } catch (error) {
+      console.error('Cache save error:', error);
+    }
+  }
+};
+
+// Probability calculation service
+const ProbabilityService = {
+  resultCache: new Map(),
+  
+  clearCache: function() {
+    this.resultCache.clear();
+  },
+  
+  getCacheKey: function(combo, deckSize, handSize) {
+    const cardsKey = combo.cards.map(card => 
+      `${card.startersInDeck}-${card.minCopiesInHand}-${card.maxCopiesInHand}`
+    ).join('|');
+    return `${cardsKey}-${deckSize}-${handSize}`;
+  },
+  
+  getCombinedCacheKey: function(combos, deckSize, handSize) {
+    const combosKey = combos.map(combo => 
+      combo.cards.map(card => 
+        `${card.startersInDeck}-${card.minCopiesInHand}-${card.maxCopiesInHand}`
+      ).join('|')
+    ).join('||');
+    return `combined-${combosKey}-${deckSize}-${handSize}`;
+  },
+  
+  monteCarloSimulation: (combo, deckSize, handSize, simulations = 100000) => {
+    const cacheKey = ProbabilityService.getCacheKey(combo, deckSize, handSize);
+    
+    if (ProbabilityService.resultCache.has(cacheKey)) {
+      return ProbabilityService.resultCache.get(cacheKey);
+    }
+    
+    let successes = 0;
+    
+    for (let i = 0; i < simulations; i++) {
+      const deck = [];
+      let currentPosition = 0;
+      
+      combo.cards.forEach((card, cardIndex) => {
+        for (let j = 0; j < card.startersInDeck; j++) {
+          deck.push(cardIndex);
+        }
+        currentPosition += card.startersInDeck;
+      });
+      
+      for (let j = currentPosition; j < deckSize; j++) {
+        deck.push(-1);
+      }
+      
+      for (let j = deck.length - 1; j > 0; j--) {
+        const k = Math.floor(Math.random() * (j + 1));
+        [deck[j], deck[k]] = [deck[k], deck[j]];
+      }
+      
+      const cardCounts = new Array(combo.cards.length).fill(0);
+      for (let j = 0; j < handSize; j++) {
+        if (deck[j] >= 0) {
+          cardCounts[deck[j]]++;
+        }
+      }
+      
+      let allCardsCriteriaMet = true;
+      for (let cardIndex = 0; cardIndex < combo.cards.length; cardIndex++) {
+        const card = combo.cards[cardIndex];
+        const drawnCount = cardCounts[cardIndex];
+        
+        if (drawnCount < card.minCopiesInHand || drawnCount > card.maxCopiesInHand) {
+          allCardsCriteriaMet = false;
+          break;
+        }
+      }
+      
+      if (allCardsCriteriaMet) {
+        successes++;
+      }
+    }
+    
+    const probability = (successes / simulations) * 100;
+    ProbabilityService.resultCache.set(cacheKey, probability);
+    
+    return probability;
+  },
+  
+  combinedMonteCarloSimulation: (combos, deckSize, handSize, simulations = 100000) => {
+    const cacheKey = ProbabilityService.getCombinedCacheKey(combos, deckSize, handSize);
+    
+    if (ProbabilityService.resultCache.has(cacheKey)) {
+      return ProbabilityService.resultCache.get(cacheKey);
+    }
+    
+    let successes = 0;
+    
+    // Create a unified card mapping for all combos
+    const allUniqueCards = new Map();
+    let cardIdCounter = 0;
+    
+    combos.forEach(combo => {
+      combo.cards.forEach(card => {
+        const cardKey = `${card.starterCard}-${card.cardId || 'custom'}`;
+        if (!allUniqueCards.has(cardKey)) {
+          allUniqueCards.set(cardKey, {
+            id: cardIdCounter++,
+            name: card.starterCard,
+            totalInDeck: 0
+          });
+        }
+        allUniqueCards.get(cardKey).totalInDeck = Math.max(
+          allUniqueCards.get(cardKey).totalInDeck,
+          card.startersInDeck
+        );
+      });
+    });
+    
+    for (let i = 0; i < simulations; i++) {
+      const deck = [];
+      
+      // Build deck with all unique cards
+      allUniqueCards.forEach((cardInfo, cardKey) => {
+        for (let j = 0; j < cardInfo.totalInDeck; j++) {
+          deck.push(cardInfo.id);
+        }
+      });
+      
+      // Fill remaining deck slots
+      for (let j = deck.length; j < deckSize; j++) {
+        deck.push(-1);
+      }
+      
+      // Shuffle deck
+      for (let j = deck.length - 1; j > 0; j--) {
+        const k = Math.floor(Math.random() * (j + 1));
+        [deck[j], deck[k]] = [deck[k], deck[j]];
+      }
+      
+      // Count cards in hand
+      const handCounts = new Map();
+      allUniqueCards.forEach((cardInfo) => {
+        handCounts.set(cardInfo.id, 0);
+      });
+      
+      for (let j = 0; j < handSize; j++) {
+        if (deck[j] >= 0) {
+          handCounts.set(deck[j], (handCounts.get(deck[j]) || 0) + 1);
+        }
+      }
+      
+      // Check if ANY combo succeeds
+      let anyComboSucceeds = false;
+      
+      for (const combo of combos) {
+        let comboSucceeds = true;
+        
+        for (const card of combo.cards) {
+          const cardKey = `${card.starterCard}-${card.cardId || 'custom'}`;
+          const cardInfo = allUniqueCards.get(cardKey);
+          const drawnCount = handCounts.get(cardInfo.id) || 0;
+          
+          if (drawnCount < card.minCopiesInHand || drawnCount > card.maxCopiesInHand) {
+            comboSucceeds = false;
+            break;
+          }
+        }
+        
+        if (comboSucceeds) {
+          anyComboSucceeds = true;
+          break;
+        }
+      }
+      
+      if (anyComboSucceeds) {
+        successes++;
+      }
+    }
+    
+    const probability = (successes / simulations) * 100;
+    ProbabilityService.resultCache.set(cacheKey, probability);
+    
+    return probability;
+  },
+  
+  calculateMultipleCombos: (combos, deckSize, handSize) => {
+    const individualResults = combos.map(combo => ({
+      id: combo.id,
+      probability: ProbabilityService.monteCarloSimulation(combo, deckSize, handSize),
+      cards: combo.cards
+    }));
+    
+    // Calculate combined probability only if there are multiple combos
+    let combinedProbability = null;
+    if (combos.length > 1) {
+      combinedProbability = ProbabilityService.combinedMonteCarloSimulation(combos, deckSize, handSize);
+    }
+    
+    return {
+      individual: individualResults,
+      combined: combinedProbability
+    };
+  }
+};
+
+// Title generation service
+const TitleGeneratorService = {
+  generateFunTitle: (combos, deckSize, results) => {
+    const cardNames = combos.flatMap(combo =>
+      combo.cards.map(card => card.starterCard)
+    ).filter(name => name.trim() !== '');
+
+    // Calculate average probability for multiple combos
+    const avgProbability = results.reduce((sum, r) => sum + r.probability, 0) / results.length;
+    
+    // Probability-based emoji selection
+    const probEmoji = avgProbability > 80 ? "🔥" :
+                     avgProbability > 60 ? "⚡" :
+                     avgProbability > 40 ? "🎲" : "💀";
+
+    // Fun suffixes based on card count
+    const suffixes = {
+      1: ["Hunt", "Check", "Math", "Dreams"],
+      2: ["Combo", "Engine", "Pair", "Duo"],
+      multi: ["Analysis", "Package", "Study", "Report"]
+    };
+
+    const flavorTexts = {
+      high: ["Going Off!", "Maximum Consistency", "Trust the Math", "Opening Hand Magic"],
+      medium: ["Solid Chances", "Decent Odds", "Making It Work", "The Sweet Spot"],
+      low: ["Brick City?", "Pray to RNGesus", "Heart of the Cards", "Bold Strategy"]
+    };
+
+    let title = "";
+
+    if (cardNames.length === 0) {
+      // Edge case: no cards
+      title = `${probEmoji} Mystery Deck Analysis (${deckSize} Cards)`;
+    } else if (cardNames.length === 1) {
+      const suffix = suffixes[1][Math.floor(Math.random() * suffixes[1].length)];
+      title = `${probEmoji} ${cardNames[0]} ${suffix}: `;
+      
+      if (avgProbability > 80) {
+        title += flavorTexts.high[Math.floor(Math.random() * flavorTexts.high.length)];
+      } else if (avgProbability > 40) {
+        title += flavorTexts.medium[Math.floor(Math.random() * flavorTexts.medium.length)];
+      } else {
+        title += flavorTexts.low[Math.floor(Math.random() * flavorTexts.low.length)];
+      }
+      
+      title += ` (${deckSize} Cards)`;
+    } else if (cardNames.length === 2) {
+      const suffix = suffixes[2][Math.floor(Math.random() * suffixes[2].length)];
+      title = `✨ ${cardNames[0]} + ${cardNames[1]}: The ${suffix}`;
+    } else {
+      const suffix = suffixes.multi[Math.floor(Math.random() * suffixes.multi.length)];
+      title = `🧮 ${cardNames.length}-Card ${suffix}: Tournament Ready?`;
+    }
+
+    return title;
+  }
+};
 
 // Searchable dropdown component
 const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, cardIndex, cardDatabase }) => {
