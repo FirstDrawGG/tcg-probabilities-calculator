@@ -540,22 +540,30 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
             color: '#ffffff',
             borderRadius: '999px',
             height: '40px',
+            cursor: 'pointer',
             ...typography.body
           }}
+          onClick={handleEdit}
         >
           <span>{value}</span>
           <div className="flex items-center space-x-2">
             <button
               type="button"
-              onClick={handleEdit}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleEdit();
+               }}
               className="text-gray-400 hover:text-white"
-              style={{ fontSize: '12px' }}
+               style={{ fontSize: '12px' }}
             >
               Edit
             </button>
             <button
               type="button"
-              onClick={handleClear}
+              onClick={(e) => {
+                e.stopPropagation(); 
+                handleClear();
+              }}
               className="text-gray-400 hover:text-white"
               style={{ fontSize: '16px' }}
             >
