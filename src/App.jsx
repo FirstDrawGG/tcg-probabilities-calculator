@@ -4,10 +4,10 @@ import { Analytics } from "@vercel/analytics/react";
 import './index.css';
 
 // Import all services
-import { ProbabilityService } from './services/ProbabilityService';
-import { CardDatabaseService } from './services/CardDatabaseService';
-import { TitleGeneratorService } from './services/TitleGeneratorService';
-import { URLService } from './services/URLService';
+import { ProbabilityService } from './services/ProbabilityService.js';
+import { CardDatabaseService } from './services/CardDatabaseService.js';
+import { TitleGeneratorService } from './services/TitleGeneratorService.js';
+import { URLService } from './services/URLService.js';
 
 // Searchable dropdown component
 const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, cardIndex, cardDatabase }) => {
