@@ -457,8 +457,9 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
   }, [searchTerm, cardDatabase]);
   
   const handleInputClick = () => {
-    if (!value || isEditing) {
-      setIsOpen(true);
+  setIsOpen(true);
+  if (value && !isEditing) {
+    handleEdit();
     }
   };
   
