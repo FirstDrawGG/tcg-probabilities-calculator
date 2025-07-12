@@ -388,6 +388,144 @@ const TitleGeneratorService = {
   }
 };
 
+// Tooltip component
+const Tooltip = ({ text, children }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0, placement: 'right' });
+  const tooltipRef = useRef(null);
+  const triggerRef = useRef(null);
+
+  const updatePosition = () => {
+    if (triggerRef.current && tooltipRef.current) {
+      const triggerRect = triggerRef.current.getBoundingClientRect();
+      const tooltipRect = tooltipRef.current.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      // Default to right positioning
+      let x = triggerRect.right + 8;
+      let y = triggerRect.top + (triggerRect.height / 2) - (tooltipRect.height / 2);
+      let placement = 'right';
+
+      // Check if tooltip would overflow viewport on the right
+      if (x + tooltipRect.width > viewportWidth - 10) {
+        // Position above instead
+        x = triggerRect.left + (triggerRect.width / 2) - (tooltipRect.width / 2);
+        y = triggerRect.top - tooltipRect.height - 4;
+        placement = 'top';
+
+        // Ensure tooltip doesn't go off left edge when centered above
+        if (x < 10) x = 10;
+        if (x + tooltipRect.width > viewportWidth - 10) {
+          x = viewportWidth - tooltipRect.width - 10;
+        }
+      }
+
+      // Ensure tooltip doesn't go off top edge
+      if (y < 10) {
+        y = triggerRect.bottom + 4;
+        placement = 'bottom';
+      }
+
+      // Ensure tooltip doesn't go off bottom edge
+      if (y + tooltipRect.height > viewportHeight - 10) {
+        y = viewportHeight - tooltipRect.height - 10;
+      }
+
+      setPosition({ x, y, placement });
+    }
+  };
+
+  const handleMouseEnter = () => {
+    setIsVisible(true);
+    setTimeout(updatePosition, 0);
+  };
+
+  const handleMouseLeave = () => {
+    setIsVisible(false);
+  };
+
+  const handleTouchStart = (e) => {
+    e.preventDefault();
+    if (isVisible) {
+      setIsVisible(false);
+    } else {
+      setIsVisible(true);
+      setTimeout(updatePosition, 0);
+    }
+  };
+
+  useEffect(() => {
+    if (isVisible) {
+      const handleResize = () => updatePosition();
+      const handleScroll = () => updatePosition();
+      
+      window.addEventListener('resize', handleResize);
+      window.addEventListener('scroll', handleScroll, true);
+      
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        window.removeEventListener('scroll', handleScroll, true);
+      };
+    }
+  }, [isVisible]);
+
+  return (
+    <>
+      <div
+        ref={triggerRef}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        style={{ 
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '16px',
+          height: '16px',
+          borderRadius: '50%',
+          backgroundColor: 'transparent',
+          border: '1px solid #ffffff',
+          color: '#ffffff',
+          fontSize: '12px',
+          fontWeight: 'bold',
+          cursor: 'pointer',
+          marginLeft: '8px',
+          flexShrink: 0,
+          userSelect: 'none'
+        }}
+      >
+        i
+      </div>
+      {isVisible && (
+        <div
+          ref={tooltipRef}
+          style={{
+            position: 'fixed',
+            left: `${position.x}px`,
+            top: `${position.y}px`,
+            backgroundColor: '#333',
+            color: '#ffffff',
+            padding: '8px 12px',
+            borderRadius: '6px',
+            fontSize: '14px',
+            lineHeight: '1.4',
+            maxWidth: '240px',
+            width: 'max-content',
+            zIndex: 1000,
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+            fontFamily: 'Geist Regular, sans-serif',
+            wordWrap: 'break-word',
+            whiteSpace: 'normal'
+          }}
+        >
+          {text}
+        </div>
+      )}
+    </>
+  );
+};
+
 // Searchable dropdown component
 const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, cardIndex, cardDatabase }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -1208,8 +1346,9 @@ useEffect(() => {
           
           <div className="space-y-4">
             <div>
-              <label className="block font-medium mb-1" style={typography.body}>
+              <label className="flex items-center font-medium mb-1" style={typography.body}>
                 Deck size:
+                <Tooltip text="Your total deck size, 40-60 cards" />
               </label>
               <input
                 type="number"
@@ -1232,8 +1371,9 @@ useEffect(() => {
             </div>
 
             <div>
-              <label className="block font-medium mb-1" style={typography.body}>
+              <label className="flex items-center font-medium mb-1" style={typography.body}>
                 Hand size:
+                <Tooltip text="Cards you draw to start the game. 5 going first, 6 going second" />
               </label>
               <input
                 type="number"
@@ -1317,8 +1457,9 @@ useEffect(() => {
                     </div>
                     
                     <div className="mb-3">
-                      <label className="block font-medium mb-1" style={typography.body}>
+                      <label className="flex items-center font-medium mb-1" style={typography.body}>
                         Card name:
+                        <Tooltip text="Search for any Yu-Gi-Oh card or create a custom placeholder (e.g. 'Any Dragon monster' or 'Any Unchained Card')" />
                       </label>
                       <SearchableCardInput
                         value={card.starterCard}
@@ -1336,8 +1477,9 @@ useEffect(() => {
 
                     <div className="space-y-4">
                       <div>
-                        <label className="block font-medium mb-1" style={typography.body}>
+                        <label className="flex items-center font-medium mb-1" style={typography.body}>
                           Copies in deck:
+                          <Tooltip text="Total copies of this card in your deck. Max 3 for most, but remember banlist restrictions" />
                         </label>
                         <div className="flex items-center space-x-3">
                           <button
@@ -1395,8 +1537,9 @@ useEffect(() => {
 
                       <div className="flex">
                         <div className="flex-1">
-                          <label className="block font-medium mb-1" style={typography.body}>
+                          <label className="flex items-center font-medium mb-1" style={typography.body}>
                             Min in hand:
+                            <Tooltip text="Minimum copies needed in your opening hand for your combo to work" />
                           </label>
                           <div className="flex items-center space-x-3">
                             <button
@@ -1453,8 +1596,9 @@ useEffect(() => {
                         </div>
 
                         <div className="flex-1" style={{ marginLeft: '16px' }}>
-                          <label className="block font-medium mb-1" style={typography.body}>
+                          <label className="flex items-center font-medium mb-1" style={typography.body}>
                             Max in hand:
+                            <Tooltip text="Upper limit of copies you want to see. Helps avoid dead multiples" />
                           </label>
                           <div className="flex items-center space-x-3">
                             <button
@@ -1515,9 +1659,39 @@ useEffect(() => {
                 ))}
                 
                 {combo.cards.length === 1 && (
+                  <div className="flex items-center mt-4">
+                    <button
+                      onClick={() => addSecondCard(combo.id)}
+                      className="font-medium transition-colors hover:bg-gray-700"
+                      style={{ 
+                        boxSizing: 'border-box',
+                        width: '200px',
+                        height: '40px',
+                        display: 'block',
+                        backgroundColor: '#282828',
+                        overflow: 'visible',
+                        gap: '7px',
+                        borderRadius: '999px',
+                        color: '#ffffff',
+                        border: 'none',
+                        ...typography.body
+                      }}
+                    >
+                      + Add 2nd card
+                    </button>
+                    <Tooltip text="Test 2-card combos by adding a second required piece to this setup" />
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {combos.length < 10 && (
+              <div>
+                <hr className="my-4" style={{ borderColor: '#444', borderTop: '1px solid #444' }} />
+                <div className="flex items-center">
                   <button
-                    onClick={() => addSecondCard(combo.id)}
-                    className="font-medium transition-colors hover:bg-gray-700 mt-4"
+                    onClick={addCombo}
+                    className="font-medium transition-colors hover:bg-gray-700"
                     style={{ 
                       boxSizing: 'border-box',
                       width: '200px',
@@ -1532,34 +1706,10 @@ useEffect(() => {
                       ...typography.body
                     }}
                   >
-                    + Add 2nd card
+                    + Add another combo
                   </button>
-                )}
-              </div>
-            ))}
-
-            {combos.length < 10 && (
-              <div>
-                <hr className="my-4" style={{ borderColor: '#444', borderTop: '1px solid #444' }} />
-                <button
-                  onClick={addCombo}
-                  className="font-medium transition-colors hover:bg-gray-700"
-                  style={{ 
-                    boxSizing: 'border-box',
-                    width: '200px',
-                    height: '40px',
-                    display: 'block',
-                    backgroundColor: '#282828',
-                    overflow: 'visible',
-                    gap: '7px',
-                    borderRadius: '999px',
-                    color: '#ffffff',
-                    border: 'none',
-                    ...typography.body
-                  }}
-                >
-                  + Add another combo
-                </button>
+                  <Tooltip text="Test multiple combo lines to see your deck's overall consistency options" />
+                </div>
               </div>
             )}
           </div>
@@ -1657,9 +1807,12 @@ useEffect(() => {
               {/* Combined probability result - only show if multiple combos */}
               {results.combined !== null && (
                 <div className="p-4 rounded-md" style={{ backgroundColor: '#1a5a3a' }}>
-                  <p className="font-semibold" style={typography.body}>
-                    Chances of opening any of the desired combos: {results.combined.toFixed(2)}%
-                  </p>
+                  <div className="flex items-center">
+                    <p className="font-semibold" style={typography.body}>
+                      Chances of opening any of the desired combos: {results.combined.toFixed(2)}%
+                    </p>
+                    <Tooltip text="Chance of opening ANY of your defined combos. Shows overall deck consistency (hitting at least one combo from ones you defined)" />
+                  </div>
                 </div>
               )}
               
@@ -1686,7 +1839,10 @@ useEffect(() => {
             </div>
             
             <div className="p-4 rounded-md" style={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }}>
-              <p className="mb-2" style={typography.body}>Shareable link:</p>
+              <div className="flex items-center mb-2">
+                <p style={typography.body}>Shareable link:</p>
+                <Tooltip text="Export your calculation as a link to share with your testing group or save your work for later" />
+              </div>
               <div className="flex items-center space-x-2">
                 <input
                   type="text"
