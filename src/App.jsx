@@ -486,7 +486,7 @@ const Tooltip = ({ text, children }) => {
           borderRadius: '50%',
           backgroundColor: 'transparent',
           border: '1px solid #ffffff',
-          color: 'var(--text-main)',
+          color: 'var(--icon-secondary)',
           fontSize: '12px',
           fontWeight: 'bold',
           cursor: 'pointer',
@@ -728,7 +728,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
           style={{ 
             backgroundColor: 'var(--bg-secondary)',
             border: `1px solid var(--border-main)`,
-            borderRadius: '999px'
+            borderRadius: '16px'
           }}
         >
           {searchTerm.length < 3 ? (
@@ -1489,7 +1489,7 @@ useEffect(() => {
                     </div>
                     
                     <div className="mb-3">
-                      <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)'}}>
+                      <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
                         Card name:
                         <Tooltip text="Search for any Yu-Gi-Oh card or create a custom placeholder (e.g. 'Any Dragon monster' or 'Any Unchained Card')" />
                       </label>
@@ -1509,7 +1509,7 @@ useEffect(() => {
 
                     <div className="space-y-4">
                       <div>
-                        <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)'}}>
+                        <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
                           Copies in deck:
                           <Tooltip text="Total copies of this card in your deck. Max 3 for most, but remember banlist restrictions" />
                         </label>
@@ -1523,7 +1523,7 @@ useEffect(() => {
                               width: '40px',
                               height: '40px',
                               borderRadius: '999px',
-                              border: 'none',
+                              border: '1px solid var(--border-main)',
                               boxSizing: 'border-box'
                             }}
                           >
@@ -1555,7 +1555,7 @@ useEffect(() => {
                               width: '40px',
                               height: '40px',
                               borderRadius: '999px',
-                              border: 'none',
+                              border: '1px solid var(--border-main)',
                               boxSizing: 'border-box'
                             }}
                           >
@@ -1569,7 +1569,7 @@ useEffect(() => {
 
                       <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
                         <div className="flex-1">
-                          <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)'}}>
+                          <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
                             Min in hand:
                             <Tooltip text="Minimum copies needed in your opening hand for your combo to work" />
                           </label>
@@ -1628,7 +1628,7 @@ useEffect(() => {
                         </div>
 
                         <div className="flex-1">
-                          <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)'}}>
+                          <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
                             Max in hand:
                             <Tooltip text="Upper limit of copies you want to see. Helps avoid dead multiples" />
                           </label>
@@ -1777,7 +1777,7 @@ useEffect(() => {
             </button>
             <button
               onClick={handleReset}
-              className="font-semibold transition-colors hover:bg-gray-700"
+              className="transition-colors hover:bg-gray-700"
               style={{ 
                 backgroundColor: 'var(--bg-secondary)', 
                 color: 'var(--text-main)',
