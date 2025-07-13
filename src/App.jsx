@@ -1341,6 +1341,31 @@ useEffect(() => {
           </h1>
         </div>
         
+        {/* CTA Section */}
+        <section className="px-6 mb-8">
+          <div 
+            className="grid grid-cols-2 lg:grid-cols-4"
+            style={{ gap: '4px' }}
+          >
+            <div className="flex items-center" style={{ gap: '8px' }}>
+              <span role="img" aria-label="checkmark">✅</span>
+              <span style={typography.body}>Add your cards</span>
+            </div>
+            <div className="flex items-center" style={{ gap: '8px' }}>
+              <span role="img" aria-label="checkmark">✅</span>
+              <span style={typography.body}>See your odds</span>
+            </div>
+            <div className="flex items-center" style={{ gap: '8px' }}>
+              <span role="img" aria-label="checkmark">✅</span>
+              <span style={typography.body}>Fix your ratios</span>
+            </div>
+            <div className="flex items-center" style={{ gap: '8px' }}>
+              <span role="img" aria-label="checkmark">✅</span>
+              <span style={typography.body}>Win more games</span>
+            </div>
+          </div>
+        </section>
+        
         <div className="p-6 mb-6">
           <h2 className="mb-4" style={typography.h2}>Define a Combo</h2>
           
