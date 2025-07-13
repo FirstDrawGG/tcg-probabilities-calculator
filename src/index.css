@@ -1,3 +1,32 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* CSS Custom Properties for July Design System */
+:root {
+  /* Colors */
+  --bg-main: #0f0f0f;
+  --bg-secondary: #141414;
+  --bg-tertiary: #1f1f1f;
+  --bg-action: #ffffff;
+  --border-main: #1f1f1f;
+  --bg-action-secondary: #282828;
+  --text-main: #ffffff;
+  --text-secondary: #a2a2a2;
+  --icon-main: #ffffff;
+  --icon-secondary: #a3a3a3;
+  
+  /* Spacing Scale */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  
+  /* Typography */
+  --font-body-size: 14px;
+  --font-body-line-height: 20px;
+  --font-h2-size: 24px;
+  --font-h2-line-height: 32px;
+  --font-h3-size: 14px;
+  --font-h3-line-height: 20px;
+}

@@ -486,7 +486,7 @@ const Tooltip = ({ text, children }) => {
           borderRadius: '50%',
           backgroundColor: 'transparent',
           border: '1px solid #ffffff',
-          color: '#ffffff',
+          color: 'var(--text-main)',
           fontSize: '12px',
           fontWeight: 'bold',
           cursor: 'pointer',
@@ -504,12 +504,13 @@ const Tooltip = ({ text, children }) => {
             position: 'fixed',
             left: `${position.x}px`,
             top: `${position.y}px`,
-            backgroundColor: '#333',
-            color: '#ffffff',
-            padding: '8px 12px',
+            backgroundColor: 'var(--bg-secondary)',
+            border: `1px solid var(--border-main)`,
+            color: 'var(--text-main)',
+            padding: 'var(--spacing-sm) 12px',
             borderRadius: '6px',
-            fontSize: '14px',
-            lineHeight: '1.4',
+            fontSize: 'var(--font-body-size)',
+            lineHeight: 'var(--font-body-line-height)',
             maxWidth: '240px',
             width: 'max-content',
             zIndex: 1000,
@@ -648,10 +649,9 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
   
   const typography = {
     body: {
-      fontSize: '14px',
-      letterSpacing: '0.1px',
-      lineHeight: '1em',
-      color: '#ffffff',
+      fontSize: 'var(--font-body-size)',
+      lineHeight: 'var(--font-body-line-height)',
+      color: 'var(--text-main)',
       fontFamily: 'Geist Regular, sans-serif'
     }
   };
@@ -668,10 +668,12 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
           placeholder={placeholder}
           className={`w-full px-3 border ${errors ? 'border-red-500' : 'border-gray-600'}`}
           style={{ 
-            backgroundColor: '#333', 
-            color: '#ffffff',
+            backgroundColor: 'var(--bg-secondary)', 
+            border: `1px solid var(--border-main)`,
+            color: 'var(--text-main)',
             borderRadius: '999px',
             height: '40px',
+            cursor: 'text',
             ...typography.body
           }}
         />
@@ -679,11 +681,12 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
         <div 
           className={`w-full px-3 border ${errors ? 'border-red-500' : 'border-gray-600'} flex justify-between items-center`}
           style={{ 
-            backgroundColor: '#333', 
-            color: '#ffffff',
+            backgroundColor: 'var(--bg-secondary)', 
+            border: `1px solid var(--border-main)`,
+            color: 'var(--text-main)',
             borderRadius: '999px',
             height: '40px',
-            cursor: 'pointer',
+            cursor: 'text',
             ...typography.body
           }}
           onClick={(e) => {     
@@ -721,8 +724,12 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
       
       {isOpen && isEditing && (
         <div 
-          className="absolute z-10 w-full mt-1 border border-gray-600 rounded-md shadow-lg"
-          style={{ backgroundColor: '#282828' }}
+          className="absolute z-10 w-full mt-1 border border-gray-600 shadow-lg"
+          style={{ 
+            backgroundColor: 'var(--bg-secondary)',
+            border: `1px solid var(--border-main)`,
+            borderRadius: '999px'
+          }}
         >
           {searchTerm.length < 3 ? (
             <div className="p-3" style={typography.body}>
@@ -841,14 +848,14 @@ const Toast = ({ message, onClose }) => {
       <div
         className="relative flex items-center px-4 py-3 rounded-lg shadow-lg"
         style={{
-          backgroundColor: '#1a1a1a',
-          border: '1px solid #333',
+          backgroundColor: 'var(--bg-secondary)',
+          border: `1px solid var(--border-main)`,
           boxShadow: '0 4px 12px rgba(255, 255, 255, 0.05)',
           minWidth: '200px'
         }}
       >
         <span style={{
-          color: '#ffffff',
+          color: 'var(--text-main)',
           fontSize: '14px',
           fontFamily: 'Geist Regular, sans-serif',
           marginRight: '24px'
@@ -966,42 +973,37 @@ export default function TCGCalculator() {
 
   const typography = {
     h1: {
-      fontSize: '24px',
-      letterSpacing: '-0.04em',
-      lineHeight: '1em',
-      color: '#ffffff',
+      fontSize: 'var(--font-h2-size)',
+      lineHeight: 'var(--font-h2-line-height)',
+      color: 'var(--text-main)',
       fontFamily: 'Geist Regular, sans-serif',
       fontWeight: 'normal'
     },
     h2: {
-      fontSize: '24px',
-      letterSpacing: '-0.04em',
-      lineHeight: '1em',
-      color: '#ffffff',
+      fontSize: 'var(--font-h2-size)',
+      lineHeight: 'var(--font-h2-line-height)',
+      color: 'var(--text-main)',
       fontFamily: 'Geist Regular, sans-serif',
       fontWeight: 'normal'
     },
     h3: {
-      fontSize: '18px',
-      letterSpacing: '-0.02em',
-      lineHeight: '1em',
-      color: '#ffffff',
+      fontSize: 'var(--font-h3-size)',
+      lineHeight: 'var(--font-h3-line-height)',
+      color: 'var(--text-main)',
       fontFamily: 'Geist Regular, sans-serif',
       fontWeight: 'normal'
     },
     h4: {
-      fontSize: '14px',
-      letterSpacing: '-0.02em',
-      lineHeight: '1.4em',
-      color: '#ffffff',
+      fontSize: 'var(--font-h3-size)',
+      lineHeight: 'var(--font-h3-line-height)',
+      color: 'var(--text-main)',
       fontFamily: 'Geist Regular, sans-serif',
       fontWeight: 'normal'
     },
     body: {
-      fontSize: '14px',
-      letterSpacing: '0.1px',
-      lineHeight: '1em',
-      color: '#ffffff',
+      fontSize: 'var(--font-body-size)',
+      lineHeight: 'var(--font-body-line-height)',
+      color: 'var(--text-secondary)',
       fontFamily: 'Geist Regular, sans-serif'
     }
   };
@@ -1294,7 +1296,7 @@ useEffect(() => {
   }, [deckSize, handSize, combos]);
 
   return (
-    <div className="min-h-screen p-4" style={{ backgroundColor: '#000000', fontFamily: 'Geist Regular, sans-serif' }}>
+    <div className="min-h-screen p-4" style={{ backgroundColor: 'var(--bg-main)', fontFamily: 'Geist Regular, sans-serif' }}>
       <style>
         {`
           input[type="number"]::-webkit-outer-spin-button,
@@ -1366,12 +1368,12 @@ useEffect(() => {
           </div>
         </section>
         
-        <div className="p-6 mb-6">
+        <div className="p-6" style={{ marginBottom: 'var(--spacing-lg)' }}>
           <h2 className="mb-4" style={typography.h2}>Define a Combo</h2>
           
           <div className="space-y-4">
             <div>
-              <label className="flex items-center font-medium mb-1" style={typography.body}>
+              <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)'}}>
                 Deck size:
                 <Tooltip text="Your total deck size, 40-60 cards" />
               </label>
@@ -1383,10 +1385,12 @@ useEffect(() => {
                   errors.deckSize ? 'border-red-500' : 'border-gray-600'
                 }`}
                 style={{ 
-                  backgroundColor: '#333', 
-                  color: '#ffffff',
+                  backgroundColor: 'var(--bg-secondary)', 
+                  border: `1px solid var(--border-main)`,
+                  color: 'var(--text-main)',
                   borderRadius: '999px',
                   height: '40px',
+                  cursor: 'text',
                   ...typography.body
                 }}
               />
@@ -1396,7 +1400,7 @@ useEffect(() => {
             </div>
 
             <div>
-              <label className="flex items-center font-medium mb-1" style={typography.body}>
+              <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)'}}>
                 Hand size:
                 <Tooltip text="Cards you draw to start the game. 5 going first, 6 going second" />
               </label>
@@ -1404,13 +1408,16 @@ useEffect(() => {
                 type="number"
                 value={handSize}
                 onChange={(e) => setHandSize(parseInt(e.target.value) || 0)}
-                className={`w-full px-3 py-2 border ${
+                className={`w-full px-3 border ${
                   errors.handSize ? 'border-red-500' : 'border-gray-600'
                 }`}
                 style={{ 
-                  backgroundColor: '#333', 
-                  color: '#ffffff',
+                  backgroundColor: 'var(--bg-secondary)', 
+                  border: `1px solid var(--border-main)`,
+                  color: 'var(--text-main)',
                   borderRadius: '999px',
+                  height: '40px',
+                  cursor: 'text',
                   ...typography.body
                 }}
               />
@@ -1432,7 +1439,7 @@ useEffect(() => {
                       className="font-medium px-2 py-1 border"
                       style={{ 
                         backgroundColor: '#333', 
-                        color: '#ffffff',
+                        color: 'var(--text-main)',
                         borderColor: '#666',
                         borderRadius: '999px',
                         ...typography.body
@@ -1482,7 +1489,7 @@ useEffect(() => {
                     </div>
                     
                     <div className="mb-3">
-                      <label className="flex items-center font-medium mb-1" style={typography.body}>
+                      <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)'}}>
                         Card name:
                         <Tooltip text="Search for any Yu-Gi-Oh card or create a custom placeholder (e.g. 'Any Dragon monster' or 'Any Unchained Card')" />
                       </label>
@@ -1502,7 +1509,7 @@ useEffect(() => {
 
                     <div className="space-y-4">
                       <div>
-                        <label className="flex items-center font-medium mb-1" style={typography.body}>
+                        <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)'}}>
                           Copies in deck:
                           <Tooltip text="Total copies of this card in your deck. Max 3 for most, but remember banlist restrictions" />
                         </label>
@@ -1511,8 +1518,8 @@ useEffect(() => {
                             onClick={() => updateCombo(combo.id, cardIndex, 'startersInDeck', Math.max(0, card.startersInDeck - 1))}
                             className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
                             style={{ 
-                              backgroundColor: '#282828', 
-                              color: '#ffffff',
+                              backgroundColor: 'var(--bg-secondary)', 
+                              color: 'var(--text-main)',
                               width: '40px',
                               height: '40px',
                               borderRadius: '999px',
@@ -1526,8 +1533,8 @@ useEffect(() => {
                             errors[`combo-${combo.id}-card-${cardIndex}-startersInDeck`] ? 'border-red-500' : 'border-gray-600'
                           }`}
                           style={{ 
-                            backgroundColor: '#282828', 
-                            color: '#ffffff',
+                            backgroundColor: 'var(--bg-secondary)', 
+                            color: 'var(--text-main)',
                             width: '64px',
                             height: '40px',
                             borderRadius: '999px',
@@ -1543,8 +1550,8 @@ useEffect(() => {
                             onClick={() => updateCombo(combo.id, cardIndex, 'startersInDeck', card.startersInDeck + 1)}
                             className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
                             style={{ 
-                              backgroundColor: '#282828', 
-                              color: '#ffffff',
+                              backgroundColor: 'var(--bg-secondary)', 
+                              color: 'var(--text-main)',
                               width: '40px',
                               height: '40px',
                               borderRadius: '999px',
@@ -1562,7 +1569,7 @@ useEffect(() => {
 
                       <div className="flex">
                         <div className="flex-1">
-                          <label className="flex items-center font-medium mb-1" style={typography.body}>
+                          <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)'}}>
                             Min in hand:
                             <Tooltip text="Minimum copies needed in your opening hand for your combo to work" />
                           </label>
@@ -1571,8 +1578,8 @@ useEffect(() => {
                               onClick={() => updateCombo(combo.id, cardIndex, 'minCopiesInHand', Math.max(0, card.minCopiesInHand - 1))}
                               className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
                               style={{ 
-                                backgroundColor: '#282828', 
-                                color: '#ffffff',
+                                backgroundColor: 'var(--bg-secondary)', 
+                                color: 'var(--text-main)',
                                 width: '40px',
                                 height: '40px',
                                 borderRadius: '999px',
@@ -1586,8 +1593,8 @@ useEffect(() => {
                               errors[`combo-${combo.id}-card-${cardIndex}-minCopiesInHand`] ? 'border-red-500' : 'border-gray-600'
                             }`}
                             style={{ 
-                              backgroundColor: '#282828', 
-                              color: '#ffffff',
+                              backgroundColor: 'var(--bg-secondary)', 
+                              color: 'var(--text-main)',
                               width: '64px',
                               height: '40px',
                               borderRadius: '999px',
@@ -1603,8 +1610,8 @@ useEffect(() => {
                               onClick={() => updateCombo(combo.id, cardIndex, 'minCopiesInHand', card.minCopiesInHand + 1)}
                               className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
                               style={{ 
-                                backgroundColor: '#282828', 
-                                color: '#ffffff',
+                                backgroundColor: 'var(--bg-secondary)', 
+                                color: 'var(--text-main)',
                                 width: '40px',
                                 height: '40px',
                                 borderRadius: '999px',
@@ -1621,7 +1628,7 @@ useEffect(() => {
                         </div>
 
                         <div className="flex-1" style={{ marginLeft: '16px' }}>
-                          <label className="flex items-center font-medium mb-1" style={typography.body}>
+                          <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)'}}>
                             Max in hand:
                             <Tooltip text="Upper limit of copies you want to see. Helps avoid dead multiples" />
                           </label>
@@ -1630,8 +1637,8 @@ useEffect(() => {
                               onClick={() => updateCombo(combo.id, cardIndex, 'maxCopiesInHand', Math.max(0, card.maxCopiesInHand - 1))}
                               className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
                               style={{ 
-                                backgroundColor: '#282828', 
-                                color: '#ffffff',
+                                backgroundColor: 'var(--bg-secondary)', 
+                                color: 'var(--text-main)',
                                 width: '40px',
                                 height: '40px',
                                 borderRadius: '999px',
@@ -1645,8 +1652,8 @@ useEffect(() => {
                               errors[`combo-${combo.id}-card-${cardIndex}-maxCopiesInHand`] ? 'border-red-500' : 'border-gray-600'
                             }`}
                             style={{ 
-                              backgroundColor: '#282828', 
-                              color: '#ffffff',
+                              backgroundColor: 'var(--bg-secondary)', 
+                              color: 'var(--text-main)',
                               width: '64px',
                               height: '40px',
                               borderRadius: '999px',
@@ -1662,8 +1669,8 @@ useEffect(() => {
                               onClick={() => updateCombo(combo.id, cardIndex, 'maxCopiesInHand', card.maxCopiesInHand + 1)}
                               className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
                               style={{ 
-                                backgroundColor: '#282828', 
-                                color: '#ffffff',
+                                backgroundColor: 'var(--bg-secondary)', 
+                                color: 'var(--text-main)',
                                 width: '40px',
                                 height: '40px',
                                 borderRadius: '999px',
@@ -1693,11 +1700,11 @@ useEffect(() => {
                         width: '200px',
                         height: '40px',
                         display: 'block',
-                        backgroundColor: '#282828',
+                        backgroundColor: 'var(--bg-secondary)',
                         overflow: 'visible',
                         gap: '7px',
                         borderRadius: '999px',
-                        color: '#ffffff',
+                        color: 'var(--text-main)',
                         border: 'none',
                         ...typography.body
                       }}
@@ -1722,11 +1729,11 @@ useEffect(() => {
                       width: '200px',
                       height: '40px',
                       display: 'block',
-                      backgroundColor: '#282828',
+                      backgroundColor: 'var(--bg-secondary)',
                       overflow: 'visible',
                       gap: '7px',
                       borderRadius: '999px',
-                      color: '#ffffff',
+                      color: 'var(--text-main)',
                       border: 'none',
                       ...typography.body
                     }}
@@ -1772,8 +1779,8 @@ useEffect(() => {
               onClick={handleReset}
               className="font-semibold transition-colors hover:bg-gray-700"
               style={{ 
-                backgroundColor: '#282828', 
-                color: '#ffffff',
+                backgroundColor: 'var(--bg-secondary)', 
+                color: 'var(--text-main)',
                 fontFamily: 'Geist Regular, sans-serif',
                 fontSize: '14px',
                 lineHeight: '20px',
@@ -1793,7 +1800,7 @@ useEffect(() => {
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-6" style={{ marginBottom: 'var(--spacing-lg)' }}>
           <h2 className="mb-4" style={typography.h2}>Calculation Dashboard</h2>
           
           <div className="space-y-2">
@@ -1831,7 +1838,7 @@ useEffect(() => {
             <div className="mt-6 space-y-2">
               {/* Combined probability result - only show if multiple combos */}
               {results.combined !== null && (
-                <div className="p-4 rounded-md" style={{ backgroundColor: '#1a5a3a' }}>
+                <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-tertiary)', border: `1px solid var(--border-main)` }}>
                   <div className="flex items-center">
                     <p className="font-semibold" style={typography.body}>
                       Chances of opening any of the desired combos: {results.combined.toFixed(2)}%
@@ -1843,7 +1850,7 @@ useEffect(() => {
               
               {/* Individual combo results */}
               {results.individual.map((result, index) => (
-                <div key={result.id} className="p-4 rounded-md" style={{ backgroundColor: '#2a4a6b' }}>
+                <div key={result.id} className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-secondary)', border: `1px solid var(--border-main)` }}>
                   <p className="font-semibold" style={typography.body}>
                     {generateResultText(result)}
                   </p>
@@ -1854,7 +1861,7 @@ useEffect(() => {
         </div>
 
         {results.individual.length > 0 && generatedTitle && (
-          <div className="p-6">
+          <div className="p-6" style={{ marginBottom: 'var(--spacing-lg)' }}>
             <h2 className="mb-4" style={typography.h2}>Deck list link</h2>
             
             <div className="mb-4">
@@ -1863,7 +1870,7 @@ useEffect(() => {
               </h3>
             </div>
             
-            <div className="p-4 rounded-md" style={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }}>
+            <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-secondary)', border: `1px solid var(--border-main)` }}>
               <div className="flex items-center mb-2">
                 <p style={typography.body}>Shareable link:</p>
                 <Tooltip text="Export your calculation as a link to share with your testing group or save your work for later" />
@@ -1875,10 +1882,12 @@ useEffect(() => {
                   readOnly
                   className="flex-1 px-3 border border-gray-600"
                   style={{ 
-                    backgroundColor: '#333', 
-                    color: '#ffffff',
+                    backgroundColor: 'var(--bg-tertiary)', 
+                    border: `1px solid var(--border-main)`,
+                    color: 'var(--text-main)',
                     borderRadius: '999px',
                     height: '40px',
+                    cursor: 'text',
                     ...typography.body
                   }}
                 />
@@ -1886,8 +1895,9 @@ useEffect(() => {
                   onClick={handleCopyLink}
                   className="px-4 py-2 font-medium transition-colors hover:bg-gray-700"
                   style={{ 
-                    backgroundColor: '#282828', 
-                    color: '#ffffff',
+                    backgroundColor: 'var(--bg-tertiary)', 
+                    color: 'var(--text-main)',
+                    border: 'none',
                     borderRadius: '999px',
                     ...typography.body
                   }}
@@ -1899,38 +1909,38 @@ useEffect(() => {
           </div>
         )}
 
-        <div className="p-6" style={{ marginTop: '1.5rem' }}>
-          <h3 className="font-semibold mb-3" style={{ ...typography.body, color: '#ffffff' }}>Understanding Your Probability Results</h3>
+        <div className="p-6" style={{ marginTop: 'var(--spacing-lg)' }}>
+          <h2 className="font-semibold mb-3" style={typography.h2}>Understanding Your Probability Results</h2>
           
-          <h4 className="font-semibold mb-2" style={{ ...typography.body, color: '#ffffff' }}>Why do I see slight variations in percentages?</h4>
-          <p className="mb-3" style={{ ...typography.body, color: '#cccccc' }}>
+          <h3 className="font-semibold mb-2" style={typography.h3}>Why do I see slight variations in percentages?</h3>
+          <p className="mb-3" style={{ ...typography.body, color: 'var(--text-secondary)' }}>
             You might notice that running the same deck configuration multiple times can show minor differences in probabilities (like 47.3% vs 47.5%). This is completely normal and expected!
           </p>
           
-          <h4 className="font-semibold mb-2" style={{ ...typography.body, color: '#ffffff' }}>The Monte Carlo Method</h4>
-          <p className="mb-2" style={{ ...typography.body, color: '#cccccc' }}>
+          <h3 className="font-semibold mb-2" style={typography.h3}>The Monte Carlo Method</h3>
+          <p className="mb-2" style={{ ...typography.body, color: 'var(--text-secondary)' }}>
             FirstDrawGG uses Monte Carlo simulation - the same proven method used by financial analysts, game developers, and engineers worldwide. Think of it like shuffling and drawing from your deck 100,000 times to see what actually happens, rather than just calculating theoretical odds.
           </p>
           
-          <p className="mb-2" style={{ ...typography.body, color: '#cccccc' }}>Here's how it works:</p>
-          <ul className="list-disc pl-5 space-y-1 mb-3" style={{ ...typography.body, color: '#cccccc' }}>
+          <p className="mb-2" style={{ ...typography.body, color: 'var(--text-secondary)' }}>Here's how it works:</p>
+          <ul className="list-disc pl-5 space-y-1 mb-3" style={{ ...typography.body, color: 'var(--text-secondary)' }}>
             <li>We simulate <span className="font-semibold">100,000 test hands</span> for each calculation</li>
             <li>Each simulation randomly shuffles your deck and draws cards</li>
             <li>The results show you what percentage of those hands met your criteria</li>
             <li>Just like real shuffling, each set of 100,000 tests will be slightly different</li>
           </ul>
           
-          <h4 className="font-semibold mb-2" style={{ ...typography.body, color: '#ffffff' }}>Why This Matters for Deck Building</h4>
-          <p className="mb-3" style={{ ...typography.body, color: '#cccccc' }}>
+          <h3 className="font-semibold mb-2" style={typography.h3}>Why This Matters for Deck Building</h3>
+          <p className="mb-3" style={{ ...typography.body, color: 'var(--text-secondary)' }}>
             These small variations (typically less than 0.5%) are actually a strength, not a weakness. They reflect the real randomness you'll experience at tournaments. A combo showing 43.2% one time and 43.5% another time tells you it's consistently in that 43-44% range - exactly the confidence level you need for competitive decisions.
           </p>
           
-          <h4 className="font-semibold mb-2" style={{ ...typography.body, color: '#ffffff' }}>The Bottom Line</h4>
-          <p className="mb-3" style={{ ...typography.body, color: '#cccccc' }}>
+          <h3 className="font-semibold mb-2" style={typography.h3}>The Bottom Line</h3>
+          <p className="mb-3" style={{ ...typography.body, color: 'var(--text-secondary)' }}>
             With 100,000 simulations per calculation, our results are statistically robust. Whether you're optimizing your competitive deck's hand trap ratios or testing that spicy rogue combo, you can trust these probabilities to guide your deck building decisions. The minor variations you see are proof the system is working correctly, not a flaw.
           </p>
           
-          <p className="italic" style={{ ...typography.body, color: '#cccccc' }}>
+          <p className="italic" style={{ ...typography.body, color: 'var(--text-secondary)' }}>
             Remember: In Yu-Gi-Oh!, understanding whether your combo is at 43% or 83% is what separates consistent decks from inconsistent ones. Happy deck building!
           </p>
         </div>
