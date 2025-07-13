@@ -1567,7 +1567,7 @@ useEffect(() => {
                         )}
                       </div>
 
-                      <div className="flex">
+                      <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
                         <div className="flex-1">
                           <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)'}}>
                             Min in hand:
@@ -1627,7 +1627,7 @@ useEffect(() => {
                           )}
                         </div>
 
-                        <div className="flex-1" style={{ marginLeft: '16px' }}>
+                        <div className="flex-1">
                           <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)'}}>
                             Max in hand:
                             <Tooltip text="Upper limit of copies you want to see. Helps avoid dead multiples" />
