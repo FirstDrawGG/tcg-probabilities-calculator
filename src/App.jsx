@@ -1344,7 +1344,7 @@ useEffect(() => {
         {/* CTA Section */}
         <section className="px-6 mb-8">
           <div 
-            className="grid grid-cols-2 lg:grid-cols-4"
+            className="grid grid-cols-2"
             style={{ gap: '4px' }}
           >
             <div className="flex items-center" style={{ gap: '8px' }}>
