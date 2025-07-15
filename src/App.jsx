@@ -1368,7 +1368,7 @@ useEffect(() => {
               fontSize: '14px',
               lineHeight: '20px',
               borderRadius: '999px',
-              border: 'none',
+              border: '1px solid var(--border-main)',
               height: '32px',
               paddingLeft: '16px',
               paddingRight: '16px',
