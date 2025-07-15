@@ -485,7 +485,7 @@ const Tooltip = ({ text, children }) => {
           height: '16px',
           borderRadius: '50%',
           backgroundColor: 'transparent',
-          border: '1px solid #ffffff',
+          border: '1px solid var(--border-secondary)',
           color: 'var(--icon-secondary)',
           fontSize: '12px',
           fontWeight: 'bold',
@@ -666,7 +666,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
           onChange={handleInputChange}
           onClick={handleInputClick}
           placeholder={placeholder}
-          className={`w-full px-3 border ${errors ? 'border-red-500' : 'border-gray-600'}`}
+          className={`w-full px-3 border ${errors ? 'border-red-500' : ''}`}
           style={{ 
             backgroundColor: 'var(--bg-secondary)', 
             border: `1px solid var(--border-main)`,
@@ -679,7 +679,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
         />
       ) : (
         <div 
-          className={`w-full px-3 border ${errors ? 'border-red-500' : 'border-gray-600'} flex justify-between items-center`}
+          className={`w-full px-3 border ${errors ? 'border-red-500' : ''} flex justify-between items-center`}
           style={{ 
             backgroundColor: 'var(--bg-secondary)', 
             border: `1px solid var(--border-main)`,
@@ -702,7 +702,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
                 e.stopPropagation();
                 handleEdit();
                }}
-              className="text-gray-400 hover:text-white"
+              className="hover:opacity-80"
                style={{ fontSize: '12px' }}
             >
               Edit
@@ -713,7 +713,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
                 e.stopPropagation(); 
                 handleClear();
               }}
-              className="text-gray-400 hover:text-white"
+              className="hover:opacity-80"
               style={{ fontSize: '16px' }}
             >
               ×
@@ -724,7 +724,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
       
       {isOpen && isEditing && (
         <div 
-          className="absolute z-10 w-full mt-1 border border-gray-600 shadow-lg"
+          className="absolute z-10 w-full mt-1 border shadow-lg"
           style={{ 
             backgroundColor: 'var(--bg-secondary)',
             border: `1px solid var(--border-main)`,
@@ -741,7 +741,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
                 {filteredCards.map((card, index) => (
                   <div
                     key={`${card.id}-${index}`}
-                    className="px-3 py-2 hover:bg-gray-700 cursor-pointer"
+                    className="px-3 py-2 hover:opacity-80 cursor-pointer"
                     style={typography.body}
                     onClick={() => handleCardSelect(card)}
                   >
@@ -750,7 +750,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
                 ))}
               </div>
               {filteredCards.length === 50 && (
-                <div className="px-3 py-2 border-t border-gray-600 text-gray-400" style={typography.body}>
+                <div className="px-3 py-2 border-t" style={{...typography.body, borderColor: 'var(--border-secondary)', color: 'var(--text-secondary)'}}>
                   Type for more results
                 </div>
               )}
@@ -760,8 +760,12 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
               <div>No matching results. Use custom name?</div>
               <button
                 onClick={handleCustomName}
-                className="mt-2 px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded"
-                style={typography.body}
+                className="mt-2 px-4 py-2 hover:opacity-80 rounded"
+                style={{
+                  ...typography.body,
+                  backgroundColor: 'var(--bg-action-secondary)',
+                  color: 'var(--text-main)'
+                }}
               >
                 Use custom name
               </button>
@@ -863,7 +867,7 @@ const Toast = ({ message, onClose }) => {
           {message}
         </span>
         <button
-          className="absolute top-2 right-2 text-gray-400 hover:text-white transition-colors"
+          className="absolute top-2 right-2 hover:opacity-80 transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             handleClose();
@@ -1310,13 +1314,13 @@ useEffect(() => {
           
           input:focus {
             outline: none;
-            box-shadow: 0 0 0 2px #282828;
+            box-shadow: 0 0 0 2px var(--bg-action-secondary);
           }
         `}
       </style>
       {isRestoringFromURL && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg">
+        <div className="fixed inset-0 flex items-center justify-center z-50" style={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
+          <div className="p-6 rounded-lg" style={{backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)'}}>
             <p style={typography.body}>Loading shared calculation...</p>
           </div>
         </div>
@@ -1382,7 +1386,7 @@ useEffect(() => {
                 value={deckSize}
                 onChange={(e) => setDeckSize(parseInt(e.target.value) || 0)}
                 className={`w-full px-3 border ${
-                  errors.deckSize ? 'border-red-500' : 'border-gray-600'
+                  errors.deckSize ? 'border-red-500' : ''
                 }`}
                 style={{ 
                   backgroundColor: 'var(--bg-secondary)', 
@@ -1409,7 +1413,7 @@ useEffect(() => {
                 value={handSize}
                 onChange={(e) => setHandSize(parseInt(e.target.value) || 0)}
                 className={`w-full px-3 border ${
-                  errors.handSize ? 'border-red-500' : 'border-gray-600'
+                  errors.handSize ? 'border-red-500' : ''
                 }`}
                 style={{ 
                   backgroundColor: 'var(--bg-secondary)', 
@@ -1427,7 +1431,7 @@ useEffect(() => {
             </div>
 
             {combos.map((combo, index) => (
-              <div key={combo.id} className="border-t pt-4" style={{ borderColor: '#444' }}>
+              <div key={combo.id} className="border-t pt-4" style={{ borderColor: 'var(--border-secondary)' }}>
                 <div className="flex justify-between items-center mb-2">
                   {editingComboId === combo.id ? (
                     <input
@@ -1438,9 +1442,9 @@ useEffect(() => {
                       onKeyDown={handleComboNameKeyDown}
                       className="font-medium px-2 py-1 border"
                       style={{ 
-                        backgroundColor: '#333', 
+                        backgroundColor: 'var(--bg-action-secondary)', 
                         color: 'var(--text-main)',
-                        borderColor: '#666',
+                        borderColor: 'var(--border-secondary)',
                         borderRadius: '999px',
                         ...typography.body
                       }}
@@ -1449,7 +1453,7 @@ useEffect(() => {
                     />
                   ) : (
                     <h3 
-                      className="cursor-pointer hover:bg-gray-800 py-1 rounded transition-colors"
+                      className="cursor-pointer hover:opacity-80 py-1 rounded transition-colors"
                       style={typography.h3}
                       onClick={() => startEditingComboName(combo)}
                     >
@@ -1459,8 +1463,11 @@ useEffect(() => {
                   {index > 0 && (
                     <button
                       onClick={() => removeCombo(combo.id)}
-                      className="text-red-400 hover:text-red-300 font-medium"
-                      style={typography.body}
+                      className="font-medium hover:opacity-80"
+                      style={{
+                        ...typography.body,
+                        color: 'var(--text-secondary)'
+                      }}
                     >
                       Remove
                     </button>
@@ -1472,7 +1479,7 @@ useEffect(() => {
                 )}
                 
                 {combo.cards.map((card, cardIndex) => (
-                  <div key={cardIndex} className={`${cardIndex > 0 ? 'border-t mt-4 pt-4' : ''}`} style={{ borderColor: '#666' }}>
+                  <div key={cardIndex} className={`${cardIndex > 0 ? 'border-t mt-4 pt-4' : ''}`} style={{ borderColor: 'var(--border-secondary)' }}>
                     <div className="flex justify-between items-center mb-2">
                       <h4 style={typography.h4}>
                         {cardIndex === 0 ? 'Card 1' : 'Card 2'}
@@ -1480,8 +1487,11 @@ useEffect(() => {
                       {cardIndex === 1 && (
                         <button
                           onClick={() => removeSecondCard(combo.id)}
-                          className="text-red-400 hover:text-red-300 font-medium"
-                          style={typography.body}
+                          className="font-medium hover:opacity-80"
+                          style={{
+                            ...typography.body,
+                            color: 'var(--text-secondary)'
+                          }}
                         >
                           Remove
                         </button>
@@ -1516,7 +1526,7 @@ useEffect(() => {
                         <div className="flex items-center space-x-3">
                           <button
                             onClick={() => updateCombo(combo.id, cardIndex, 'startersInDeck', Math.max(0, card.startersInDeck - 1))}
-                            className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
+                            className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                             style={{ 
                               backgroundColor: 'var(--bg-secondary)', 
                               color: 'var(--text-main)',
@@ -1530,7 +1540,7 @@ useEffect(() => {
                             -
                           </button>
                           <div className={`text-center py-2 border ${
-                            errors[`combo-${combo.id}-card-${cardIndex}-startersInDeck`] ? 'border-red-500' : 'border-gray-600'
+                            errors[`combo-${combo.id}-card-${cardIndex}-startersInDeck`] ? 'border-red-500' : ''
                           }`}
                           style={{ 
                             backgroundColor: 'var(--bg-secondary)', 
@@ -1548,7 +1558,7 @@ useEffect(() => {
                           </div>
                           <button
                             onClick={() => updateCombo(combo.id, cardIndex, 'startersInDeck', card.startersInDeck + 1)}
-                            className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
+                            className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                             style={{ 
                               backgroundColor: 'var(--bg-secondary)', 
                               color: 'var(--text-main)',
@@ -1576,7 +1586,7 @@ useEffect(() => {
                           <div className="flex items-center space-x-3">
                             <button
                               onClick={() => updateCombo(combo.id, cardIndex, 'minCopiesInHand', Math.max(0, card.minCopiesInHand - 1))}
-                              className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
+                              className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                               style={{ 
                                 backgroundColor: 'var(--bg-secondary)', 
                                 color: 'var(--text-main)',
@@ -1590,7 +1600,7 @@ useEffect(() => {
                               -
                             </button>
                             <div className={`text-center py-2 border ${
-                              errors[`combo-${combo.id}-card-${cardIndex}-minCopiesInHand`] ? 'border-red-500' : 'border-gray-600'
+                              errors[`combo-${combo.id}-card-${cardIndex}-minCopiesInHand`] ? 'border-red-500' : ''
                             }`}
                             style={{ 
                               backgroundColor: 'var(--bg-secondary)', 
@@ -1608,7 +1618,7 @@ useEffect(() => {
                             </div>
                             <button
                               onClick={() => updateCombo(combo.id, cardIndex, 'minCopiesInHand', card.minCopiesInHand + 1)}
-                              className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
+                              className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                               style={{ 
                                 backgroundColor: 'var(--bg-secondary)', 
                                 color: 'var(--text-main)',
@@ -1635,7 +1645,7 @@ useEffect(() => {
                           <div className="flex items-center space-x-3">
                             <button
                               onClick={() => updateCombo(combo.id, cardIndex, 'maxCopiesInHand', Math.max(0, card.maxCopiesInHand - 1))}
-                              className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
+                              className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                               style={{ 
                                 backgroundColor: 'var(--bg-secondary)', 
                                 color: 'var(--text-main)',
@@ -1649,7 +1659,7 @@ useEffect(() => {
                               -
                             </button>
                             <div className={`text-center py-2 border ${
-                              errors[`combo-${combo.id}-card-${cardIndex}-maxCopiesInHand`] ? 'border-red-500' : 'border-gray-600'
+                              errors[`combo-${combo.id}-card-${cardIndex}-maxCopiesInHand`] ? 'border-red-500' : ''
                             }`}
                             style={{ 
                               backgroundColor: 'var(--bg-secondary)', 
@@ -1667,7 +1677,7 @@ useEffect(() => {
                             </div>
                             <button
                               onClick={() => updateCombo(combo.id, cardIndex, 'maxCopiesInHand', card.maxCopiesInHand + 1)}
-                              className="flex items-center justify-center font-semibold hover:bg-gray-600 transition-colors"
+                              className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                               style={{ 
                                 backgroundColor: 'var(--bg-secondary)', 
                                 color: 'var(--text-main)',
@@ -1694,7 +1704,7 @@ useEffect(() => {
                   <div className="flex items-center mt-4">
                     <button
                       onClick={() => addSecondCard(combo.id)}
-                      className="font-medium transition-colors hover:bg-gray-700"
+                      className="font-medium transition-colors hover:opacity-80"
                       style={{ 
                         boxSizing: 'border-box',
                         width: '200px',
@@ -1719,11 +1729,11 @@ useEffect(() => {
 
             {combos.length < 10 && (
               <div>
-                <hr className="my-4" style={{ borderColor: '#444', borderTop: '1px solid #444' }} />
+                <hr className="my-4" style={{ borderColor: 'var(--border-secondary)', borderTop: '1px solid var(--border-secondary)' }} />
                 <div className="flex items-center">
                   <button
                     onClick={addCombo}
-                    className="font-medium transition-colors hover:bg-gray-700"
+                    className="font-medium transition-colors hover:opacity-80"
                     style={{ 
                       boxSizing: 'border-box',
                       width: '200px',
@@ -1752,12 +1762,12 @@ useEffect(() => {
               disabled={!allFieldsFilled}
               className={`flex-1 font-semibold transition-colors ${
                 allFieldsFilled
-                  ? 'hover:bg-gray-100'
+                  ? 'hover:opacity-80'
                   : 'cursor-not-allowed opacity-50'
               }`}
               style={{ 
-                backgroundColor: allFieldsFilled ? '#ffffff' : '#666666',
-                color: allFieldsFilled ? '#000000' : '#999999',
+                backgroundColor: allFieldsFilled ? 'var(--bg-action)' : 'var(--border-secondary)',
+                color: allFieldsFilled ? '#000000' : 'var(--text-placeholder)',
                 fontFamily: 'Geist Regular, sans-serif',
                 fontSize: '14px',
                 lineHeight: '20px',
@@ -1777,7 +1787,7 @@ useEffect(() => {
             </button>
             <button
               onClick={handleReset}
-              className="transition-colors hover:bg-gray-700"
+              className="transition-colors hover:opacity-80"
               style={{ 
                 backgroundColor: 'var(--bg-secondary)', 
                 color: 'var(--text-main)',
@@ -1812,7 +1822,7 @@ useEffect(() => {
             </p>
             
             {dashboardValues.combos.map((combo, index) => (
-              <div key={combo.id} className="pl-4 border-l-2" style={{ borderColor: '#444' }}>
+              <div key={combo.id} className="pl-4 border-l-2" style={{ borderColor: 'var(--border-secondary)' }}>
                 <p className="font-medium" style={typography.body}>{combo.name}</p>
                 {combo.cards.map((card, cardIndex) => (
                   <div key={cardIndex} className={cardIndex > 0 ? 'mt-2' : ''}>
@@ -1880,7 +1890,7 @@ useEffect(() => {
                   type="text"
                   value={shareableUrl}
                   readOnly
-                  className="flex-1 px-3 border border-gray-600"
+                  className="flex-1 px-3 border"
                   style={{ 
                     backgroundColor: 'var(--bg-tertiary)', 
                     border: `1px solid var(--border-main)`,
@@ -1893,7 +1903,7 @@ useEffect(() => {
                 />
                 <button
                   onClick={handleCopyLink}
-                  className="px-4 py-2 font-medium transition-colors hover:bg-gray-700"
+                  className="px-4 py-2 font-medium transition-colors hover:opacity-80"
                   style={{ 
                     backgroundColor: 'var(--bg-tertiary)', 
                     color: 'var(--text-main)',
