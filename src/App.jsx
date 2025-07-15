@@ -485,7 +485,7 @@ const Tooltip = ({ text, children }) => {
           height: '16px',
           borderRadius: '50%',
           backgroundColor: 'transparent',
-          border: '1px solid var(--border-secondary)',
+          border: '1px solid var(--icon-secondary)',
           color: 'var(--icon-secondary)',
           fontSize: '12px',
           fontWeight: 'bold',
@@ -1319,7 +1319,7 @@ useEffect(() => {
         `}
       </style>
       {isRestoringFromURL && (
-        <div className="fixed inset-0 flex items-center justify-center z-50" style={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
+        <div className="fixed inset-0 flex items-center justify-center z-50" style={{backgroundColor: 'var(--bg-main)', opacity: 0.8}}>
           <div className="p-6 rounded-lg" style={{backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)'}}>
             <p style={typography.body}>Loading shared calculation...</p>
           </div>
@@ -1381,11 +1381,11 @@ useEffect(() => {
         </section>
         
         <div className="p-6" style={{ marginBottom: 'var(--spacing-lg)' }}>
-          <h2 className="mb-4" style={typography.h2}>Define a Combo</h2>
+          <h2 className="mb-4" style={{...typography.h2, color: 'var(--text-main)'}}>Define a Combo</h2>
           
           <div className="space-y-4">
             <div>
-              <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)'}}>
+              <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
                 Deck size:
                 <Tooltip text="Your total deck size, 40-60 cards" />
               </label>
@@ -1412,7 +1412,7 @@ useEffect(() => {
             </div>
 
             <div>
-              <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)'}}>
+              <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
                 Hand size:
                 <Tooltip text="Cards you draw to start the game. 5 going first, 6 going second" />
               </label>
@@ -1462,7 +1462,7 @@ useEffect(() => {
                   ) : (
                     <h3 
                       className="cursor-pointer hover:opacity-80 py-1 rounded transition-colors"
-                      style={typography.h3}
+                      style={{...typography.h3, color: 'var(--text-main)'}}
                       onClick={() => startEditingComboName(combo)}
                     >
                       {combo.name}
@@ -1489,7 +1489,7 @@ useEffect(() => {
                 {combo.cards.map((card, cardIndex) => (
                   <div key={cardIndex} className={`${cardIndex > 0 ? 'border-t mt-4 pt-4' : ''}`} style={{ borderColor: 'var(--border-secondary)' }}>
                     <div className="flex justify-between items-center mb-2">
-                      <h4 style={typography.h4}>
+                      <h4 style={{...typography.h4, color: 'var(--text-main)'}}>
                         {cardIndex === 0 ? 'Card 1' : 'Card 2'}
                       </h4>
                       {cardIndex === 1 && (
