@@ -1325,36 +1325,35 @@ useEffect(() => {
           </div>
         </div>
       )}
-      {/* Logo and brand header */}
-      <div className="flex items-center mb-8">
-        <img 
-          src="https://raw.githubusercontent.com/FirstDrawGG/tcg-probabilities-calculator/main/Logo.png" 
-          alt="FirstDrawGG Logo"
-          style={{
-            width: '24px',
-            height: '24px',
-            objectFit: 'contain',
-            marginRight: '8px'
-          }}
-          onError={(e) => {
-            e.target.style.display = 'none';
-            const fallback = e.target.nextElementSibling;
-            if (fallback) fallback.style.display = 'block';
-          }}
-        />
-        <h1 style={{ 
-          fontSize: '24px',
-          lineHeight: '24px',
-          color: 'var(--text-main)',
-          fontFamily: 'Geist Regular, sans-serif',
-          fontWeight: 'normal',
-          margin: 0
-        }}>
-          FirstDrawGG
-        </h1>
-      </div>
-
       <div className="w-full mx-auto" style={{ maxWidth: '580px' }}>
+        {/* Logo and brand header */}
+        <div className="flex items-center mb-8 px-6">
+          <img 
+            src="https://raw.githubusercontent.com/FirstDrawGG/tcg-probabilities-calculator/main/Logo.png" 
+            alt="FirstDrawGG Logo"
+            style={{
+              width: '24px',
+              height: '24px',
+              objectFit: 'contain',
+              marginRight: '8px'
+            }}
+            onError={(e) => {
+              e.target.style.display = 'none';
+              const fallback = e.target.nextElementSibling;
+              if (fallback) fallback.style.display = 'block';
+            }}
+          />
+          <h1 style={{ 
+            fontSize: '24px',
+            lineHeight: '24px',
+            color: 'var(--text-main)',
+            fontFamily: 'Geist Regular, sans-serif',
+            fontWeight: 'normal',
+            margin: 0
+          }}>
+            FirstDrawGG
+          </h1>
+        </div>
         
         {/* CTA Section */}
         <section className="px-6 mb-8">
