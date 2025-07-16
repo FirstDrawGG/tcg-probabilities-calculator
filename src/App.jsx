@@ -928,12 +928,52 @@ export default function TCGCalculator() {
 
   // Handle top deck click
   const handleTopDeckClick = (link, deckTitle) => {
-    // Show toast with deck name
-    setGeneratedTitle(`Loaded ${deckTitle}`);
-    setShowToast(true);
-    
-    // Navigate to the deck URL
-    window.location.href = link;
+    try {
+      // Extract the calc parameter from the URL
+      const match = link.match(/#calc=(.+)/);
+      if (!match) return;
+      
+      // Decode the calculation data
+      const decoded = atob(match[1]);
+      const data = JSON.parse(decoded);
+      
+      // Load the deck data into the app
+      setDeckSize(data.d);
+      setHandSize(data.h);
+      
+      const loadedCombos = data.c.map(combo => ({
+        id: combo.i,
+        name: combo.n,
+        cards: combo.cards.map(card => ({
+          starterCard: card.s || '',
+          cardId: card.cId || null,
+          isCustom: card.iC || false,
+          startersInDeck: card.deck,
+          minCopiesInHand: card.min,
+          maxCopiesInHand: card.max
+        }))
+      }));
+      
+      setCombos(loadedCombos);
+      
+      // Calculate results
+      setTimeout(() => {
+        const calculatedResults = ProbabilityService.calculateMultipleCombos(loadedCombos, data.d, data.h);
+        setResults(calculatedResults);
+        setDashboardValues({
+          deckSize: data.d,
+          handSize: data.h,
+          combos: loadedCombos.map(c => ({ ...c }))
+        });
+        
+        // Show success toast
+        setGeneratedTitle(`Loaded ${deckTitle}`);
+        setShowToast(true);
+      }, 100);
+      
+    } catch (error) {
+      console.error('Failed to load top deck:', error);
+    }
   };
 
   // Restore calculation from URL on mount
@@ -1888,14 +1928,14 @@ useEffect(() => {
                 <div
                   className="flex-shrink-0 flex items-center justify-center mr-3"
                   style={{
-                    width: '32px',
-                    height: '32px',
+                    width: '40px',
+                    height: '40px',
                     backgroundColor: 'var(--bg-secondary)',
                     border: '1px solid var(--border-main)',
                     borderRadius: '4px'
                   }}
                 >
-                  <span style={{ color: 'var(--text-main)', fontSize: '16px', lineHeight: '1' }}>⭐</span>
+                  <span style={{ color: 'var(--text-main)', fontSize: '16px', fontWeight: 'bold' }}>*</span>
                 </div>
                 <div className="flex-1 text-left">
                   <h3 style={{
