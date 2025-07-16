@@ -966,9 +966,17 @@ export default function TCGCalculator() {
           combos: loadedCombos.map(c => ({ ...c }))
         });
         
-        // Show success toast
-        setGeneratedTitle(`Loaded ${deckTitle}`);
-        setShowToast(true);
+        // Generate shareable URL
+        URLService.updateURL(data.d, data.h, loadedCombos);
+        const url = window.location.href;
+        setShareableUrl(url);
+        
+        // Generate title
+        const title = TitleGeneratorService.generateFunTitle(loadedCombos, data.d, calculatedResults.individual);
+        setGeneratedTitle(title);
+        
+        // Auto-scroll to top of page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }, 100);
       
     } catch (error) {
@@ -1911,33 +1919,37 @@ useEffect(() => {
         <div className="p-6" style={{ marginBottom: 'var(--spacing-lg)' }}>
           <h2 style={{ ...typography.h2, marginBottom: '16px' }}>Top Decks</h2>
           
-          <div className="space-y-2">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {topDecks.map((deck, index) => (
               <div
                 key={index}
                 onClick={() => handleTopDeckClick(deck.link, deck.title)}
-                className="cursor-pointer transition-colors hover:opacity-80 flex items-start"
+                className="cursor-pointer transition-colors hover:opacity-80"
                 style={{
                   width: '100%',
                   maxWidth: '580px',
                   height: 'fit-content',
-                  padding: '12px',
-                  marginBottom: index < topDecks.length - 1 ? '8px' : '0'
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  padding: '12px'
                 }}
               >
                 <div
-                  className="flex-shrink-0 flex items-center justify-center mr-3"
+                  className="flex-shrink-0 flex items-center justify-center"
                   style={{
-                    width: '32px',
-                    height: '32px',
+                    width: '40px',
+                    height: '40px',
                     backgroundColor: 'var(--bg-secondary)',
                     border: '1px solid var(--border-main)',
-                    borderRadius: '4px'
+                    marginRight: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}
                 >
-                  <span style={{ color: 'var(--text-main)', fontSize: '16px', lineHeight: '1' }}>⭐</span>
+                  <span style={{ fontSize: '20px', lineHeight: '1' }}>⭐</span>
                 </div>
-                <div className="flex-1 text-left">
+                <div style={{ flex: 1, textAlign: 'left' }}>
                   <h3 style={{
                     ...typography.h3,
                     marginBottom: '4px',
