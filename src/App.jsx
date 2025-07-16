@@ -917,6 +917,25 @@ export default function TCGCalculator() {
   const [shareableUrl, setShareableUrl] = useState('');
   const [showToast, setShowToast] = useState(false);
 
+  // Top Decks data
+  const topDecks = [
+    {
+      title: "Gem-Knight going 2nd deck - 3rd/4th Place in NAWCQ 2025",
+      description: "Consistency is through the roof when you run a deck list stacked with starters/board breakers/Charmies",
+      link: "https://www.firstdrawgg.online/#calc=eyJkIjo0MSwiaCI6NiwiYyI6W3siaSI6MSwibiI6IkNvbWJvIDEiLCJjYXJkcyI6W3sicyI6IkFueSBDaGFybXkiLCJjSWQiOm51bGwsImlDIjp0cnVlLCJkZWNrIjo4LCJtaW4iOjEsIm1heCI6M31dfSx7ImkiOjIsIm4iOiJDb21ibyAyIiwiY2FyZHMiOlt7InMiOiJHZW0tS25pZ2h0IFF1YXJ0eiIsImNJZCI6MzU2MjI3MzksImlDIjpmYWxzZSwiZGVjayI6MywibWluIjoxLCJtYXgiOjF9XX0seyJpIjozLCJuIjoiQ29tYm8gMyIsImNhcmRzIjpbeyJzIjoiR2VtLUtuaWdodCBOZXB5cmltIiwiY0lkIjo1MTgzMTU2MCwiaUMiOmZhbHNlLCJkZWNrIjozLCJtaW4iOjEsIm1heCI6MX1dfSx7ImkiOjQsIm4iOiJDb21ibyA0IiwiY2FyZHMiOlt7InMiOiJCb2FyZCBCcmVha2VyIiwiY0lkIjpudWxsLCJpQyI6dHJ1ZSwiZGVjayI6OSwibWluIjoxLCJtYXgiOjF9XX1dfQ=="
+    }
+  ];
+
+  // Handle top deck click
+  const handleTopDeckClick = (link, deckTitle) => {
+    // Show toast with deck name
+    setGeneratedTitle(`Loaded ${deckTitle}`);
+    setShowToast(true);
+    
+    // Navigate to the deck URL
+    window.location.href = link;
+  };
+
   // Restore calculation from URL on mount
   useEffect(() => {
     const restoreFromURL = () => {
@@ -1845,6 +1864,58 @@ useEffect(() => {
             >
               Reset
             </button>
+          </div>
+        </div>
+
+        {/* Top Decks Section */}
+        <div className="p-6" style={{ marginBottom: 'var(--spacing-lg)' }}>
+          <h2 style={{ ...typography.h2, marginBottom: '16px' }}>Top Decks</h2>
+          
+          <div className="space-y-2">
+            {topDecks.map((deck, index) => (
+              <div
+                key={index}
+                onClick={() => handleTopDeckClick(deck.link, deck.title)}
+                className="cursor-pointer transition-colors hover:opacity-80 flex items-start"
+                style={{
+                  width: '100%',
+                  maxWidth: '580px',
+                  height: 'fit-content',
+                  padding: '12px',
+                  marginBottom: index < topDecks.length - 1 ? '8px' : '0'
+                }}
+              >
+                <div
+                  className="flex-shrink-0 flex items-center justify-center mr-3"
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    backgroundColor: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-main)',
+                    borderRadius: '4px'
+                  }}
+                >
+                  <span style={{ color: 'var(--text-main)', fontSize: '16px', lineHeight: '1' }}>⭐</span>
+                </div>
+                <div className="flex-1 text-left">
+                  <h3 style={{
+                    ...typography.h3,
+                    marginBottom: '4px',
+                    fontWeight: '600'
+                  }}>
+                    {deck.title}
+                  </h3>
+                  <p style={{
+                    ...typography.body,
+                    color: 'var(--text-secondary)',
+                    fontSize: '13px',
+                    lineHeight: '18px'
+                  }}>
+                    {deck.description}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
