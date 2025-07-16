@@ -1928,14 +1928,14 @@ useEffect(() => {
                 <div
                   className="flex-shrink-0 flex items-center justify-center mr-3"
                   style={{
-                    width: '40px',
-                    height: '40px',
+                    width: '32px',
+                    height: '32px',
                     backgroundColor: 'var(--bg-secondary)',
                     border: '1px solid var(--border-main)',
                     borderRadius: '4px'
                   }}
                 >
-                  <span style={{ color: 'var(--text-main)', fontSize: '16px', fontWeight: 'bold' }}>*</span>
+                  <span style={{ color: 'var(--text-main)', fontSize: '16px', lineHeight: '1' }}>⭐</span>
                 </div>
                 <div className="flex-1 text-left">
                   <h3 style={{
