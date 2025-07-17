@@ -1930,8 +1930,7 @@ useEffect(() => {
                   maxWidth: '580px',
                   height: 'fit-content',
                   display: 'flex',
-                  alignItems: 'flex-start',
-                  padding: '12px'
+                  alignItems: 'flex-start'
                 }}
               >
                 <div
@@ -1941,6 +1940,7 @@ useEffect(() => {
                     height: '40px',
                     backgroundColor: 'var(--bg-secondary)',
                     border: '1px solid var(--border-main)',
+                    borderRadius: '8px',
                     marginRight: '12px',
                     display: 'flex',
                     alignItems: 'center',
