@@ -31,4 +31,25 @@
   --font-h2-line-height: 32px;
   --font-h3-size: 14px;
   --font-h3-line-height: 20px;
+  
+  /* Text Action Color for Calculate button text */
+  --text-action: #000000;
+}
+
+/* Placeholder text styling */
+input::placeholder {
+  color: var(--text-secondary) !important;
+}
+
+input::-webkit-input-placeholder {
+  color: var(--text-secondary) !important;
+}
+
+input::-moz-placeholder {
+  color: var(--text-secondary) !important;
+  opacity: 1;
+}
+
+input:-ms-input-placeholder {
+  color: var(--text-secondary) !important;
 }

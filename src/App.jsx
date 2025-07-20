@@ -485,8 +485,8 @@ const Tooltip = ({ text, children }) => {
           height: '16px',
           borderRadius: '50%',
           backgroundColor: 'transparent',
-          border: '1px solid var(--icon-secondary)',
-          color: 'var(--icon-secondary)',
+          border: '1px solid var(--icon-main)',
+          color: 'var(--icon-main)',
           fontSize: '12px',
           fontWeight: 'bold',
           cursor: 'pointer',
@@ -732,7 +732,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
           }}
         >
           {searchTerm.length < 3 ? (
-            <div className="p-3" style={typography.body}>
+            <div className="p-3" style={{...typography.body, color: 'var(--text-secondary)'}}>
               Type at least 3 characters to search or use your custom name
             </div>
           ) : filteredCards.length > 0 ? (
@@ -1634,7 +1634,7 @@ useEffect(() => {
                             className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                             style={{ 
                               backgroundColor: 'var(--bg-secondary)', 
-                              color: 'var(--text-main)',
+                              color: 'var(--text-secondary)',
                               width: '40px',
                               height: '40px',
                               borderRadius: '999px',
@@ -1644,29 +1644,31 @@ useEffect(() => {
                           >
                             -
                           </button>
-                          <div className={`text-center py-2 border ${
-                            errors[`combo-${combo.id}-card-${cardIndex}-startersInDeck`] ? 'border-red-500' : ''
-                          }`}
-                          style={{ 
-                            backgroundColor: 'var(--bg-secondary)', 
-                            color: 'var(--text-main)',
-                            width: '64px',
-                            height: '40px',
-                            borderRadius: '999px',
-                            boxSizing: 'border-box',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            ...typography.body
-                          }}>
-                            {card.startersInDeck}
-                          </div>
+                          <input
+                            type="number"
+                            value={card.startersInDeck}
+                            onChange={(e) => updateCombo(combo.id, cardIndex, 'startersInDeck', parseInt(e.target.value) || 0)}
+                            className={`text-center border ${
+                              errors[`combo-${combo.id}-card-${cardIndex}-startersInDeck`] ? 'border-red-500' : ''
+                            }`}
+                            style={{ 
+                              backgroundColor: 'var(--bg-secondary)', 
+                              color: 'var(--text-main)',
+                              width: '64px',
+                              height: '40px',
+                              borderRadius: '999px',
+                              border: '1px solid var(--border-main)',
+                              boxSizing: 'border-box',
+                              textAlign: 'center',
+                              ...typography.body
+                            }}
+                          />
                           <button
                             onClick={() => updateCombo(combo.id, cardIndex, 'startersInDeck', card.startersInDeck + 1)}
                             className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                             style={{ 
                               backgroundColor: 'var(--bg-secondary)', 
-                              color: 'var(--text-main)',
+                              color: 'var(--text-secondary)',
                               width: '40px',
                               height: '40px',
                               borderRadius: '999px',
@@ -1694,43 +1696,45 @@ useEffect(() => {
                               className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                               style={{ 
                                 backgroundColor: 'var(--bg-secondary)', 
-                                color: 'var(--text-main)',
+                                color: 'var(--text-secondary)',
                                 width: '40px',
                                 height: '40px',
                                 borderRadius: '999px',
-                                border: 'none',
+                                border: '1px solid var(--border-main)',
                                 boxSizing: 'border-box'
                               }}
                             >
                               -
                             </button>
-                            <div className={`text-center py-2 border ${
-                              errors[`combo-${combo.id}-card-${cardIndex}-minCopiesInHand`] ? 'border-red-500' : ''
-                            }`}
-                            style={{ 
-                              backgroundColor: 'var(--bg-secondary)', 
-                              color: 'var(--text-main)',
-                              width: '64px',
-                              height: '40px',
-                              borderRadius: '999px',
-                              boxSizing: 'border-box',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              ...typography.body
-                            }}>
-                              {card.minCopiesInHand}
-                            </div>
+                            <input
+                              type="number"
+                              value={card.minCopiesInHand}
+                              onChange={(e) => updateCombo(combo.id, cardIndex, 'minCopiesInHand', parseInt(e.target.value) || 0)}
+                              className={`text-center border ${
+                                errors[`combo-${combo.id}-card-${cardIndex}-minCopiesInHand`] ? 'border-red-500' : ''
+                              }`}
+                              style={{ 
+                                backgroundColor: 'var(--bg-secondary)', 
+                                color: 'var(--text-main)',
+                                width: '64px',
+                                height: '40px',
+                                borderRadius: '999px',
+                                border: '1px solid var(--border-main)',
+                                boxSizing: 'border-box',
+                                textAlign: 'center',
+                                ...typography.body
+                              }}
+                            />
                             <button
                               onClick={() => updateCombo(combo.id, cardIndex, 'minCopiesInHand', card.minCopiesInHand + 1)}
                               className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                               style={{ 
                                 backgroundColor: 'var(--bg-secondary)', 
-                                color: 'var(--text-main)',
+                                color: 'var(--text-secondary)',
                                 width: '40px',
                                 height: '40px',
                                 borderRadius: '999px',
-                                border: 'none',
+                                border: '1px solid var(--border-main)',
                                 boxSizing: 'border-box'
                               }}
                             >
@@ -1753,43 +1757,45 @@ useEffect(() => {
                               className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                               style={{ 
                                 backgroundColor: 'var(--bg-secondary)', 
-                                color: 'var(--text-main)',
+                                color: 'var(--text-secondary)',
                                 width: '40px',
                                 height: '40px',
                                 borderRadius: '999px',
-                                border: 'none',
+                                border: '1px solid var(--border-main)',
                                 boxSizing: 'border-box'
                               }}
                             >
                               -
                             </button>
-                            <div className={`text-center py-2 border ${
-                              errors[`combo-${combo.id}-card-${cardIndex}-maxCopiesInHand`] ? 'border-red-500' : ''
-                            }`}
-                            style={{ 
-                              backgroundColor: 'var(--bg-secondary)', 
-                              color: 'var(--text-main)',
-                              width: '64px',
-                              height: '40px',
-                              borderRadius: '999px',
-                              boxSizing: 'border-box',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              ...typography.body
-                            }}>
-                              {card.maxCopiesInHand}
-                            </div>
+                            <input
+                              type="number"
+                              value={card.maxCopiesInHand}
+                              onChange={(e) => updateCombo(combo.id, cardIndex, 'maxCopiesInHand', parseInt(e.target.value) || 0)}
+                              className={`text-center border ${
+                                errors[`combo-${combo.id}-card-${cardIndex}-maxCopiesInHand`] ? 'border-red-500' : ''
+                              }`}
+                              style={{ 
+                                backgroundColor: 'var(--bg-secondary)', 
+                                color: 'var(--text-main)',
+                                width: '64px',
+                                height: '40px',
+                                borderRadius: '999px',
+                                border: '1px solid var(--border-main)',
+                                boxSizing: 'border-box',
+                                textAlign: 'center',
+                                ...typography.body
+                              }}
+                            />
                             <button
                               onClick={() => updateCombo(combo.id, cardIndex, 'maxCopiesInHand', card.maxCopiesInHand + 1)}
                               className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                               style={{ 
                                 backgroundColor: 'var(--bg-secondary)', 
-                                color: 'var(--text-main)',
+                                color: 'var(--text-secondary)',
                                 width: '40px',
                                 height: '40px',
                                 borderRadius: '999px',
-                                border: 'none',
+                                border: '1px solid var(--border-main)',
                                 boxSizing: 'border-box'
                               }}
                             >
@@ -1872,7 +1878,7 @@ useEffect(() => {
               }`}
               style={{ 
                 backgroundColor: allFieldsFilled ? 'var(--bg-action)' : 'var(--border-secondary)',
-                color: allFieldsFilled ? '#000000' : 'var(--text-placeholder)',
+                color: allFieldsFilled ? 'var(--text-action)' : 'var(--text-placeholder)',
                 fontFamily: 'Geist Regular, sans-serif',
                 fontSize: '14px',
                 lineHeight: '20px',
@@ -2009,9 +2015,9 @@ useEffect(() => {
             <div className="mt-6 space-y-2">
               {/* Combined probability result - only show if multiple combos */}
               {results.combined !== null && (
-                <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-tertiary)', border: `1px solid var(--border-main)` }}>
+                <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-action)', border: `1px solid var(--border-main)` }}>
                   <div className="flex items-center">
-                    <p className="font-semibold" style={typography.body}>
+                    <p className="font-semibold" style={{...typography.body, color: 'var(--text-action)'}}>
                       Chances of opening any of the desired combos: {results.combined.toFixed(2)}%
                     </p>
                     <Tooltip text="Chance of opening ANY of your defined combos. Shows overall deck consistency (hitting at least one combo from ones you defined)" />
@@ -2046,6 +2052,7 @@ useEffect(() => {
                 <p style={typography.body}>Shareable link:</p>
                 <Tooltip text="Export your calculation as a link to share with your testing group or save your work for later" />
               </div>
+              <p style={{...typography.body, color: 'var(--text-secondary)', marginBottom: '8px'}}>Save & share your deck ratios</p>
               <div className="flex items-center space-x-2">
                 <input
                   type="text"
@@ -2066,8 +2073,8 @@ useEffect(() => {
                   onClick={handleCopyLink}
                   className="px-4 py-2 font-medium transition-colors hover:opacity-80"
                   style={{ 
-                    backgroundColor: 'var(--bg-tertiary)', 
-                    color: 'var(--text-main)',
+                    backgroundColor: 'var(--bg-action)', 
+                    color: 'var(--text-action)',
                     border: 'none',
                     borderRadius: '999px',
                     ...typography.body
