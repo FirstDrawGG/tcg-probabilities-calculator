@@ -78,6 +78,10 @@ const CardDatabaseService = {
   CACHE_KEY: 'yugioh_cards_cache',
   CACHE_DURATION: 7 * 24 * 60 * 60 * 1000,
   
+  // Blob storage configuration
+  BLOB_BASE_URL: 'https://blob.vercel-storage.com', // Will be updated with actual URL after deployment
+  BLOB_ENABLED: process.env.NODE_ENV === 'production', // Enable in production only
+  
   async fetchCards() {
     try {
       console.log('Fetching cards from API...');
@@ -128,6 +132,47 @@ const CardDatabaseService = {
     } catch (error) {
       console.error('Cache save error:', error);
     }
+  },
+  
+  /**
+   * Generate optimized image URL for a card
+   * @param {string} cardId - The card ID
+   * @param {string} size - Image size ('full' or 'small')
+   * @param {string} format - Image format ('webp' or 'jpg')
+   * @returns {string} The optimized image URL
+   */
+  getImageUrl(cardId, size = 'small', format = 'webp') {
+    if (!this.BLOB_ENABLED) {
+      // Fallback to YGOPro URLs for development
+      return `https://images.ygoprodeck.com/images/cards/${cardId}.jpg`;
+    }
+    
+    return `${this.BLOB_BASE_URL}/cards/${size}/${cardId}.${format}`;
+  },
+  
+  /**
+   * Generate HTML picture element for optimal browser support
+   * @param {string} cardId - The card ID
+   * @param {string} cardName - The card name for alt text
+   * @param {string} size - Image size ('full' or 'small')
+   * @returns {object} Props for HTML picture element
+   */
+  getImageProps(cardId, cardName, size = 'small') {
+    if (!this.BLOB_ENABLED) {
+      // Fallback for development
+      return {
+        src: this.getImageUrl(cardId, size, 'jpg'),
+        alt: cardName,
+        loading: 'lazy'
+      };
+    }
+    
+    return {
+      webpSrc: this.getImageUrl(cardId, size, 'webp'),
+      jpgSrc: this.getImageUrl(cardId, size, 'jpg'),
+      alt: cardName,
+      loading: 'lazy'
+    };
   }
 };
 
