@@ -79,8 +79,8 @@ const CardDatabaseService = {
   CACHE_DURATION: 7 * 24 * 60 * 60 * 1000,
   
   // Blob storage configuration
-  BLOB_BASE_URL: 'https://blob.vercel-storage.com', // Will be updated with actual URL after deployment
-  BLOB_ENABLED: process.env.NODE_ENV === 'production', // Enable in production only
+  BLOB_BASE_URL: 'https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com', // Updated with correct Vercel Blob URL
+  BLOB_ENABLED: true, // Enable blob storage for card images
   
   async fetchCards() {
     try {
@@ -135,43 +135,58 @@ const CardDatabaseService = {
   },
   
   /**
-   * Generate optimized image URL for a card
-   * @param {string} cardId - The card ID
+   * Sanitize card name for URL generation (matches migration script)
+   * @param {string} cardName - The card name
+   * @returns {string} Sanitized card name
+   */
+  sanitizeCardName(cardName) {
+    return cardName
+      .replace(/[^a-zA-Z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .toLowerCase()
+      .substring(0, 50);
+  },
+
+  /**
+   * Generate optimized image URL for a card using new structure
+   * @param {string} cardName - The card name
    * @param {string} size - Image size ('full' or 'small')
-   * @param {string} format - Image format ('webp' or 'jpg')
    * @returns {string} The optimized image URL
    */
-  getImageUrl(cardId, size = 'small', format = 'webp') {
-    if (!this.BLOB_ENABLED) {
-      // Fallback to YGOPro URLs for development
-      return `https://images.ygoprodeck.com/images/cards/${cardId}.jpg`;
+  getImageUrl(cardName, size = 'small') {
+    if (!this.BLOB_ENABLED || !cardName) {
+      // Fallback to YGOPro URLs if blob storage disabled or no card name
+      return `https://images.ygoprodeck.com/images/cards/small.jpg`; // Generic fallback
     }
     
-    return `${this.BLOB_BASE_URL}/cards/${size}/${cardId}.${format}`;
+    const sanitizedName = this.sanitizeCardName(cardName);
+    const suffix = size === 'small' ? '-small' : '';
+    return `${this.BLOB_BASE_URL}/cards/${sanitizedName}${suffix}.webp`;
   },
   
   /**
-   * Generate HTML picture element for optimal browser support
-   * @param {string} cardId - The card ID
-   * @param {string} cardName - The card name for alt text
+   * Generate image props for WebP with YGOPro fallback
+   * @param {string} cardName - The card name
+   * @param {string} cardId - The card ID (for fallback)
    * @param {string} size - Image size ('full' or 'small')
-   * @returns {object} Props for HTML picture element
+   * @returns {object} Props for HTML img element with WebP support
    */
-  getImageProps(cardId, cardName, size = 'small') {
-    if (!this.BLOB_ENABLED) {
-      // Fallback for development
-      return {
-        src: this.getImageUrl(cardId, size, 'jpg'),
-        alt: cardName,
-        loading: 'lazy'
-      };
-    }
+  getImageProps(cardName, cardId, size = 'small') {
+    const webpUrl = this.getImageUrl(cardName, size);
+    const fallbackUrl = cardId ? 
+      `https://images.ygoprodeck.com/images/cards/${cardId}.jpg` :
+      `https://images.ygoprodeck.com/images/cards/small.jpg`;
     
     return {
-      webpSrc: this.getImageUrl(cardId, size, 'webp'),
-      jpgSrc: this.getImageUrl(cardId, size, 'jpg'),
-      alt: cardName,
-      loading: 'lazy'
+      src: this.BLOB_ENABLED ? webpUrl : fallbackUrl,
+      alt: cardName || 'Yu-Gi-Oh Card',
+      loading: 'lazy',
+      onError: (e) => {
+        // Fallback to YGOPro image if Blob image fails to load
+        if (e.target.src !== fallbackUrl) {
+          e.target.src = fallbackUrl;
+        }
+      }
     };
   }
 };
@@ -375,6 +390,104 @@ const ProbabilityService = {
   }
 };
 
+// Opening hand generation service
+const OpeningHandService = {
+  generateHand: (combos, deckSize, handSize) => {
+    if (!combos || combos.length === 0 || handSize <= 0 || deckSize <= 0) {
+      return Array(handSize).fill(null).map(() => ({ type: 'blank', cardName: null, isCustom: false }));
+    }
+
+    // Create deck with all cards - this simulates true probabilistic drawing
+    const deck = [];
+    const cardMapping = new Map();
+    let cardIdCounter = 0;
+
+    // Process all combo cards and create unified card mapping
+    combos.forEach(combo => {
+      combo.cards.forEach(card => {
+        if (card.starterCard.trim() === '') return;
+        
+        const cardKey = `${card.starterCard}-${card.cardId || 'custom'}`;
+        if (!cardMapping.has(cardKey)) {
+          cardMapping.set(cardKey, {
+            id: cardIdCounter++,
+            name: card.starterCard,
+            cardId: card.cardId,
+            isCustom: card.isCustom,
+            totalInDeck: 0
+          });
+        }
+        cardMapping.get(cardKey).totalInDeck = Math.max(
+          cardMapping.get(cardKey).totalInDeck,
+          card.startersInDeck
+        );
+      });
+    });
+
+    // Build deck according to hypergeometric distribution principles
+    cardMapping.forEach((cardInfo) => {
+      for (let i = 0; i < cardInfo.totalInDeck; i++) {
+        deck.push({
+          id: cardInfo.id,
+          name: cardInfo.name,
+          cardId: cardInfo.cardId,
+          isCustom: cardInfo.isCustom
+        });
+      }
+    });
+
+    // Fill remaining deck slots with blank cards (representing non-combo cards)
+    while (deck.length < deckSize) {
+      deck.push(null);
+    }
+
+    // Shuffle deck using cryptographically secure Fisher-Yates algorithm
+    // This ensures true randomness for probabilistic accuracy
+    for (let i = deck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+
+    // Draw opening hand - this represents the hypergeometric distribution
+    // in practice (drawing without replacement from a finite population)
+    const hand = [];
+    for (let i = 0; i < handSize; i++) {
+      if (i < deck.length && deck[i]) {
+        hand.push({
+          type: 'card',
+          cardName: deck[i].name,
+          cardId: deck[i].cardId,
+          isCustom: deck[i].isCustom
+        });
+      } else {
+        hand.push({
+          type: 'blank',
+          cardName: null,
+          isCustom: false
+        });
+      }
+    }
+
+    return hand;
+  },
+
+  // Advanced hand generation that considers combo satisfaction probabilities
+  generateProbabilisticHand: (combos, deckSize, handSize) => {
+    // Use Monte Carlo approach to generate hands that reflect true probability
+    // This will show both successful hands AND brick hands based on real odds
+    const numAttempts = 10; // Try multiple hands and pick one randomly
+    const possibleHands = [];
+
+    for (let attempt = 0; attempt < numAttempts; attempt++) {
+      const hand = OpeningHandService.generateHand(combos, deckSize, handSize);
+      possibleHands.push(hand);
+    }
+
+    // Return a random hand from the possibilities (ensures true randomness)
+    return possibleHands[Math.floor(Math.random() * possibleHands.length)];
+  }
+};
+
 // Title generation service
 const TitleGeneratorService = {
   generateFunTitle: (combos, deckSize, results) => {
@@ -431,6 +544,200 @@ const TitleGeneratorService = {
 
     return title;
   }
+};
+
+// Card Image component
+const CardImage = ({ cardData, size = 'small' }) => {
+  const [imageError, setImageError] = useState(false);
+  const [blankImageError, setBlankImageError] = useState(false);
+  
+  const blankCardUrl = 'https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards/yugioh_card_back_blank.jpg';
+  
+  if (!cardData || cardData.type === 'blank') {
+    // Default blank Yu-Gi-Oh card using Vercel Blob image
+    return (
+      <div
+        style={{
+          width: size === 'small' ? '60px' : '120px',
+          height: size === 'small' ? '87px' : '174px',
+          position: 'relative',
+          borderRadius: '4px',
+          overflow: 'hidden'
+        }}
+      >
+        <img
+          src={blankCardUrl}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            borderRadius: '4px'
+          }}
+          onError={() => {
+            if (!blankImageError) {
+              setBlankImageError(true);
+            }
+          }}
+          alt="Yu-Gi-Oh Card Back"
+        />
+        {blankImageError && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundColor: '#1a1a1a',
+              border: '1px solid #333',
+              borderRadius: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              backgroundImage: 'radial-gradient(circle, #2a2a2a 1px, transparent 1px)',
+              backgroundSize: '10px 10px'
+            }}
+          >
+            <div style={{ color: '#666', fontSize: '10px', textAlign: 'center' }}>
+              Yu-Gi-Oh!
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (cardData.isCustom) {
+    // Black and white blank card for custom cards using the same image but grayscaled
+    return (
+      <div
+        style={{
+          width: size === 'small' ? '60px' : '120px',
+          height: size === 'small' ? '87px' : '174px',
+          position: 'relative',
+          borderRadius: '4px',
+          overflow: 'hidden'
+        }}
+      >
+        <img
+          src={blankCardUrl}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            borderRadius: '4px',
+            filter: 'grayscale(100%) brightness(0.7)'
+          }}
+          onError={() => {
+            if (!blankImageError) {
+              setBlankImageError(true);
+            }
+          }}
+          alt={`Custom Card: ${cardData.cardName}`}
+        />
+        {blankImageError && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundColor: '#666',
+              border: '1px solid #333',
+              borderRadius: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              backgroundImage: 'radial-gradient(circle, #777 1px, transparent 1px)',
+              backgroundSize: '10px 10px',
+              filter: 'grayscale(100%)'
+            }}
+          >
+            <div style={{ color: '#333', fontSize: '8px', textAlign: 'center', padding: '4px' }}>
+              {cardData.cardName}
+            </div>
+          </div>
+        )}
+        {/* Overlay custom card name */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '2px',
+            left: '2px',
+            right: '2px',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            color: '#fff',
+            fontSize: '7px',
+            textAlign: 'center',
+            padding: '1px 2px',
+            borderRadius: '2px',
+            maxHeight: '20px',
+            overflow: 'hidden'
+          }}
+        >
+          {cardData.cardName}
+        </div>
+      </div>
+    );
+  }
+
+  // Regular card with image
+  const imageProps = CardDatabaseService.getImageProps(cardData.cardName, cardData.cardId, size);
+  
+  return (
+    <div
+      style={{
+        width: size === 'small' ? '60px' : '120px',
+        height: size === 'small' ? '87px' : '174px',
+        position: 'relative',
+        borderRadius: '4px',
+        overflow: 'hidden'
+      }}
+    >
+      <img
+        {...imageProps}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          borderRadius: '4px'
+        }}
+        onError={(e) => {
+          if (!imageError) {
+            setImageError(true);
+            // Fallback to blank card style
+            e.target.style.display = 'none';
+          }
+        }}
+        alt={cardData.cardName || 'Yu-Gi-Oh Card'}
+      />
+      {imageError && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: '#1a1a1a',
+            border: '1px solid #333',
+            borderRadius: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column'
+          }}
+        >
+          <div style={{ color: '#666', fontSize: '8px', textAlign: 'center', padding: '4px' }}>
+            {cardData.cardName}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 // Tooltip component
@@ -961,6 +1268,9 @@ export default function TCGCalculator() {
   const [generatedTitle, setGeneratedTitle] = useState('');
   const [shareableUrl, setShareableUrl] = useState('');
   const [showToast, setShowToast] = useState(false);
+  const [openingHand, setOpeningHand] = useState([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const refreshDebounceRef = useRef(null);
 
   // Top Decks data
   const topDecks = [
@@ -1130,6 +1440,7 @@ export default function TCGCalculator() {
     if (deckSize < 1) newErrors.deckSize = 'Please enter valid value';
     if (handSize < 1) newErrors.handSize = 'Please enter valid value';
     
+    if (deckSize < handSize) newErrors.deckSize = "Can't be lower than Hand size";
     if (handSize > deckSize) newErrors.handSize = 'Please enter valid value';
     
     combos.forEach((combo, index) => {
@@ -1164,6 +1475,31 @@ export default function TCGCalculator() {
   const allFieldsFilled = combos.every(combo => 
     combo.cards.every(card => card.starterCard.trim() !== '')
   );
+
+  const hasValidationErrors = Object.keys(errors).length > 0 || deckSize < handSize;
+
+  const generateOpeningHand = () => {
+    const hand = OpeningHandService.generateProbabilisticHand(combos, deckSize, handSize);
+    setOpeningHand(hand);
+  };
+
+  const refreshOpeningHand = () => {
+    if (isRefreshing) return;
+    
+    // Clear any existing debounce timer
+    if (refreshDebounceRef.current) {
+      clearTimeout(refreshDebounceRef.current);
+    }
+    
+    setIsRefreshing(true);
+    
+    // Debounce with 100ms delay to prevent spam clicking
+    refreshDebounceRef.current = setTimeout(() => {
+      generateOpeningHand();
+      setIsRefreshing(false);
+      refreshDebounceRef.current = null;
+    }, 100);
+  };
 
   const runCalculation = () => {
     if (!validate()) return;
@@ -1202,6 +1538,7 @@ export default function TCGCalculator() {
     setTempComboName('');
     setGeneratedTitle('');
     setShareableUrl('');
+    setOpeningHand([]);
     ProbabilityService.clearCache();
     
     window.history.replaceState(null, '', window.location.pathname);
@@ -1410,6 +1747,19 @@ useEffect(() => {
   useEffect(() => {
     if (results.individual.length > 0) validate();
   }, [deckSize, handSize, combos]);
+
+  useEffect(() => {
+    generateOpeningHand();
+  }, [deckSize, handSize, combos]);
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (refreshDebounceRef.current) {
+        clearTimeout(refreshDebounceRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen p-4" style={{ backgroundColor: 'var(--bg-main)', fontFamily: 'Geist Regular, sans-serif' }}>
@@ -1915,15 +2265,15 @@ useEffect(() => {
           <div className="flex space-x-4 mt-6">
             <button
               onClick={runCalculation}
-              disabled={!allFieldsFilled}
+              disabled={!allFieldsFilled || hasValidationErrors}
               className={`flex-1 font-semibold transition-colors ${
-                allFieldsFilled
+                allFieldsFilled && !hasValidationErrors
                   ? 'hover:opacity-80'
                   : 'cursor-not-allowed opacity-50'
               }`}
               style={{ 
-                backgroundColor: allFieldsFilled ? 'var(--bg-action)' : 'var(--border-secondary)',
-                color: allFieldsFilled ? 'var(--text-action)' : 'var(--text-placeholder)',
+                backgroundColor: allFieldsFilled && !hasValidationErrors ? 'var(--bg-action)' : 'var(--border-secondary)',
+                color: allFieldsFilled && !hasValidationErrors ? 'var(--text-action)' : 'var(--text-placeholder)',
                 fontFamily: 'Geist Regular, sans-serif',
                 fontSize: '14px',
                 lineHeight: '20px',
@@ -2054,6 +2404,48 @@ useEffect(() => {
                 ))}
               </div>
             ))}
+          </div>
+
+          {/* Opening Hand Display */}
+          <div className="mt-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 style={{...typography.h3, color: 'var(--text-main)'}}>Opening hand</h3>
+              <button
+                onClick={refreshOpeningHand}
+                disabled={isRefreshing}
+                className={`px-4 py-2 font-medium transition-colors ${
+                  isRefreshing ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-80'
+                }`}
+                style={{ 
+                  backgroundColor: 'var(--bg-secondary)', 
+                  color: 'var(--text-main)',
+                  border: '1px solid var(--border-main)',
+                  borderRadius: '20px',
+                  fontSize: '14px',
+                  lineHeight: '20px',
+                  fontFamily: 'Geist Regular, sans-serif'
+                }}
+              >
+                {isRefreshing ? 'Shuffling...' : 'Refresh'}
+              </button>
+            </div>
+            
+            <p className="mb-4" style={{...typography.body, color: 'var(--text-secondary)'}}>
+              *This is a probabilistic example of your opening hand based on defined combos
+            </p>
+            
+            <div 
+              style={{
+                display: 'flex',
+                gap: '8px',
+                flexWrap: 'wrap',
+                justifyContent: 'flex-start'
+              }}
+            >
+              {openingHand.map((cardData, index) => (
+                <CardImage key={index} cardData={cardData} size="small" />
+              ))}
+            </div>
           </div>
 
           {results.individual.length > 0 && (

@@ -1,78 +1,86 @@
 import React from 'react';
 
 /**
- * Optimized card image component with WebP/JPEG fallback
+ * Optimized card image component with WebP from Vercel Blob Storage
  * 
  * Features:
- * - WebP with JPEG fallback for browser compatibility
+ * - WebP format with YGOPro fallback for compatibility  
  * - Lazy loading for performance
- * - Multiple size options
+ * - Multiple size options (full, small)
  * - Error handling with fallback to YGOPro URLs
+ * - Uses card name for Blob URLs, card ID for fallbacks
  */
 
 const CardImage = ({ 
-  cardId, 
   cardName, 
+  cardId, 
   size = 'small', 
   className = '', 
   style = {},
   onClick = null,
   loading = 'lazy'
 }) => {
-  // Blob storage configuration
-  const BLOB_BASE_URL = 'https://blob.vercel-storage.com'; // Will be updated with actual URL
-  const BLOB_ENABLED = process.env.NODE_ENV === 'production';
+  // Blob storage configuration - updated to match AC requirements
+  const BLOB_BASE_URL = 'https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com'; // Correct Vercel Blob URL
+  const BLOB_ENABLED = true; // Enable blob storage for card images
   
   /**
-   * Generate image URLs
+   * Sanitize card name for URL generation (matches migration script)
+   */
+  const sanitizeCardName = (name) => {
+    if (!name) return '';
+    return name
+      .replace(/[^a-zA-Z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .toLowerCase()
+      .substring(0, 50);
+  };
+  
+  /**
+   * Generate image URLs using new card name-based structure
    */
   const getImageUrls = () => {
-    if (!BLOB_ENABLED) {
-      // Fallback to YGOPro URLs for development
-      return {
-        fallback: `https://images.ygoprodeck.com/images/cards/${cardId}.jpg`
-      };
+    const fallbackUrl = cardId ? 
+      `https://images.ygoprodeck.com/images/cards/${cardId}.jpg` :
+      `https://images.ygoprodeck.com/images/cards/small.jpg`;
+    
+    if (!BLOB_ENABLED || !cardName) {
+      return { fallback: fallbackUrl };
     }
     
+    const sanitizedName = sanitizeCardName(cardName);
+    const suffix = size === 'small' ? '-small' : '';
+    
     return {
-      webp: `${BLOB_BASE_URL}/cards/${size}/${cardId}.webp`,
-      jpeg: `${BLOB_BASE_URL}/cards/${size}/${cardId}.jpg`,
-      fallback: `https://images.ygoprodeck.com/images/cards/${cardId}.jpg`
+      webp: `${BLOB_BASE_URL}/cards/${sanitizedName}${suffix}.webp`,
+      fallback: fallbackUrl
     };
   };
   
   const urls = getImageUrls();
   
   /**
-   * Handle image loading errors
+   * Handle image loading errors - fallback to YGOPro
    */
   const handleError = (event) => {
-    // Fallback to YGOPro URL if blob image fails
     if (event.target.src !== urls.fallback) {
-      console.warn(`Failed to load optimized image for card ${cardId}, falling back to YGOPro`);
+      console.warn(`Failed to load blob image for card "${cardName}", falling back to YGOPro`);
       event.target.src = urls.fallback;
     }
   };
   
-  /**
-   * Handle source errors in picture element
-   */
-  const handleSourceError = (event) => {
-    // Remove the failed source element
-    event.target.remove();
-  };
-  
   // Common image props
   const imageProps = {
-    alt: cardName || `Yu-Gi-Oh card ${cardId}`,
+    alt: cardName || `Yu-Gi-Oh card ${cardId || 'Unknown'}`,
     loading: loading,
     className: className,
     style: style,
     onClick: onClick,
-    onError: handleError
+    onError: handleError,
+    title: cardName
   };
   
-  // For development or when blob is disabled, use simple img
+  // If blob disabled or no WebP URL, use fallback
   if (!BLOB_ENABLED || !urls.webp) {
     return (
       <img
@@ -82,24 +90,12 @@ const CardImage = ({
     );
   }
   
-  // For production with blob storage, use picture element with WebP/JPEG fallback
+  // Use WebP with fallback - simpler structure for modern browsers
   return (
-    <picture>
-      <source 
-        srcSet={urls.webp} 
-        type="image/webp"
-        onError={handleSourceError}
-      />
-      <source 
-        srcSet={urls.jpeg} 
-        type="image/jpeg"
-        onError={handleSourceError}
-      />
-      <img
-        src={urls.jpeg}
-        {...imageProps}
-      />
-    </picture>
+    <img
+      src={urls.webp}
+      {...imageProps}
+    />
   );
 };
 
