@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 // URL encoding/decoding utilities
 const URLService = {
-  encodeCalculation: (deckSize, handSize, combos) => {
+  encodeCalculation: (deckSize, handSize, combos, ydkFile = null) => {
     try {
       const data = {
         d: deckSize,
@@ -20,6 +20,14 @@ const URLService = {
           }))
         }))
       };
+      
+      // Add YDK file data if present
+      if (ydkFile) {
+        data.ydk = {
+          name: ydkFile.name,
+          content: ydkFile.content
+        };
+      }
       
       const jsonString = JSON.stringify(data);
       const encoded = btoa(jsonString);
@@ -43,7 +51,7 @@ const URLService = {
         return null;
       }
       
-      return {
+      const result = {
         deckSize: data.d,
         handSize: data.h,
         combos: data.c.map(combo => ({
@@ -59,14 +67,24 @@ const URLService = {
           }))
         }))
       };
+      
+      // Add YDK file data if present
+      if (data.ydk) {
+        result.ydkFile = {
+          name: data.ydk.name,
+          content: data.ydk.content
+        };
+      }
+      
+      return result;
     } catch (error) {
       console.error('Failed to decode calculation:', error);
       return null;
     }
   },
 
-  updateURL: (deckSize, handSize, combos) => {
-    const encoded = URLService.encodeCalculation(deckSize, handSize, combos);
+  updateURL: (deckSize, handSize, combos, ydkFile = null) => {
+    const encoded = URLService.encodeCalculation(deckSize, handSize, combos, ydkFile);
     if (encoded) {
       window.history.replaceState(null, '', `#calc=${encoded}`);
     }
@@ -488,6 +506,101 @@ const OpeningHandService = {
   }
 };
 
+// YDK file parsing service
+const YdkParsingService = {
+  async loadStaticCardDatabase() {
+    try {
+      const response = await fetch('/cardDatabase.json');
+      if (!response.ok) {
+        throw new Error(`Failed to load card database: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Failed to load static card database:', error);
+      return {};
+    }
+  },
+
+  parseYdkFile(fileContent, staticCardDatabase) {
+    try {
+      const lines = fileContent.split('\n').map(line => line.trim()).filter(line => line);
+      const result = {
+        cards: [],
+        unmatchedIds: [],
+        extraDeckCards: [], // Track Extra Deck cards separately
+        cardCounts: {} // Track count of each card by name
+      };
+
+      let currentSection = null;
+      
+      for (const line of lines) {
+        if (line.startsWith('#')) continue; // Skip comments
+        if (line === '!side') break; // Stop at side deck
+        
+        if (line === '#main') {
+          currentSection = 'main';
+          continue;
+        }
+        if (line === '#extra') {
+          currentSection = 'extra';
+          continue;
+        }
+        
+        // Parse card ID
+        const cardId = line.trim();
+        if (!cardId || isNaN(cardId)) continue;
+        
+        const cardData = staticCardDatabase[cardId];
+        if (cardData) {
+          if (cardData.isExtraDeck) {
+            // Track Extra Deck cards but don't include in main results
+            result.extraDeckCards.push({
+              id: cardId,
+              name: cardData.name,
+              isExtraDeck: true
+            });
+          } else {
+            // Include main deck cards
+            result.cards.push({
+              id: cardId,
+              name: cardData.name,
+              isExtraDeck: cardData.isExtraDeck
+            });
+            
+            // Track count of each card by name
+            if (!result.cardCounts[cardData.name]) {
+              result.cardCounts[cardData.name] = 0;
+            }
+            result.cardCounts[cardData.name]++;
+          }
+        } else {
+          // Only count as unmatched if card is not found in database at all
+          result.unmatchedIds.push(cardId);
+        }
+      }
+
+      return result;
+    } catch (error) {
+      console.error('Error parsing YDK file:', error);
+      throw new Error('Failed to parse YDK file');
+    }
+  },
+
+  validateYdkFile(file) {
+    // Check file size (100KB limit)
+    if (file.size > 100 * 1024) {
+      throw new Error('File size exceeds 100KB limit');
+    }
+
+    // Check file extension
+    if (!file.name.toLowerCase().endsWith('.ydk')) {
+      throw new Error('Only YDK files are supported');
+    }
+
+    return true;
+  }
+};
+
 // Title generation service
 const TitleGeneratorService = {
   generateFunTitle: (combos, deckSize, results) => {
@@ -880,7 +993,8 @@ const Tooltip = ({ text, children }) => {
 };
 
 // Searchable dropdown component
-const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, cardIndex, cardDatabase }) => {
+const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, cardIndex, cardDatabase, ydkCards, ydkCardCounts, updateCombo }) => {
+  
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCards, setFilteredCards] = useState([]);
@@ -918,7 +1032,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
   }, [isOpen]);
   
   useEffect(() => {
-    if (searchTerm.length < 3) {
+    if (searchTerm.length === 0) {
       setFilteredCards([]);
       return;
     }
@@ -927,16 +1041,36 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
     debounceTimerRef.current = setTimeout(() => {
       console.log('Searching for:', searchTerm);
       console.log('Card database length:', cardDatabase ? cardDatabase.length : 0);
+      console.log('YDK cards length:', ydkCards ? ydkCards.length : 0);
       
       const searchLower = searchTerm.toLowerCase();
-      const matches = (cardDatabase || [])
-        .filter(card => card.name && card.name.toLowerCase().includes(searchLower))
-        .slice(0, 50)
-        .map(card => ({
-          name: card.name,
-          id: card.id,
-          isCustom: false
-        }));
+      let matches = [];
+      
+      if (searchTerm.length < 3) {
+        // For 1-2 characters, search only YDK cards
+        if (ydkCards && ydkCards.length > 0) {
+          matches = ydkCards
+            .filter(card => card.name && card.name.toLowerCase().includes(searchLower))
+            .slice(0, 50);
+        }
+      } else {
+        // For 3+ characters, search both YDK cards and full database
+        const ydkMatches = ydkCards && ydkCards.length > 0 
+          ? ydkCards.filter(card => card.name && card.name.toLowerCase().includes(searchLower))
+          : [];
+        
+        const dbMatches = (cardDatabase || [])
+          .filter(card => card.name && card.name.toLowerCase().includes(searchLower))
+          .slice(0, 50 - ydkMatches.length)
+          .map(card => ({
+            name: card.name,
+            id: card.id,
+            isCustom: false
+          }));
+        
+        // Combine YDK matches first, then database matches
+        matches = [...ydkMatches, ...dbMatches];
+      }
       
       console.log('Found matches:', matches.length);
       console.log('First few matches:', matches.slice(0, 3));
@@ -945,7 +1079,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
     }, 300);
     
     return () => clearTimeout(debounceTimerRef.current);
-  }, [searchTerm, cardDatabase]);
+  }, [searchTerm, cardDatabase, ydkCards]);
   
   const handleInputClick = () => {
   setIsOpen(true);
@@ -960,14 +1094,28 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
   };
   
   const handleCardSelect = (card) => {
+    // Update the card name properly
     onChange({
       starterCard: card.name,
       cardId: card.id,
       isCustom: card.isCustom
     });
+    
+    // If this is a YDK card, also update the copies in deck and max in hand immediately
+    if (ydkCardCounts && ydkCardCounts[card.name] && updateCombo && comboId !== undefined && cardIndex !== undefined) {
+      const cardCount = ydkCardCounts[card.name];
+      
+      // Update copies in deck
+      updateCombo(comboId, cardIndex, 'startersInDeck', cardCount);
+      
+      // Update max copies in hand to match deck count (but don't exceed reasonable limits)
+      const maxInHand = Math.min(cardCount, 3); // Cap at 3 for reasonable hand size
+      updateCombo(comboId, cardIndex, 'maxCopiesInHand', maxInHand);
+    }
+    
+    // Close dropdown and clear search - let useEffect handle isEditing
     setSearchTerm('');
     setIsOpen(false);
-    setIsEditing(false);
   };
   
   const handleCustomName = () => {
@@ -1084,23 +1232,89 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
           }}
         >
           {searchTerm.length < 3 ? (
-            <div className="p-3" style={{...typography.body, color: 'var(--text-secondary)'}}>
-              Type at least 3 characters to search or use your custom name
-            </div>
+            <>
+              {/* Show YDK cards if available, even with < 3 characters */}
+              {ydkCards && ydkCards.length > 0 && (
+                <>
+                  <div className="px-3 py-2" style={{...typography.body, color: 'var(--text-secondary)'}}>
+                    Cards you uploaded
+                  </div>
+                  <div className="max-h-40 overflow-y-auto">
+                    {(searchTerm.length === 0 ? ydkCards : filteredCards).map((card, index) => (
+                      <div
+                        key={`${card.id}-${index}`}
+                        className="px-3 py-2 hover:opacity-80 cursor-pointer"
+                        style={typography.body}
+                        onClick={() => handleCardSelect(card)}
+                      >
+                        {card.name}
+                      </div>
+                    ))}
+                  </div>
+                  {searchTerm.length > 0 && (
+                    <div className="border-t px-3 py-2" style={{...typography.body, borderColor: 'var(--border-secondary)', color: 'var(--text-secondary)'}}>
+                      Type at least 3 characters to search or use your custom name
+                    </div>
+                  )}
+                </>
+              )}
+              
+              {/* Show default message if no YDK cards */}
+              {(!ydkCards || ydkCards.length === 0) && (
+                <div className="p-3" style={{...typography.body, color: 'var(--text-secondary)'}}>
+                  Type at least 3 characters to search or use your custom name
+                </div>
+              )}
+            </>
           ) : filteredCards.length > 0 ? (
             <>
-              <div className="max-h-60 overflow-y-auto">
-                {filteredCards.map((card, index) => (
-                  <div
-                    key={`${card.id}-${index}`}
-                    className="px-3 py-2 hover:opacity-80 cursor-pointer"
-                    style={typography.body}
-                    onClick={() => handleCardSelect(card)}
-                  >
-                    {card.name}
+              {/* Separate YDK cards and other results for 3+ character search */}
+              {(() => {
+                const searchLower = searchTerm.toLowerCase();
+                const ydkMatches = ydkCards && ydkCards.length > 0 
+                  ? ydkCards.filter(card => card.name && card.name.toLowerCase().includes(searchLower))
+                  : [];
+                const otherMatches = filteredCards.slice(ydkMatches.length);
+                
+                return (
+                  <div className="max-h-60 overflow-y-auto">
+                    {/* YDK Cards Section */}
+                    {ydkMatches.length > 0 && (
+                      <>
+                        <div className="px-3 py-2" style={{...typography.body, color: 'var(--text-secondary)'}}>
+                          Cards you uploaded
+                        </div>
+                        {ydkMatches.map((card, index) => (
+                          <div
+                            key={`ydk-${card.id}-${index}`}
+                            className="px-3 py-2 hover:opacity-80 cursor-pointer"
+                            style={typography.body}
+                            onClick={() => handleCardSelect(card)}
+                          >
+                            {card.name}
+                          </div>
+                        ))}
+                        {otherMatches.length > 0 && (
+                          <div className="border-t" style={{borderColor: 'var(--border-secondary)'}}></div>
+                        )}
+                      </>
+                    )}
+                    
+                    {/* Other Results */}
+                    {otherMatches.map((card, index) => (
+                      <div
+                        key={`db-${card.id}-${index}`}
+                        className="px-3 py-2 hover:opacity-80 cursor-pointer"
+                        style={typography.body}
+                        onClick={() => handleCardSelect(card)}
+                      >
+                        {card.name}
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                );
+              })()}
+              
               {filteredCards.length === 50 && (
                 <div className="px-3 py-2 border-t" style={{...typography.body, borderColor: 'var(--border-secondary)', color: 'var(--text-secondary)'}}>
                   Type for more results
@@ -1271,6 +1485,10 @@ export default function TCGCalculator() {
   const [openingHand, setOpeningHand] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const refreshDebounceRef = useRef(null);
+  const [uploadedYdkFile, setUploadedYdkFile] = useState(null);
+  const [ydkCards, setYdkCards] = useState([]);
+  const [ydkCardCounts, setYdkCardCounts] = useState({});
+  const [staticCardDatabase, setStaticCardDatabase] = useState({});
 
   // Top Decks data
   const topDecks = [
@@ -1322,7 +1540,7 @@ export default function TCGCalculator() {
         });
         
         // Generate shareable URL
-        URLService.updateURL(data.d, data.h, loadedCombos);
+        URLService.updateURL(data.d, data.h, loadedCombos, uploadedYdkFile);
         const url = window.location.href;
         setShareableUrl(url);
         
@@ -1350,6 +1568,43 @@ export default function TCGCalculator() {
         setHandSize(urlData.handSize);
         setCombos(urlData.combos);
         
+        // Restore YDK file if present
+        if (urlData.ydkFile && staticCardDatabase && Object.keys(staticCardDatabase).length > 0) {
+          try {
+            const parseResult = YdkParsingService.parseYdkFile(urlData.ydkFile.content, staticCardDatabase);
+            
+            // Get unique card names (remove duplicates)
+            const uniqueCards = [];
+            const seenNames = new Set();
+            
+            parseResult.cards.forEach(card => {
+              if (!seenNames.has(card.name)) {
+                seenNames.add(card.name);
+                uniqueCards.push({
+                  name: card.name,
+                  id: card.id,
+                  isCustom: false
+                });
+              }
+            });
+            
+            // Update deck size to match YDK file main deck card count
+            const mainDeckCardCount = parseResult.cards.length;
+            setDeckSize(mainDeckCardCount);
+            
+            setUploadedYdkFile(urlData.ydkFile);
+            setYdkCards(uniqueCards);
+            setYdkCardCounts(parseResult.cardCounts);
+            
+            // Show error only for truly unmatched cards
+            if (parseResult.unmatchedIds.length > 0) {
+              alert("Some cards from your YDK file weren't matched");
+            }
+          } catch (error) {
+            console.error('Failed to restore YDK file from URL:', error);
+          }
+        }
+        
         setTimeout(() => {
           const calculatedResults = ProbabilityService.calculateMultipleCombos(urlData.combos, urlData.deckSize, urlData.handSize);
           setResults(calculatedResults);
@@ -1364,7 +1619,7 @@ export default function TCGCalculator() {
     };
 
     restoreFromURL();
-  }, []);
+  }, [staticCardDatabase]);
   
   // Load card database on mount
   useEffect(() => {
@@ -1396,6 +1651,79 @@ export default function TCGCalculator() {
     
     loadCardDatabase();
   }, []);
+
+  // Load static card database for YDK parsing
+  useEffect(() => {
+    const loadStaticDatabase = async () => {
+      const database = await YdkParsingService.loadStaticCardDatabase();
+      setStaticCardDatabase(database);
+    };
+    
+    loadStaticDatabase();
+  }, []);
+
+  // YDK file handling functions
+  const handleYdkFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      YdkParsingService.validateYdkFile(file);
+      
+      const fileContent = await readFileAsText(file);
+      const parseResult = YdkParsingService.parseYdkFile(fileContent, staticCardDatabase);
+      
+      // Get unique card names (remove duplicates) for search dropdown
+      const uniqueCards = [];
+      const seenNames = new Set();
+      
+      parseResult.cards.forEach(card => {
+        if (!seenNames.has(card.name)) {
+          seenNames.add(card.name);
+          uniqueCards.push({
+            name: card.name,
+            id: card.id,
+            isCustom: false
+          });
+        }
+      });
+      
+      // Update deck size to match total main deck cards (including duplicates)
+      const mainDeckCardCount = parseResult.cards.length;
+      setDeckSize(mainDeckCardCount);
+      
+      setUploadedYdkFile({
+        name: file.name,
+        content: fileContent
+      });
+      setYdkCards(uniqueCards);
+      setYdkCardCounts(parseResult.cardCounts);
+      
+      // Show error toast only if there are truly unmatched cards (not just Extra Deck cards)
+      if (parseResult.unmatchedIds.length > 0) {
+        alert("Some cards from your YDK file weren't matched");
+      }
+      
+    } catch (error) {
+      console.error('YDK upload error:', error);
+      alert(error.message);
+    }
+  };
+
+  const handleClearYdkFile = () => {
+    setUploadedYdkFile(null);
+    setYdkCards([]);
+    setYdkCardCounts({});
+  };
+
+  const readFileAsText = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.onerror = (e) => reject(new Error('Failed to read file'));
+      reader.readAsText(file);
+    });
+  };
 
   const typography = {
     h1: {
@@ -1514,7 +1842,7 @@ export default function TCGCalculator() {
     setResults(calculatedResults);
     
     // Generate shareable URL
-    URLService.updateURL(deckSize, handSize, combos);
+    URLService.updateURL(deckSize, handSize, combos, uploadedYdkFile);
     const url = window.location.href;
     setShareableUrl(url);
     
@@ -1561,7 +1889,7 @@ export default function TCGCalculator() {
   };
 
   const updateCombo = (id, cardIndex, field, value) => {
-    setCombos(combos.map(combo => {
+    setCombos(prevCombos => prevCombos.map(combo => {
       if (combo.id !== id) return combo;
       
       const updatedCombo = { ...combo };
@@ -1872,6 +2200,70 @@ useEffect(() => {
           </div>
         </section>
         
+        {/* YDK File Upload Section */}
+        <div className="p-6" style={{ marginBottom: 'var(--spacing-lg)' }}>
+          <h2 className="mb-4" style={{...typography.h2, color: 'var(--text-main)'}}>Upload YDK file</h2>
+          <p className="mb-4" style={{...typography.body, color: 'var(--text-secondary)'}}>
+            Upload a YDK file and the calc will immediately recognize your deck
+          </p>
+          
+          <div className="space-y-4">
+            {!uploadedYdkFile ? (
+              <div>
+                <input
+                  type="file"
+                  accept=".ydk"
+                  onChange={handleYdkFileUpload}
+                  style={{ display: 'none' }}
+                  id="ydk-file-input"
+                />
+                <label
+                  htmlFor="ydk-file-input"
+                  className="inline-flex items-center px-6 py-2 cursor-pointer hover:opacity-80"
+                  style={{
+                    backgroundColor: 'var(--bg-action-secondary)',
+                    border: `1px solid var(--border-main)`,
+                    color: 'var(--text-main)',
+                    borderRadius: '999px',
+                    ...typography.body
+                  }}
+                >
+                  Upload
+                </label>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between p-3 border rounded-lg" 
+                   style={{ 
+                     backgroundColor: 'var(--bg-secondary)', 
+                     border: `1px solid var(--border-main)`,
+                     borderRadius: '16px'
+                   }}>
+                <div>
+                  <div style={{...typography.body, color: 'var(--text-main)', fontWeight: 'medium'}}>
+                    {uploadedYdkFile.name}
+                  </div>
+                  <div style={{...typography.body, color: 'var(--text-secondary)', fontSize: '14px'}}>
+                    {deckSize} Main deck cards loaded ({ydkCards.length} unique)
+                  </div>
+                </div>
+                <button
+                  onClick={handleClearYdkFile}
+                  className="px-3 py-1 hover:opacity-80"
+                  style={{
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    color: 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    fontSize: '16px'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="p-6" style={{ marginBottom: 'var(--spacing-lg)' }}>
           <h2 className="mb-4" style={{...typography.h2, color: 'var(--text-main)'}}>Define a Combo</h2>
           
@@ -2011,6 +2403,9 @@ useEffect(() => {
                         comboId={combo.id}
                         cardIndex={cardIndex}
                         cardDatabase={cardDatabase}
+                        ydkCards={ydkCards}
+                        ydkCardCounts={ydkCardCounts}
+                        updateCombo={updateCombo}
                       />
                       {errors[`combo-${combo.id}-card-${cardIndex}-starterCard`] && (
                         <p className="text-red-500 mt-1" style={typography.body}>{errors[`combo-${combo.id}-card-${cardIndex}-starterCard`]}</p>

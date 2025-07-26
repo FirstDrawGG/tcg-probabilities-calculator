@@ -5,15 +5,20 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node scripts/generate-card-database.js && vite build",
+    "build:db": "node scripts/generate-card-database.js",
     "preview": "vite preview",
     "migrate:images": "node scripts/migrate-card-images.js",
-    "validate:migration": "node scripts/validate-migration.js"
+    "migrate:images:optimized": "node scripts/migrate-card-images-optimized.js",
+    "migrate:images:final": "node scripts/migrate-card-images-final.js",
+    "validate:migration": "node scripts/validate-migration.js",
+    "validate:migration:final": "node scripts/validate-migration-final.js"
   },
   "dependencies": {
     "@vercel/analytics": "^1.5.0",
     "@vercel/blob": "^1.1.1",
-    "node-fetch": "^3.3.2",
+    "dotenv": "^17.2.0",
+    "node-fetch": "^2.7.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sharp": "^0.34.3"
