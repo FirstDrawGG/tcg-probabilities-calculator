@@ -1174,7 +1174,16 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
             borderRadius: '999px',
             height: '40px',
             cursor: 'text',
+            outline: 'none',
             ...typography.body
+          }}
+          onFocus={(e) => {
+            e.target.style.border = '1px solid var(--border-action)';
+            e.target.style.color = 'var(--text-main)';
+          }}
+          onBlur={(e) => {
+            e.target.style.border = `1px solid var(--border-main)`;
+            e.target.style.color = 'var(--text-main)';
           }}
         />
       ) : (
@@ -1202,7 +1211,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
                 e.stopPropagation();
                 handleEdit();
                }}
-              className="hover:opacity-80"
+              className="hover:opacity-80 transition-opacity"
                style={{ fontSize: '12px' }}
             >
               Edit
@@ -1213,7 +1222,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
                 e.stopPropagation(); 
                 handleClear();
               }}
-              className="hover:opacity-80"
+              className="hover:opacity-80 transition-opacity"
               style={{ fontSize: '16px' }}
             >
               ×
@@ -1243,7 +1252,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
                     {(searchTerm.length === 0 ? ydkCards : filteredCards).map((card, index) => (
                       <div
                         key={`${card.id}-${index}`}
-                        className="px-3 py-2 hover:opacity-80 cursor-pointer"
+                        className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity"
                         style={typography.body}
                         onClick={() => handleCardSelect(card)}
                       >
@@ -1287,7 +1296,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
                         {ydkMatches.map((card, index) => (
                           <div
                             key={`ydk-${card.id}-${index}`}
-                            className="px-3 py-2 hover:opacity-80 cursor-pointer"
+                            className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity"
                             style={typography.body}
                             onClick={() => handleCardSelect(card)}
                           >
@@ -1304,7 +1313,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
                     {otherMatches.map((card, index) => (
                       <div
                         key={`db-${card.id}-${index}`}
-                        className="px-3 py-2 hover:opacity-80 cursor-pointer"
+                        className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity"
                         style={typography.body}
                         onClick={() => handleCardSelect(card)}
                       >
@@ -1326,7 +1335,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
               <div>No matching results. Use custom name?</div>
               <button
                 onClick={handleCustomName}
-                className="mt-2 px-4 py-2 hover:opacity-80 rounded"
+                className="mt-2 px-4 py-2 hover:opacity-80 rounded transition-opacity"
                 style={{
                   ...typography.body,
                   backgroundColor: 'var(--bg-action-secondary)',
@@ -2106,18 +2115,66 @@ useEffect(() => {
             outline: none;
             box-shadow: 0 0 0 2px var(--bg-action-secondary);
           }
+          
+          /* AC #6: Hover state transition animation */
+          .hover\\:opacity-80,
+          button:hover,
+          label:hover,
+          [role="button"]:hover,
+          .cursor-pointer:hover {
+            transition-duration: 153.51ms;
+            transition-timing-function: linear(
+              0 0%,
+              0.038294 1%,
+              0.126287 2%,
+              0.235428 3%,
+              0.348573 4%,
+              0.456037 5%,
+              0.552897 6%,
+              0.637194 7%,
+              0.708724 8%,
+              0.768266 9%,
+              0.817082 10%,
+              0.856612 11%,
+              0.888293 12%,
+              0.913459 13%,
+              0.933298 14%,
+              0.948831 15%,
+              0.960919 16%,
+              0.970275 17%,
+              0.97748 18%,
+              0.983003 19%,
+              0.987217 20%,
+              0.99042 21%,
+              0.992846 22%,
+              0.994675 23%,
+              0.996049 24%,
+              0.997079 25%,
+              0.997848 26%,
+              0.998419 27%,
+              0.998843 28%,
+              0.999156 29%,
+              0.999387 30%,
+              0.999556 31%,
+              0.99968 32%,
+              0.99977 33%,
+              0.999836 34%,
+              0.999883 35%,
+              0.999917 36%
+            );
+          }
         `}
       </style>
       {isRestoringFromURL && (
         <div className="fixed inset-0 flex items-center justify-center z-50" style={{backgroundColor: 'var(--bg-main)', opacity: 0.8}}>
-          <div className="p-6 rounded-lg" style={{backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)'}}>
+          <div className="p-0 rounded-lg" style={{backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)'}}>
             <p style={typography.body}>Loading shared calculation...</p>
           </div>
         </div>
       )}
-      <div className="w-full mx-auto" style={{ maxWidth: '580px' }}>
+      <div className="w-full mx-auto" style={{ maxWidth: '520px' }}>
         {/* Logo and brand header */}
-        <div className="flex items-center justify-between mb-8 px-6">
+        <div className="flex items-center justify-between mb-8 px-0">
           <div className="flex items-center">
             <img 
               src="https://raw.githubusercontent.com/FirstDrawGG/tcg-probabilities-calculator/main/Logo.png" 
@@ -2152,13 +2209,13 @@ useEffect(() => {
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              backgroundColor: 'var(--bg-secondary)',
+              backgroundColor: 'transparent',
               color: 'var(--text-main)',
               fontFamily: 'Geist Regular, sans-serif',
               fontSize: '14px',
               lineHeight: '20px',
               borderRadius: '999px',
-              border: '1px solid var(--border-main)',
+              border: 'none',
               height: '32px',
               paddingLeft: '16px',
               paddingRight: '16px',
@@ -2169,14 +2226,14 @@ useEffect(() => {
               textDecoration: 'none',
               transition: 'opacity 0.2s ease'
             }}
-            className="hover:opacity-80"
+            className="hover:opacity-80 transition-opacity"
           >
             Help
           </a>
         </div>
         
         {/* CTA Section */}
-        <section className="px-6 mb-8">
+        <section className="px-0 mb-8">
           <div 
             className="grid grid-cols-2"
             style={{ gap: '4px' }}
@@ -2200,14 +2257,13 @@ useEffect(() => {
           </div>
         </section>
         
-        {/* YDK File Upload Section */}
-        <div className="p-6" style={{ marginBottom: 'var(--spacing-lg)' }}>
-          <h2 className="mb-4" style={{...typography.h2, color: 'var(--text-main)'}}>Upload YDK file</h2>
-          <p className="mb-4" style={{...typography.body, color: 'var(--text-secondary)'}}>
-            Upload a YDK file and the calc will immediately recognize your deck
-          </p>
+        <div className="p-0" style={{ margin: 0, paddingBottom: '16px' }}>
+          <h2 className="mb-4" style={{...typography.h2, color: 'var(--text-main)'}}>Define a Combo</h2>
           
-          <div className="space-y-4">
+          {/* YDK File Upload Section */}
+          <div className="flex items-center justify-between mb-4">
+            <h3 style={{...typography.h3, color: 'var(--text-main)', margin: 0}}>Upload YDK file</h3>
+            
             {!uploadedYdkFile ? (
               <div>
                 <input
@@ -2219,10 +2275,10 @@ useEffect(() => {
                 />
                 <label
                   htmlFor="ydk-file-input"
-                  className="inline-flex items-center px-6 py-2 cursor-pointer hover:opacity-80"
+                  className="inline-flex items-center px-0 py-2 cursor-pointer hover:opacity-80 transition-opacity"
                   style={{
-                    backgroundColor: 'var(--bg-action-secondary)',
-                    border: `1px solid var(--border-main)`,
+                    backgroundColor: 'transparent',
+                    border: 'none',
                     color: 'var(--text-main)',
                     borderRadius: '999px',
                     ...typography.body
@@ -2232,40 +2288,37 @@ useEffect(() => {
                 </label>
               </div>
             ) : (
-              <div className="flex items-center justify-between p-3 border rounded-lg" 
-                   style={{ 
-                     backgroundColor: 'var(--bg-secondary)', 
-                     border: `1px solid var(--border-main)`,
-                     borderRadius: '16px'
-                   }}>
-                <div>
-                  <div style={{...typography.body, color: 'var(--text-main)', fontWeight: 'medium'}}>
-                    {uploadedYdkFile.name}
-                  </div>
-                  <div style={{...typography.body, color: 'var(--text-secondary)', fontSize: '14px'}}>
-                    {deckSize} Main deck cards loaded ({ydkCards.length} unique)
-                  </div>
-                </div>
-                <button
-                  onClick={handleClearYdkFile}
-                  className="px-3 py-1 hover:opacity-80"
-                  style={{
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    color: 'var(--text-secondary)',
-                    cursor: 'pointer',
-                    fontSize: '16px'
-                  }}
-                >
-                  ✕
-                </button>
-              </div>
+              <button
+                onClick={handleClearYdkFile}
+                className="px-3 py-1 hover:opacity-80 transition-opacity"
+                style={{
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  color: 'var(--text-secondary)',
+                  cursor: 'pointer',
+                  fontSize: '16px'
+                }}
+              >
+                ✕
+              </button>
             )}
           </div>
-        </div>
-
-        <div className="p-6" style={{ marginBottom: 'var(--spacing-lg)' }}>
-          <h2 className="mb-4" style={{...typography.h2, color: 'var(--text-main)'}}>Define a Combo</h2>
+          
+          {uploadedYdkFile && (
+            <div className="mb-4 p-3 border rounded-lg" 
+                 style={{ 
+                   backgroundColor: 'var(--bg-secondary)', 
+                   border: `1px solid var(--border-main)`,
+                   borderRadius: '16px'
+                 }}>
+              <div style={{...typography.body, color: 'var(--text-main)', fontWeight: 'medium'}}>
+                {uploadedYdkFile.name}
+              </div>
+              <div style={{...typography.body, color: 'var(--text-secondary)', fontSize: '14px'}}>
+                {deckSize} Main deck cards loaded ({ydkCards.length} unique)
+              </div>
+            </div>
+          )}
           
           <div className="space-y-4">
             <div>
@@ -2355,10 +2408,10 @@ useEffect(() => {
                   {index > 0 && (
                     <button
                       onClick={() => removeCombo(combo.id)}
-                      className="font-medium hover:opacity-80"
+                      className="font-medium hover:opacity-80 transition-opacity"
                       style={{
                         ...typography.body,
-                        color: 'var(--text-secondary)'
+                        color: 'var(--text-main)'
                       }}
                     >
                       Remove
@@ -2372,29 +2425,25 @@ useEffect(() => {
                 
                 {combo.cards.map((card, cardIndex) => (
                   <div key={cardIndex} className={`${cardIndex > 0 ? 'border-t mt-4 pt-4' : ''}`} style={{ borderColor: 'var(--border-secondary)' }}>
-                    <div className="flex justify-between items-center mb-2">
-                      <h4 style={{...typography.h4, color: 'var(--text-main)'}}>
-                        {cardIndex === 0 ? 'Card 1' : 'Card 2'}
-                      </h4>
-                      {cardIndex === 1 && (
-                        <button
-                          onClick={() => removeSecondCard(combo.id)}
-                          className="font-medium hover:opacity-80"
-                          style={{
-                            ...typography.body,
-                            color: 'var(--text-secondary)'
-                          }}
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </div>
-                    
                     <div className="mb-3">
-                      <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
-                        Card name:
-                        <Tooltip text="Search for any Yu-Gi-Oh card or create a custom placeholder (e.g. 'Any Dragon monster' or 'Any Unchained Card')" />
-                      </label>
+                      <div className="flex items-center justify-between" style={{marginBottom: 'var(--spacing-xs)'}}>
+                        <label className="flex items-center font-medium" style={{...typography.body, color: 'var(--text-main)'}}>
+                          Card name:
+                          <Tooltip text="Search for any Yu-Gi-Oh card or create a custom placeholder (e.g. 'Any Dragon monster' or 'Any Unchained Card')" />
+                        </label>
+                        {cardIndex === 1 && (
+                          <button
+                            onClick={() => removeSecondCard(combo.id)}
+                            className="font-medium hover:opacity-80 transition-opacity"
+                            style={{
+                              ...typography.body,
+                              color: 'var(--text-main)'
+                            }}
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
                       <SearchableCardInput
                         value={card.starterCard}
                         onChange={(value) => updateCombo(combo.id, cardIndex, 'starterCard', value)}
@@ -2712,7 +2761,7 @@ useEffect(() => {
         </div>
 
         {/* Top Decks Section */}
-        <div className="p-6" style={{ marginBottom: 'var(--spacing-lg)' }}>
+        <div className="p-0" style={{ margin: 0, paddingBottom: '16px' }}>
           <h2 style={{ ...typography.h2, marginBottom: '16px' }}>Top Decks</h2>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -2767,7 +2816,7 @@ useEffect(() => {
           </div>
         </div>
 
-        <div className="p-6" style={{ marginBottom: 'var(--spacing-lg)' }}>
+        <div className="p-0" style={{ margin: 0, paddingBottom: '16px' }}>
           <h2 className="mb-4" style={typography.h2}>Calculation Dashboard</h2>
           
           <div className="space-y-2">
@@ -2784,7 +2833,7 @@ useEffect(() => {
                 {combo.cards.map((card, cardIndex) => (
                   <div key={cardIndex} className={cardIndex > 0 ? 'mt-2' : ''}>
                     <p style={typography.body}>
-                      <span className="font-medium">Card {cardIndex + 1}:</span> {card.starterCard || '-'}
+                      <span className="font-medium">{card.starterCard || '-'}</span>
                     </p>
                     <p style={typography.body}>
                       <span className="font-medium">Copies in deck:</span> {card.startersInDeck}
@@ -2803,7 +2852,7 @@ useEffect(() => {
 
           {/* Opening Hand Display */}
           <div className="mt-6">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
               <h3 style={{...typography.h3, color: 'var(--text-main)'}}>Opening hand</h3>
               <button
                 onClick={refreshOpeningHand}
@@ -2812,9 +2861,9 @@ useEffect(() => {
                   isRefreshing ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-80'
                 }`}
                 style={{ 
-                  backgroundColor: 'var(--bg-secondary)', 
+                  backgroundColor: 'transparent', 
                   color: 'var(--text-main)',
-                  border: '1px solid var(--border-main)',
+                  border: 'none',
                   borderRadius: '20px',
                   fontSize: '14px',
                   lineHeight: '20px',
@@ -2870,7 +2919,7 @@ useEffect(() => {
         </div>
 
         {results.individual.length > 0 && generatedTitle && (
-          <div className="p-6" style={{ marginBottom: 'var(--spacing-lg)' }}>
+          <div className="p-0" style={{ margin: 0, paddingBottom: '16px' }}>
             <h2 className="mb-4" style={typography.h2}>Deck list link</h2>
             
             <div className="mb-4">
@@ -2919,7 +2968,7 @@ useEffect(() => {
           </div>
         )}
 
-        <div className="p-6" style={{ marginTop: 'var(--spacing-lg)' }}>
+        <div className="p-0" style={{ marginTop: 'var(--spacing-lg)' }}>
           <h2 className="font-semibold mb-3" style={typography.h2}>Understanding Your Probability Results</h2>
           
           <h3 className="font-semibold mb-2" style={typography.h3}>Why do I see slight variations in percentages?</h3>
