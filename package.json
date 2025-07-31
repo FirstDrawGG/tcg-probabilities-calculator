@@ -8,6 +8,8 @@
     "build": "node scripts/generate-card-database.js && vite build",
     "build:db": "node scripts/generate-card-database.js",
     "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "migrate:images": "node scripts/migrate-card-images.js",
     "migrate:images:optimized": "node scripts/migrate-card-images-optimized.js",
     "migrate:images:final": "node scripts/migrate-card-images-final.js",
@@ -28,7 +30,8 @@
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.4.0",
-    "vite": "^5.0.10"
+    "vite": "^5.0.10",
+    "vitest": "^3.2.4"
   },
   "engines": {
     "node": ">=18.0.0"

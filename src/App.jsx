@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ProbabilityService from './services/ProbabilityService';
+import YdkParser from './services/YdkParser';
 
 // URL encoding/decoding utilities
 const URLService = {
@@ -209,204 +211,6 @@ const CardDatabaseService = {
   }
 };
 
-// Probability calculation service
-const ProbabilityService = {
-  resultCache: new Map(),
-  
-  clearCache: function() {
-    this.resultCache.clear();
-  },
-  
-  getCacheKey: function(combo, deckSize, handSize) {
-    const cardsKey = combo.cards.map(card => 
-      `${card.startersInDeck}-${card.minCopiesInHand}-${card.maxCopiesInHand}`
-    ).join('|');
-    return `${cardsKey}-${deckSize}-${handSize}`;
-  },
-  
-  getCombinedCacheKey: function(combos, deckSize, handSize) {
-    const combosKey = combos.map(combo => 
-      combo.cards.map(card => 
-        `${card.startersInDeck}-${card.minCopiesInHand}-${card.maxCopiesInHand}`
-      ).join('|')
-    ).join('||');
-    return `combined-${combosKey}-${deckSize}-${handSize}`;
-  },
-  
-  monteCarloSimulation: (combo, deckSize, handSize, simulations = 100000) => {
-    const cacheKey = ProbabilityService.getCacheKey(combo, deckSize, handSize);
-    
-    if (ProbabilityService.resultCache.has(cacheKey)) {
-      return ProbabilityService.resultCache.get(cacheKey);
-    }
-    
-    let successes = 0;
-    
-    for (let i = 0; i < simulations; i++) {
-      const deck = [];
-      let currentPosition = 0;
-      
-      combo.cards.forEach((card, cardIndex) => {
-        for (let j = 0; j < card.startersInDeck; j++) {
-          deck.push(cardIndex);
-        }
-        currentPosition += card.startersInDeck;
-      });
-      
-      for (let j = currentPosition; j < deckSize; j++) {
-        deck.push(-1);
-      }
-      
-      for (let j = deck.length - 1; j > 0; j--) {
-        const k = Math.floor(Math.random() * (j + 1));
-        [deck[j], deck[k]] = [deck[k], deck[j]];
-      }
-      
-      const cardCounts = new Array(combo.cards.length).fill(0);
-      for (let j = 0; j < handSize; j++) {
-        if (deck[j] >= 0) {
-          cardCounts[deck[j]]++;
-        }
-      }
-      
-      let allCardsCriteriaMet = true;
-      for (let cardIndex = 0; cardIndex < combo.cards.length; cardIndex++) {
-        const card = combo.cards[cardIndex];
-        const drawnCount = cardCounts[cardIndex];
-        
-        if (drawnCount < card.minCopiesInHand || drawnCount > card.maxCopiesInHand) {
-          allCardsCriteriaMet = false;
-          break;
-        }
-      }
-      
-      if (allCardsCriteriaMet) {
-        successes++;
-      }
-    }
-    
-    const probability = (successes / simulations) * 100;
-    ProbabilityService.resultCache.set(cacheKey, probability);
-    
-    return probability;
-  },
-  
-  combinedMonteCarloSimulation: (combos, deckSize, handSize, simulations = 100000) => {
-    const cacheKey = ProbabilityService.getCombinedCacheKey(combos, deckSize, handSize);
-    
-    if (ProbabilityService.resultCache.has(cacheKey)) {
-      return ProbabilityService.resultCache.get(cacheKey);
-    }
-    
-    let successes = 0;
-    
-    // Create a unified card mapping for all combos
-    const allUniqueCards = new Map();
-    let cardIdCounter = 0;
-    
-    combos.forEach(combo => {
-      combo.cards.forEach(card => {
-        const cardKey = `${card.starterCard}-${card.cardId || 'custom'}`;
-        if (!allUniqueCards.has(cardKey)) {
-          allUniqueCards.set(cardKey, {
-            id: cardIdCounter++,
-            name: card.starterCard,
-            totalInDeck: 0
-          });
-        }
-        allUniqueCards.get(cardKey).totalInDeck = Math.max(
-          allUniqueCards.get(cardKey).totalInDeck,
-          card.startersInDeck
-        );
-      });
-    });
-    
-    for (let i = 0; i < simulations; i++) {
-      const deck = [];
-      
-      // Build deck with all unique cards
-      allUniqueCards.forEach((cardInfo, cardKey) => {
-        for (let j = 0; j < cardInfo.totalInDeck; j++) {
-          deck.push(cardInfo.id);
-        }
-      });
-      
-      // Fill remaining deck slots
-      for (let j = deck.length; j < deckSize; j++) {
-        deck.push(-1);
-      }
-      
-      // Shuffle deck
-      for (let j = deck.length - 1; j > 0; j--) {
-        const k = Math.floor(Math.random() * (j + 1));
-        [deck[j], deck[k]] = [deck[k], deck[j]];
-      }
-      
-      // Count cards in hand
-      const handCounts = new Map();
-      allUniqueCards.forEach((cardInfo) => {
-        handCounts.set(cardInfo.id, 0);
-      });
-      
-      for (let j = 0; j < handSize; j++) {
-        if (deck[j] >= 0) {
-          handCounts.set(deck[j], (handCounts.get(deck[j]) || 0) + 1);
-        }
-      }
-      
-      // Check if ANY combo succeeds
-      let anyComboSucceeds = false;
-      
-      for (const combo of combos) {
-        let comboSucceeds = true;
-        
-        for (const card of combo.cards) {
-          const cardKey = `${card.starterCard}-${card.cardId || 'custom'}`;
-          const cardInfo = allUniqueCards.get(cardKey);
-          const drawnCount = handCounts.get(cardInfo.id) || 0;
-          
-          if (drawnCount < card.minCopiesInHand || drawnCount > card.maxCopiesInHand) {
-            comboSucceeds = false;
-            break;
-          }
-        }
-        
-        if (comboSucceeds) {
-          anyComboSucceeds = true;
-          break;
-        }
-      }
-      
-      if (anyComboSucceeds) {
-        successes++;
-      }
-    }
-    
-    const probability = (successes / simulations) * 100;
-    ProbabilityService.resultCache.set(cacheKey, probability);
-    
-    return probability;
-  },
-  
-  calculateMultipleCombos: (combos, deckSize, handSize) => {
-    const individualResults = combos.map(combo => ({
-      id: combo.id,
-      probability: ProbabilityService.monteCarloSimulation(combo, deckSize, handSize),
-      cards: combo.cards
-    }));
-    
-    // Calculate combined probability only if there are multiple combos
-    let combinedProbability = null;
-    if (combos.length > 1) {
-      combinedProbability = ProbabilityService.combinedMonteCarloSimulation(combos, deckSize, handSize);
-    }
-    
-    return {
-      individual: individualResults,
-      combined: combinedProbability
-    };
-  }
-};
 
 // Opening hand generation service
 const OpeningHandService = {
@@ -506,100 +310,6 @@ const OpeningHandService = {
   }
 };
 
-// YDK file parsing service
-const YdkParsingService = {
-  async loadStaticCardDatabase() {
-    try {
-      const response = await fetch('/cardDatabase.json');
-      if (!response.ok) {
-        throw new Error(`Failed to load card database: ${response.status}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Failed to load static card database:', error);
-      return {};
-    }
-  },
-
-  parseYdkFile(fileContent, staticCardDatabase) {
-    try {
-      const lines = fileContent.split('\n').map(line => line.trim()).filter(line => line);
-      const result = {
-        cards: [],
-        unmatchedIds: [],
-        extraDeckCards: [], // Track Extra Deck cards separately
-        cardCounts: {} // Track count of each card by name
-      };
-
-      let currentSection = null;
-      
-      for (const line of lines) {
-        if (line.startsWith('#')) continue; // Skip comments
-        if (line === '!side') break; // Stop at side deck
-        
-        if (line === '#main') {
-          currentSection = 'main';
-          continue;
-        }
-        if (line === '#extra') {
-          currentSection = 'extra';
-          continue;
-        }
-        
-        // Parse card ID
-        const cardId = line.trim();
-        if (!cardId || isNaN(cardId)) continue;
-        
-        const cardData = staticCardDatabase[cardId];
-        if (cardData) {
-          if (cardData.isExtraDeck) {
-            // Track Extra Deck cards but don't include in main results
-            result.extraDeckCards.push({
-              id: cardId,
-              name: cardData.name,
-              isExtraDeck: true
-            });
-          } else {
-            // Include main deck cards
-            result.cards.push({
-              id: cardId,
-              name: cardData.name,
-              isExtraDeck: cardData.isExtraDeck
-            });
-            
-            // Track count of each card by name
-            if (!result.cardCounts[cardData.name]) {
-              result.cardCounts[cardData.name] = 0;
-            }
-            result.cardCounts[cardData.name]++;
-          }
-        } else {
-          // Only count as unmatched if card is not found in database at all
-          result.unmatchedIds.push(cardId);
-        }
-      }
-
-      return result;
-    } catch (error) {
-      console.error('Error parsing YDK file:', error);
-      throw new Error('Failed to parse YDK file');
-    }
-  },
-
-  validateYdkFile(file) {
-    // Check file size (100KB limit)
-    if (file.size > 100 * 1024) {
-      throw new Error('File size exceeds 100KB limit');
-    }
-
-    // Check file extension
-    if (!file.name.toLowerCase().endsWith('.ydk')) {
-      throw new Error('Only YDK files are supported');
-    }
-
-    return true;
-  }
-};
 
 // Title generation service
 const TitleGeneratorService = {
@@ -1582,7 +1292,7 @@ export default function TCGCalculator() {
         // Restore YDK file if present
         if (urlData.ydkFile && staticCardDatabase && Object.keys(staticCardDatabase).length > 0) {
           try {
-            const parseResult = YdkParsingService.parseYdkFile(urlData.ydkFile.content, staticCardDatabase);
+            const parseResult = YdkParser.parseYdkFile(urlData.ydkFile.content, staticCardDatabase);
             
             // Get unique card names (remove duplicates)
             const uniqueCards = [];
@@ -1666,7 +1376,7 @@ export default function TCGCalculator() {
   // Load static card database for YDK parsing
   useEffect(() => {
     const loadStaticDatabase = async () => {
-      const database = await YdkParsingService.loadStaticCardDatabase();
+      const database = await YdkParser.loadStaticCardDatabase();
       setStaticCardDatabase(database);
     };
     
@@ -1679,10 +1389,10 @@ export default function TCGCalculator() {
     if (!file) return;
 
     try {
-      YdkParsingService.validateYdkFile(file);
+      YdkParser.validateYdkFile(file);
       
       const fileContent = await readFileAsText(file);
-      const parseResult = YdkParsingService.parseYdkFile(fileContent, staticCardDatabase);
+      const parseResult = YdkParser.parseYdkFile(fileContent, staticCardDatabase);
       
       // Get unique card names (remove duplicates) for search dropdown
       const uniqueCards = [];
@@ -1737,7 +1447,7 @@ export default function TCGCalculator() {
     }
 
     try {
-      const parseResult = YdkParsingService.parseYdkFile(content, staticCardDatabase);
+      const parseResult = YdkParser.parseYdkFile(content, staticCardDatabase);
       
       if (parseResult.cards.length === 0) {
         alert("No main deck found in pasted text");
