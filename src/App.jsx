@@ -1498,6 +1498,8 @@ export default function TCGCalculator() {
   const [ydkCards, setYdkCards] = useState([]);
   const [ydkCardCounts, setYdkCardCounts] = useState({});
   const [staticCardDatabase, setStaticCardDatabase] = useState({});
+  const [showClipboardField, setShowClipboardField] = useState(false);
+  const [clipboardContent, setClipboardContent] = useState('');
 
   // Top Decks data
   const topDecks = [
@@ -1723,6 +1725,64 @@ export default function TCGCalculator() {
     setUploadedYdkFile(null);
     setYdkCards([]);
     setYdkCardCounts({});
+  };
+
+  const handleFromClipboard = () => {
+    setShowClipboardField(true);
+  };
+
+  const processClipboardContent = async (content) => {
+    if (!content.trim()) {
+      return;
+    }
+
+    try {
+      const parseResult = YdkParsingService.parseYdkFile(content, staticCardDatabase);
+      
+      if (parseResult.cards.length === 0) {
+        alert("No main deck found in pasted text");
+        return;
+      }
+
+      const uniqueCards = [];
+      const seenNames = new Set();
+      
+      parseResult.cards.forEach(card => {
+        if (!seenNames.has(card.name)) {
+          seenNames.add(card.name);
+          uniqueCards.push({
+            name: card.name,
+            id: card.id,
+            isCustom: false
+          });
+        }
+      });
+      
+      const mainDeckCardCount = parseResult.cards.length;
+      setDeckSize(mainDeckCardCount);
+      
+      setUploadedYdkFile({
+        name: "Clipboard YDK",
+        content: content
+      });
+      setYdkCards(uniqueCards);
+      setYdkCardCounts(parseResult.cardCounts);
+      setShowClipboardField(false);
+      
+      // Don't show unmatched cards alert for clipboard paste - silent processing
+      
+    } catch (error) {
+      console.error('YDK clipboard error:', error);
+      alert("No main deck found in pasted text");
+    }
+  };
+
+  const handleClearClipboard = () => {
+    setUploadedYdkFile(null);
+    setYdkCards([]);
+    setYdkCardCounts({});
+    setClipboardContent('');
+    setShowClipboardField(false);
   };
 
   const readFileAsText = (file) => {
@@ -2261,11 +2321,32 @@ useEffect(() => {
           <h2 className="mb-4" style={{...typography.h2, color: 'var(--text-main)'}}>Define a Combo</h2>
           
           {/* YDK File Upload Section */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center mb-4" style={{ gap: '24px' }}>
             <h3 style={{...typography.h3, color: 'var(--text-main)', margin: 0}}>Upload YDK file</h3>
             
-            {!uploadedYdkFile ? (
-              <div>
+            {!uploadedYdkFile && (
+              <div className="flex items-center" style={{ gap: '8px' }}>
+                <button
+                  onClick={handleFromClipboard}
+                  className="inline-flex items-center px-0 py-2 cursor-pointer hover:opacity-80 transition-opacity"
+                  style={{
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    color: 'var(--text-main)',
+                    borderRadius: '999px',
+                    ...typography.body
+                  }}
+                >
+                  From clipboard
+                </button>
+                <div
+                  style={{
+                    width: '1px',
+                    height: '16px',
+                    backgroundColor: 'var(--text-secondary)',
+                    opacity: 0.3
+                  }}
+                />
                 <input
                   type="file"
                   accept=".ydk"
@@ -2287,22 +2368,70 @@ useEffect(() => {
                   Upload
                 </label>
               </div>
-            ) : (
+            )}
+            
+            {uploadedYdkFile && uploadedYdkFile.name === "Clipboard YDK" && (
               <button
-                onClick={handleClearYdkFile}
-                className="px-3 py-1 hover:opacity-80 transition-opacity"
+                onClick={handleClearClipboard}
+                className="inline-flex items-center px-0 py-2 cursor-pointer hover:opacity-80 transition-opacity"
                 style={{
                   backgroundColor: 'transparent',
                   border: 'none',
                   color: 'var(--text-secondary)',
-                  cursor: 'pointer',
-                  fontSize: '16px'
+                  borderRadius: '999px',
+                  ...typography.body
                 }}
               >
-                ✕
+                Clear YDK
               </button>
             )}
           </div>
+          
+          {showClipboardField && (
+            <div className="mb-4">
+              <textarea
+                value={clipboardContent}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setClipboardContent(value);
+                  
+                  // Debounce the processing to avoid processing every keystroke
+                  if (window.clipboardProcessTimeout) {
+                    clearTimeout(window.clipboardProcessTimeout);
+                  }
+                  
+                  window.clipboardProcessTimeout = setTimeout(() => {
+                    if (value.trim()) {
+                      processClipboardContent(value);
+                    }
+                  }, 1000); // Wait 1 second after user stops typing
+                }}
+                onPaste={(e) => {
+                  // Process immediately on paste
+                  setTimeout(() => {
+                    const textarea = e.target;
+                    const value = textarea.value;
+                    if (value.trim()) {
+                      processClipboardContent(value);
+                    }
+                  }, 100); // Small delay to ensure paste content is set
+                }}
+                placeholder="Paste your YDK file content here..."
+                className="w-full p-3 border rounded-lg"
+                style={{
+                  backgroundColor: 'var(--bg-input)',
+                  border: `1px solid var(--border-main)`,
+                  borderRadius: '16px',
+                  color: 'var(--text-main)',
+                  fontFamily: 'Geist Regular, sans-serif',
+                  fontSize: '14px',
+                  lineHeight: '20px',
+                  resize: 'vertical',
+                  minHeight: '80px'
+                }}
+              />
+            </div>
+          )}
           
           {uploadedYdkFile && (
             <div className="mb-4 p-3 border rounded-lg" 
