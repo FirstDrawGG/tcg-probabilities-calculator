@@ -3331,6 +3331,10 @@
     "name": "Appliancer Breakerbuncle",
     "isExtraDeck": false
   },
+  "5848934": {
+    "name": "Serene Psychic Sorceress",
+    "isExtraDeck": true
+  },
   "5851097": {
     "name": "Vanity's Emptiness",
     "isExtraDeck": false
@@ -3722,6 +3726,10 @@
   "6556909": {
     "name": "Red-Eyes Soul",
     "isExtraDeck": false
+  },
+  "6560411": {
+    "name": "Bramble Rose Dragon",
+    "isExtraDeck": true
   },
   "6568731": {
     "name": "Glacial Beast Iceberg Narwhal",
@@ -4127,6 +4135,10 @@
     "name": "Dracotail Mululu",
     "isExtraDeck": false
   },
+  "7382007": {
+    "name": "Gouki Sheik Ogre",
+    "isExtraDeck": true
+  },
   "7391448": {
     "name": "Goyo Guardian",
     "isExtraDeck": true
@@ -4353,6 +4365,10 @@
   },
   "7778726": {
     "name": "Hip Hoshiningen",
+    "isExtraDeck": true
+  },
+  "7782069": {
+    "name": "Gouki The Tyrant Ogre",
     "isExtraDeck": true
   },
   "7799906": {
@@ -4914,6 +4930,10 @@
   "8802510": {
     "name": "PSY-Framelord Lambda",
     "isExtraDeck": true
+  },
+  "8805661": {
+    "name": "Megalith Phuloch",
+    "isExtraDeck": false
   },
   "8806072": {
     "name": "Combo Fighter",
@@ -6167,6 +6187,10 @@
     "name": "Barrier Statue of the Torrent",
     "isExtraDeck": false
   },
+  "10966439": {
+    "name": "Marshmao☆Yummy",
+    "isExtraDeck": false
+  },
   "10971759": {
     "name": "Bug Emergency",
     "isExtraDeck": false
@@ -6565,6 +6589,10 @@
   },
   "11685347": {
     "name": "Blast Asmodian",
+    "isExtraDeck": false
+  },
+  "11688916": {
+    "name": "Solfachord Primoria",
     "isExtraDeck": false
   },
   "11699941": {
@@ -7157,6 +7185,10 @@
   },
   "12766474": {
     "name": "Duke Shade, the Sinister Shadow Lord",
+    "isExtraDeck": false
+  },
+  "12800564": {
+    "name": "Master Peace, the True Dracoverlord",
     "isExtraDeck": false
   },
   "12800777": {
@@ -9299,6 +9331,10 @@
     "name": "Gishki Avance",
     "isExtraDeck": false
   },
+  "16693934": {
+    "name": "Quadogmatika Beast",
+    "isExtraDeck": false
+  },
   "16699558": {
     "name": "Indigo-Eyes Silver Dragon",
     "isExtraDeck": true
@@ -9397,6 +9433,10 @@
   },
   "16909657": {
     "name": "Reptilianne Scylla",
+    "isExtraDeck": false
+  },
+  "16922142": {
+    "name": "Magnifistorming Crothea",
     "isExtraDeck": false
   },
   "16923472": {
@@ -9873,6 +9913,10 @@
   },
   "17706537": {
     "name": "Fossil Tusker",
+    "isExtraDeck": false
+  },
+  "17719582": {
+    "name": "Artmage Peripeteia -Turmoil-",
     "isExtraDeck": false
   },
   "17720747": {
@@ -10971,6 +11015,10 @@
     "name": "Barrier Statue of the Drought",
     "isExtraDeck": false
   },
+  "19743887": {
+    "name": "VARefar the Kick Deity",
+    "isExtraDeck": false
+  },
   "19747827": {
     "name": "Red-Eyes Black Dragon Sword",
     "isExtraDeck": true
@@ -11379,6 +11427,10 @@
     "name": "Concentrating Current",
     "isExtraDeck": false
   },
+  "20508881": {
+    "name": "Magnifistorming Sight Trance",
+    "isExtraDeck": false
+  },
   "20513882": {
     "name": "Painful Escape",
     "isExtraDeck": false
@@ -11490,6 +11542,10 @@
   "20714553": {
     "name": "Endymion, the Crescent of Magistus",
     "isExtraDeck": true
+  },
+  "20715411": {
+    "name": "D/D/D Zero Demise King Zero Machinex",
+    "isExtraDeck": false
   },
   "20720928": {
     "name": "Metaphys Factor",
@@ -12065,6 +12121,10 @@
   },
   "21715135": {
     "name": "Gagaga Academy Emergency Network",
+    "isExtraDeck": false
+  },
+  "21720439": {
+    "name": "Artmage Movement -Lineage-",
     "isExtraDeck": false
   },
   "21723081": {
@@ -15363,6 +15423,10 @@
     "name": "Uradora of Fate",
     "isExtraDeck": false
   },
+  "27755794": {
+    "name": "Magnifistorming Megala",
+    "isExtraDeck": false
+  },
   "27756115": {
     "name": "Superheavy Samurai Soulbeads",
     "isExtraDeck": false
@@ -15823,6 +15887,10 @@
     "name": "Super Solar Nutrient",
     "isExtraDeck": false
   },
+  "28531163": {
+    "name": "Apocaries",
+    "isExtraDeck": false
+  },
   "28534130": {
     "name": "Salamangreat Burning Shell",
     "isExtraDeck": false
@@ -15909,6 +15977,10 @@
   },
   "28651380": {
     "name": "Raviel, Lord of Phantasms - Shimmering Scraper",
+    "isExtraDeck": false
+  },
+  "28653611": {
+    "name": "Infernal Punisher",
     "isExtraDeck": false
   },
   "28654932": {
@@ -16009,6 +16081,10 @@
   },
   "28877100": {
     "name": "Defensive Tactics",
+    "isExtraDeck": false
+  },
+  "28877382": {
+    "name": "Doom-Z Five - Amalthe",
     "isExtraDeck": false
   },
   "28877602": {
@@ -16118,6 +16194,10 @@
   "29095552": {
     "name": "Masked HERO Acid",
     "isExtraDeck": true
+  },
+  "29099860": {
+    "name": "Gouki Mashin Suprex",
+    "isExtraDeck": false
   },
   "29107423": {
     "name": "Ruddy Rose Witch",
@@ -16537,6 +16617,10 @@
   },
   "29867611": {
     "name": "Amaze Attraction Majestic Merry-Go-Round",
+    "isExtraDeck": false
+  },
+  "29876299": {
+    "name": "Megalith Anastasis",
     "isExtraDeck": false
   },
   "29876529": {
@@ -17191,6 +17275,10 @@
     "name": "Appliancer Reuse",
     "isExtraDeck": false
   },
+  "30998403": {
+    "name": "D/D/D Sky King Zeus Ragnarok",
+    "isExtraDeck": true
+  },
   "31000575": {
     "name": "Conscription",
     "isExtraDeck": false
@@ -17202,6 +17290,10 @@
   "31006879": {
     "name": "On Your Mark, Get Set, DUEL!",
     "isExtraDeck": false
+  },
+  "31010081": {
+    "name": "Doom-Z Break Diactorus",
+    "isExtraDeck": true
   },
   "31034919": {
     "name": "Mad Reloader",
@@ -17883,6 +17975,10 @@
     "name": "Prediction Princess Coinorma",
     "isExtraDeck": false
   },
+  "32232538": {
+    "name": "D/D/D Wisdom King Solomon",
+    "isExtraDeck": true
+  },
   "32233746": {
     "name": "Vanquishing Light",
     "isExtraDeck": false
@@ -18005,6 +18101,10 @@
   },
   "32441317": {
     "name": "De-Synchro",
+    "isExtraDeck": false
+  },
+  "32442017": {
+    "name": "Doom-Z Raider",
     "isExtraDeck": false
   },
   "32446630": {
@@ -18149,6 +18249,10 @@
   },
   "32663969": {
     "name": "Domino Effect",
+    "isExtraDeck": false
+  },
+  "32665564": {
+    "name": "Dark Contract with the Zero King",
     "isExtraDeck": false
   },
   "32671443": {
@@ -18437,6 +18541,10 @@
   },
   "33158448": {
     "name": "F.A. Dawn Dragster",
+    "isExtraDeck": true
+  },
+  "33171768": {
+    "name": "Axon Kicker Oracle",
     "isExtraDeck": true
   },
   "33178416": {
@@ -18779,6 +18887,10 @@
     "name": "Teardrop the Rikka Queen",
     "isExtraDeck": true
   },
+  "33781156": {
+    "name": "Tri-Brigade Arms Mouser",
+    "isExtraDeck": true
+  },
   "33782437": {
     "name": "One Day of Peace",
     "isExtraDeck": false
@@ -18882,6 +18994,10 @@
   "33951077": {
     "name": "Super War-Lion",
     "isExtraDeck": false
+  },
+  "33955120": {
+    "name": "Hate Rose Witch",
+    "isExtraDeck": true
   },
   "33964637": {
     "name": "Secret Six Samurai - Rihan",
@@ -20765,6 +20881,10 @@
   },
   "37300735": {
     "name": "T.G. Jet Falcon",
+    "isExtraDeck": false
+  },
+  "37301660": {
+    "name": "WINDS OF VICTORY",
     "isExtraDeck": false
   },
   "37310367": {
@@ -23455,6 +23575,10 @@
     "name": "Reptilianne Nyami",
     "isExtraDeck": false
   },
+  "42091632": {
+    "name": "Dominus Spiral",
+    "isExtraDeck": false
+  },
   "42097666": {
     "name": "Spirit with Eyes of Blue",
     "isExtraDeck": true
@@ -24679,6 +24803,10 @@
     "name": "Masaki the Legendary Swordsman",
     "isExtraDeck": false
   },
+  "44293356": {
+    "name": "Megalith Nortra Phulra",
+    "isExtraDeck": false
+  },
   "44297127": {
     "name": "Miracle Rupture",
     "isExtraDeck": false
@@ -25098,6 +25226,10 @@
   "45014450": {
     "name": "Odd-Eyes Venom Dragon",
     "isExtraDeck": true
+  },
+  "45016904": {
+    "name": "Taotao the Chanter",
+    "isExtraDeck": false
   },
   "45023678": {
     "name": "Lightning Punisher",
@@ -25731,6 +25863,10 @@
     "name": "Barrier Statue of the Heavens",
     "isExtraDeck": false
   },
+  "46148485": {
+    "name": "Chakravartin Sphinx",
+    "isExtraDeck": false
+  },
   "46159582": {
     "name": "Gishki Aquamirror",
     "isExtraDeck": false
@@ -26235,6 +26371,10 @@
     "name": "Urubonus, the Avatar of Malice",
     "isExtraDeck": false
   },
+  "47082621": {
+    "name": "Regenesis Demiurge",
+    "isExtraDeck": false
+  },
   "47084486": {
     "name": "Vanity's Fiend",
     "isExtraDeck": false
@@ -26698,6 +26838,10 @@
   "47946130": {
     "name": "Gouki The Giant Ogre",
     "isExtraDeck": true
+  },
+  "47960073": {
+    "name": "K9-04 Noroi",
+    "isExtraDeck": false
   },
   "47961342": {
     "name": "Switch Point",
@@ -29847,6 +29991,10 @@
     "name": "Blaster, Dragon Ruler of Infernos",
     "isExtraDeck": false
   },
+  "53813120": {
+    "name": "Magnifistorming Sovereign Tyranny",
+    "isExtraDeck": false
+  },
   "53819028": {
     "name": "Predaplant Sarraceniant",
     "isExtraDeck": false
@@ -29917,6 +30065,10 @@
   },
   "53927679": {
     "name": "Fire Trooper",
+    "isExtraDeck": false
+  },
+  "53927851": {
+    "name": "Magnifistorm Vortex Beauty Valrune",
     "isExtraDeck": false
   },
   "53932291": {
@@ -30019,6 +30171,10 @@
     "name": "Flower Cardian Willow",
     "isExtraDeck": false
   },
+  "54143349": {
+    "name": "Magnifistorming Erdam",
+    "isExtraDeck": false
+  },
   "54149433": {
     "name": "Fire King Avatar Garunix",
     "isExtraDeck": false
@@ -30077,6 +30233,10 @@
   },
   "54261514": {
     "name": "Final Bringer of the End Times",
+    "isExtraDeck": false
+  },
+  "54265980": {
+    "name": "Doom-Z Seven - Elara",
     "isExtraDeck": false
   },
   "54266211": {
@@ -30499,6 +30659,10 @@
     "name": "Influence Dragon",
     "isExtraDeck": false
   },
+  "54936778": {
+    "name": "Dark Contract with the Different Dimension",
+    "isExtraDeck": false
+  },
   "54941203": {
     "name": "Tuning Magician",
     "isExtraDeck": false
@@ -30579,6 +30743,10 @@
     "name": "Witchcrafter Masterpiece",
     "isExtraDeck": false
   },
+  "55088578": {
+    "name": "Onomatokage",
+    "isExtraDeck": false
+  },
   "55099248": {
     "name": "Naturia Strawberry",
     "isExtraDeck": false
@@ -30621,6 +30789,10 @@
   },
   "55154344": {
     "name": "Ryu-Ge Realm - Wyrm Winds",
+    "isExtraDeck": false
+  },
+  "55158350": {
+    "name": "Fusion Recruitment",
     "isExtraDeck": false
   },
   "55168550": {
@@ -32325,6 +32497,10 @@
   },
   "58203736": {
     "name": "Sea Stealth II",
+    "isExtraDeck": false
+  },
+  "58205203": {
+    "name": "Mariamne Paradox, the True Dracophoenix Knight",
     "isExtraDeck": false
   },
   "58206034": {
@@ -36543,12 +36719,20 @@
     "name": "Brotherhood of the Fire Fist - Rhino",
     "isExtraDeck": false
   },
+  "66092596": {
+    "name": "Draco Stand-Off",
+    "isExtraDeck": false
+  },
   "66094973": {
     "name": "Transforming Sphere",
     "isExtraDeck": false
   },
   "66100045": {
     "name": "Transmigration Break",
+    "isExtraDeck": false
+  },
+  "66100116": {
+    "name": "Violence Witch",
     "isExtraDeck": false
   },
   "66102515": {
@@ -37107,6 +37291,10 @@
     "name": "Ghost of a Grudge",
     "isExtraDeck": false
   },
+  "67115133": {
+    "name": "Magnifistorming Stanza Tribute",
+    "isExtraDeck": false
+  },
   "67120578": {
     "name": "Gagaga Head",
     "isExtraDeck": false
@@ -37235,6 +37423,10 @@
     "name": "Darklord Nurse Reficule",
     "isExtraDeck": false
   },
+  "67322708": {
+    "name": "D/D Lance Soldier",
+    "isExtraDeck": false
+  },
   "67328336": {
     "name": "Meklord Fortress",
     "isExtraDeck": false
@@ -37326,6 +37518,10 @@
   "67511500": {
     "name": "Lady of D.",
     "isExtraDeck": false
+  },
+  "67515699": {
+    "name": "K9-666 \"Jacks\"",
+    "isExtraDeck": true
   },
   "67517351": {
     "name": "Hyper Rank-Up-Magic Utopiforce",
@@ -37722,6 +37918,10 @@
   "68226653": {
     "name": "Flamvell Dragnov",
     "isExtraDeck": false
+  },
+  "68231287": {
+    "name": "Jupiter the Power Patron of Destruction",
+    "isExtraDeck": true
   },
   "68246154": {
     "name": "Magical Musketeer Doc",
@@ -38127,6 +38327,10 @@
     "name": "Crashbug Road",
     "isExtraDeck": false
   },
+  "69053263": {
+    "name": "Black Rose Garden",
+    "isExtraDeck": false
+  },
   "69058960": {
     "name": "Number 13: Embodiment of Crime",
     "isExtraDeck": true
@@ -38218,6 +38422,10 @@
   "69176131": {
     "name": "Space Cyclone",
     "isExtraDeck": false
+  },
+  "69176851": {
+    "name": "Miasma Necromancer",
+    "isExtraDeck": true
   },
   "69181753": {
     "name": "Performapal Kuribohble",
@@ -38354,6 +38562,10 @@
   "69452756": {
     "name": "Unending Nightmare",
     "isExtraDeck": false
+  },
+  "69453825": {
+    "name": "Gouki Dragon Ogre",
+    "isExtraDeck": true
   },
   "69455834": {
     "name": "King of Yamimakai",
@@ -38971,6 +39183,10 @@
     "name": "High Rate Draw",
     "isExtraDeck": false
   },
+  "70576413": {
+    "name": "D/D/D Founder King Clovis",
+    "isExtraDeck": true
+  },
   "70583986": {
     "name": "Dewloren, Tiger King of the Ice Barrier",
     "isExtraDeck": true
@@ -39403,6 +39619,10 @@
     "name": "Man Beast of Ares",
     "isExtraDeck": false
   },
+  "71398055": {
+    "name": "D/D/D/D Great Dimension King Arc Crisis",
+    "isExtraDeck": true
+  },
   "71406430": {
     "name": "Libromancer Doombroker",
     "isExtraDeck": false
@@ -39413,6 +39633,10 @@
   },
   "71408082": {
     "name": "Paladin of Dark Dragon",
+    "isExtraDeck": false
+  },
+  "71410542": {
+    "name": "WAKE CUP! Macchi",
     "isExtraDeck": false
   },
   "71411377": {
@@ -40079,6 +40303,10 @@
     "name": "Energy Bravery",
     "isExtraDeck": false
   },
+  "72632190": {
+    "name": "Tri-Headed Behemoth",
+    "isExtraDeck": false
+  },
   "72634965": {
     "name": "Vanity's Ruler",
     "isExtraDeck": false
@@ -40466,6 +40694,10 @@
   "73347079": {
     "name": "Raidraptor - Force Strix",
     "isExtraDeck": true
+  },
+  "73355772": {
+    "name": "Dogmatika Fleurdelis, the Thunderous",
+    "isExtraDeck": false
   },
   "73355951": {
     "name": "Alpha Summon",
@@ -44039,6 +44271,10 @@
     "name": "D.D. Esper Star Sparrow",
     "isExtraDeck": false
   },
+  "80208225": {
+    "name": "Dracotail Sting",
+    "isExtraDeck": false
+  },
   "80208323": {
     "name": "Interplanetarypurplythorny Beast",
     "isExtraDeck": false
@@ -44097,6 +44333,10 @@
   },
   "80316585": {
     "name": "Cyber Harpie Lady",
+    "isExtraDeck": false
+  },
+  "80320877": {
+    "name": "Doom-Z Destruction",
     "isExtraDeck": false
   },
   "80321197": {
@@ -44181,6 +44421,10 @@
   },
   "80534031": {
     "name": "Virtue Stream",
+    "isExtraDeck": false
+  },
+  "80538047": {
+    "name": "Magnifistorming Suen",
     "isExtraDeck": false
   },
   "80538728": {
@@ -44551,6 +44795,10 @@
     "name": "Lair Wire",
     "isExtraDeck": false
   },
+  "81143465": {
+    "name": "Tragic Twin Threads",
+    "isExtraDeck": false
+  },
   "81146288": {
     "name": "Rosaria, the Stately Fallen Angel",
     "isExtraDeck": false
@@ -44829,6 +45077,10 @@
   },
   "81618817": {
     "name": "Lord of Zemia",
+    "isExtraDeck": false
+  },
+  "81650695": {
+    "name": "Power Patron Machine Doom-Z",
     "isExtraDeck": false
   },
   "81661951": {
@@ -46371,6 +46623,10 @@
     "name": "Ghostrick Yeti",
     "isExtraDeck": false
   },
+  "84477320": {
+    "name": "Dracotail Phrixl",
+    "isExtraDeck": false
+  },
   "84478195": {
     "name": "Barrier Statue of the Abyss",
     "isExtraDeck": false
@@ -46498,6 +46754,10 @@
   "84687358": {
     "name": "Mirror Force Dragon",
     "isExtraDeck": true
+  },
+  "84693918": {
+    "name": "Solfachord Solfeggia",
+    "isExtraDeck": false
   },
   "84696266": {
     "name": "Sonic Duck",
@@ -46833,6 +47093,10 @@
   },
   "85314178": {
     "name": "Cosmo Queen the Queen of Prayers",
+    "isExtraDeck": false
+  },
+  "85315450": {
+    "name": "Magnifistorm Great Pyre Phonix",
     "isExtraDeck": false
   },
   "85325774": {
@@ -48707,6 +48971,10 @@
     "name": "Detonate",
     "isExtraDeck": false
   },
+  "89086647": {
+    "name": "Miss Okiku's Dishrithmetic",
+    "isExtraDeck": false
+  },
   "89091579": {
     "name": "Basic Insect",
     "isExtraDeck": false
@@ -50371,6 +50639,10 @@
     "name": "Humid Winds",
     "isExtraDeck": false
   },
+  "92269002": {
+    "name": "Tri-Brigade Hammer",
+    "isExtraDeck": false
+  },
   "92300891": {
     "name": "Karakuri Barrel mdl 96 \"Shinkuro\"",
     "isExtraDeck": false
@@ -50471,6 +50743,10 @@
     "name": "Limiter Overload",
     "isExtraDeck": false
   },
+  "92472273": {
+    "name": "Doom-Z Zero - Drastia",
+    "isExtraDeck": false
+  },
   "92481084": {
     "name": "Temple of the Mind's Eye",
     "isExtraDeck": false
@@ -50537,6 +50813,10 @@
   },
   "92595643": {
     "name": "Fine",
+    "isExtraDeck": false
+  },
+  "92595825": {
+    "name": "Twilight Rose Black Knight",
     "isExtraDeck": false
   },
   "92597893": {
@@ -50947,6 +51227,10 @@
     "name": "Kozmoll Wickedwitch",
     "isExtraDeck": false
   },
+  "93317313": {
+    "name": "D/D Defense Soldier",
+    "isExtraDeck": false
+  },
   "93332803": {
     "name": "Dogoran, the Mad Flame Kaiju",
     "isExtraDeck": false
@@ -51045,6 +51329,10 @@
   },
   "93473606": {
     "name": "Amaze Attraction Wonder Wheel",
+    "isExtraDeck": false
+  },
+  "93481594": {
+    "name": "Solfachord Happiness",
     "isExtraDeck": false
   },
   "93483212": {
@@ -51375,6 +51663,10 @@
     "name": "Bujingi Ophidian",
     "isExtraDeck": false
   },
+  "94103142": {
+    "name": "Magnifistorming Summoning Technique",
+    "isExtraDeck": false
+  },
   "94113093": {
     "name": "Doodlebook - Uh uh uh!",
     "isExtraDeck": false
@@ -51507,6 +51799,10 @@
     "name": "Hidden Springs of the Far East",
     "isExtraDeck": false
   },
+  "94326720": {
+    "name": "Theorealize Overdrive",
+    "isExtraDeck": false
+  },
   "94331452": {
     "name": "Symphonic Warrior Drumss",
     "isExtraDeck": false
@@ -51598,6 +51894,10 @@
   "94484482": {
     "name": "Slip Summon",
     "isExtraDeck": false
+  },
+  "94503794": {
+    "name": "Cerzebuth, Laimargia of the Ebon Irons",
+    "isExtraDeck": true
   },
   "94515289": {
     "name": "Frozen Fitzgerald",
@@ -52087,6 +52387,10 @@
     "name": "Mist Valley Shaman",
     "isExtraDeck": false
   },
+  "95448372": {
+    "name": "Gouki Fighting Spirit",
+    "isExtraDeck": false
+  },
   "95448692": {
     "name": "Damage Diet",
     "isExtraDeck": false
@@ -52222,6 +52526,10 @@
   "95621257": {
     "name": "Flamvell Magician",
     "isExtraDeck": false
+  },
+  "95626382": {
+    "name": "Doom-Z End - Drastrius",
+    "isExtraDeck": true
   },
   "95637655": {
     "name": "Backup Warrior",
@@ -54477,302 +54785,6 @@
   },
   "101206080": {
     "name": "Fireworks Celebration",
-    "isExtraDeck": false
-  },
-  "101302001": {
-    "name": "D/D Lance Soldier",
-    "isExtraDeck": false
-  },
-  "101302002": {
-    "name": "D/D Defense Soldier",
-    "isExtraDeck": false
-  },
-  "101302003": {
-    "name": "D/D/D Zero Demise King Zero Machinex",
-    "isExtraDeck": false
-  },
-  "101302004": {
-    "name": "Violence Witch",
-    "isExtraDeck": false
-  },
-  "101302005": {
-    "name": "Twilight Rose Black Knight",
-    "isExtraDeck": false
-  },
-  "101302006": {
-    "name": "Gouki Mashin Suprex",
-    "isExtraDeck": false
-  },
-  "101302007": {
-    "name": "Onomatokage",
-    "isExtraDeck": false
-  },
-  "101302008": {
-    "name": "Doom-Z Zero - Drastia",
-    "isExtraDeck": false
-  },
-  "101302009": {
-    "name": "Doom-Z Five - Amalthe",
-    "isExtraDeck": false
-  },
-  "101302010": {
-    "name": "Doom-Z Seven - Elara",
-    "isExtraDeck": false
-  },
-  "101302011": {
-    "name": "Power Patron Machine Doom-Z",
-    "isExtraDeck": false
-  },
-  "101302012": {
-    "name": "Magnifistorming Megala",
-    "isExtraDeck": false
-  },
-  "101302013": {
-    "name": "Magnifistorming Erdam",
-    "isExtraDeck": false
-  },
-  "101302014": {
-    "name": "Magnifistorming Suen",
-    "isExtraDeck": false
-  },
-  "101302015": {
-    "name": "Magnifistorming Crothea",
-    "isExtraDeck": false
-  },
-  "101302016": {
-    "name": "Magnifistorm Vortex Beauty Valrune",
-    "isExtraDeck": false
-  },
-  "101302017": {
-    "name": "Magnifistorm Great Pyre Phonix",
-    "isExtraDeck": false
-  },
-  "101302018": {
-    "name": "Master Peace, the True Dracoverlord",
-    "isExtraDeck": false
-  },
-  "101302019": {
-    "name": "Mariamne Paradox, the True Dracophoenix Knight",
-    "isExtraDeck": false
-  },
-  "101302020": {
-    "name": "Solfachord Solfeggia",
-    "isExtraDeck": false
-  },
-  "101302021": {
-    "name": "Solfachord Primoria",
-    "isExtraDeck": false
-  },
-  "101302022": {
-    "name": "Regenesis Demiurge",
-    "isExtraDeck": false
-  },
-  "101302023": {
-    "name": "Dracotail Phrixl",
-    "isExtraDeck": false
-  },
-  "101302025": {
-    "name": "K9-04 Noroi",
-    "isExtraDeck": false
-  },
-  "101302026": {
-    "name": "Dogmatika Fleurdelis, the Thunderous",
-    "isExtraDeck": false
-  },
-  "101302027": {
-    "name": "VARefar the Kick Deity",
-    "isExtraDeck": false
-  },
-  "101302028": {
-    "name": "Chakravartin Sphinx",
-    "isExtraDeck": false
-  },
-  "101302029": {
-    "name": "Tri-Headed Behemoth",
-    "isExtraDeck": false
-  },
-  "101302031": {
-    "name": "Taotao the Chanter",
-    "isExtraDeck": false
-  },
-  "101302032": {
-    "name": "WAKE CUP! Macchi",
-    "isExtraDeck": false
-  },
-  "101302033": {
-    "name": "Megalith Phuloch",
-    "isExtraDeck": false
-  },
-  "101302034": {
-    "name": "Megalith Nortra Phulra",
-    "isExtraDeck": false
-  },
-  "101302035": {
-    "name": "D/D/D/D Great Dimension King Arc Crisis",
-    "isExtraDeck": true
-  },
-  "101302036": {
-    "name": "Gouki The Tyrant Ogre",
-    "isExtraDeck": true
-  },
-  "101302037": {
-    "name": "Axon Kicker Oracle",
-    "isExtraDeck": true
-  },
-  "101302038": {
-    "name": "D/D/D Founder King Clovis",
-    "isExtraDeck": true
-  },
-  "101302039": {
-    "name": "Bramble Rose Dragon",
-    "isExtraDeck": true
-  },
-  "101302040": {
-    "name": "Hate Rose Witch",
-    "isExtraDeck": true
-  },
-  "101302041": {
-    "name": "Gouki Dragon Ogre",
-    "isExtraDeck": true
-  },
-  "101302042": {
-    "name": "Serene Psychic Sorceress",
-    "isExtraDeck": true
-  },
-  "101302043": {
-    "name": "D/D/D Wisdom King Solomon",
-    "isExtraDeck": true
-  },
-  "101302044": {
-    "name": "Jupiter the Power Patron of Destruction",
-    "isExtraDeck": true
-  },
-  "101302045": {
-    "name": "Doom-Z End - Drastrius",
-    "isExtraDeck": true
-  },
-  "101302046": {
-    "name": "Doom-Z Break Diactorus",
-    "isExtraDeck": true
-  },
-  "101302048": {
-    "name": "Cerzebuth, Laimargia of the Ebon Irons",
-    "isExtraDeck": true
-  },
-  "101302049": {
-    "name": "D/D/D Sky King Zeus Ragnarok",
-    "isExtraDeck": true
-  },
-  "101302050": {
-    "name": "Gouki Sheik Ogre",
-    "isExtraDeck": true
-  },
-  "101302051": {
-    "name": "Tri-Brigade Arms Mouser",
-    "isExtraDeck": true
-  },
-  "101302052": {
-    "name": "Miasma Necromancer",
-    "isExtraDeck": true
-  },
-  "101302054": {
-    "name": "Dark Contract with the Zero King",
-    "isExtraDeck": false
-  },
-  "101302055": {
-    "name": "Black Rose Garden",
-    "isExtraDeck": false
-  },
-  "101302056": {
-    "name": "Gouki Fighting Spirit",
-    "isExtraDeck": false
-  },
-  "101302057": {
-    "name": "Doom-Z Raider",
-    "isExtraDeck": false
-  },
-  "101302059": {
-    "name": "Theorealize Overdrive",
-    "isExtraDeck": false
-  },
-  "101302060": {
-    "name": "Artmage Movement -Lineage-",
-    "isExtraDeck": false
-  },
-  "101302061": {
-    "name": "Magnifistorming Stanza Tribute",
-    "isExtraDeck": false
-  },
-  "101302062": {
-    "name": "Magnifistorming Summoning Technique",
-    "isExtraDeck": false
-  },
-  "101302063": {
-    "name": "Magnifistorming Sight Trance",
-    "isExtraDeck": false
-  },
-  "101302064": {
-    "name": "Draco Stand-Off",
-    "isExtraDeck": false
-  },
-  "101302065": {
-    "name": "Solfachord Happiness",
-    "isExtraDeck": false
-  },
-  "101302066": {
-    "name": "Megalith Anastasis",
-    "isExtraDeck": false
-  },
-  "101302068": {
-    "name": "Tri-Brigade Hammer",
-    "isExtraDeck": false
-  },
-  "101302069": {
-    "name": "Infernal Punisher",
-    "isExtraDeck": false
-  },
-  "101302070": {
-    "name": "Fusion Recruitment",
-    "isExtraDeck": false
-  },
-  "101302071": {
-    "name": "Tragic Twin Threads",
-    "isExtraDeck": false
-  },
-  "101302072": {
-    "name": "Apocaries",
-    "isExtraDeck": false
-  },
-  "101302073": {
-    "name": "Dark Contract with the Different Dimension",
-    "isExtraDeck": false
-  },
-  "101302074": {
-    "name": "Doom-Z Destruction",
-    "isExtraDeck": false
-  },
-  "101302075": {
-    "name": "Artmage Peripeteia -Turmoil-",
-    "isExtraDeck": false
-  },
-  "101302076": {
-    "name": "Magnifistorming Sovereign Tyranny",
-    "isExtraDeck": false
-  },
-  "101302077": {
-    "name": "Dracotail Sting",
-    "isExtraDeck": false
-  },
-  "101302078": {
-    "name": "Quadogmatika Beast",
-    "isExtraDeck": false
-  },
-  "101302079": {
-    "name": "Dominus Spiral",
-    "isExtraDeck": false
-  },
-  "101302080": {
-    "name": "Miss Okiku's Dishrithmetic",
     "isExtraDeck": false
   },
   "111000561": {

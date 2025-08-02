@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ProbabilityService from './services/ProbabilityService';
 import YdkParser from './services/YdkParser';
+import ComboBuilder from './features/calculator/ComboBuilder';
+import ResultsDisplay from './features/calculator/ResultsDisplay';
+import DeckInputs from './features/calculator/DeckInputs';
+import YdkImporter from './features/deck-import/YdkImporter';
 
 // URL encoding/decoding utilities
 const URLService = {
@@ -160,11 +164,13 @@ const CardDatabaseService = {
    * @returns {string} Sanitized card name
    */
   sanitizeCardName(cardName) {
-    return cardName
+    const result = cardName
       .replace(/[^a-zA-Z0-9\s-]/g, '')
       .replace(/\s+/g, '-')
       .toLowerCase()
       .substring(0, 50);
+    console.log(`Sanitized "${cardName}" -> "${result}"`);
+    return result;
   },
 
   /**
@@ -174,14 +180,17 @@ const CardDatabaseService = {
    * @returns {string} The optimized image URL
    */
   getImageUrl(cardName, size = 'small') {
-    if (!this.BLOB_ENABLED || !cardName) {
-      // Fallback to YGOPro URLs if blob storage disabled or no card name
-      return `https://images.ygoprodeck.com/images/cards/small.jpg`; // Generic fallback
+    if (!cardName) {
+      console.log('❌ No card name provided for image URL generation');
+      return '';
     }
     
     const sanitizedName = this.sanitizeCardName(cardName);
-    const suffix = size === 'small' ? '-small' : '';
-    return `${this.BLOB_BASE_URL}/cards/${sanitizedName}${suffix}.webp`;
+    // Update URL structure to match Vercel Blob storage: cards-small/name.webp instead of cards/name-small.webp
+    const directory = size === 'small' ? 'cards-small' : 'cards';
+    const url = `${this.BLOB_BASE_URL}/${directory}/${sanitizedName}.webp`;
+    console.log(`🔗 Generated Vercel Blob URL for "${cardName}":`, url);
+    return url;
   },
   
   /**
@@ -193,20 +202,11 @@ const CardDatabaseService = {
    */
   getImageProps(cardName, cardId, size = 'small') {
     const webpUrl = this.getImageUrl(cardName, size);
-    const fallbackUrl = cardId ? 
-      `https://images.ygoprodeck.com/images/cards/${cardId}.jpg` :
-      `https://images.ygoprodeck.com/images/cards/small.jpg`;
     
     return {
-      src: this.BLOB_ENABLED ? webpUrl : fallbackUrl,
+      src: webpUrl,
       alt: cardName || 'Yu-Gi-Oh Card',
-      loading: 'lazy',
-      onError: (e) => {
-        // Fallback to YGOPro image if Blob image fails to load
-        if (e.target.src !== fallbackUrl) {
-          e.target.src = fallbackUrl;
-        }
-      }
+      loading: 'lazy'
     };
   }
 };
@@ -215,7 +215,9 @@ const CardDatabaseService = {
 // Opening hand generation service
 const OpeningHandService = {
   generateHand: (combos, deckSize, handSize) => {
+    console.log('🔄 OpeningHandService.generateHand called with:', { combos: combos?.length, deckSize, handSize });
     if (!combos || combos.length === 0 || handSize <= 0 || deckSize <= 0) {
+      console.log('❌ Invalid parameters, returning blank cards');
       return Array(handSize).fill(null).map(() => ({ type: 'blank', cardName: null, isCustom: false }));
     }
 
@@ -225,9 +227,15 @@ const OpeningHandService = {
     let cardIdCounter = 0;
 
     // Process all combo cards and create unified card mapping
-    combos.forEach(combo => {
-      combo.cards.forEach(card => {
-        if (card.starterCard.trim() === '') return;
+    console.log('🔍 Processing combos:', combos);
+    combos.forEach((combo, comboIndex) => {
+      console.log(`🔍 Processing combo ${comboIndex}:`, combo);
+      combo.cards.forEach((card, cardIndex) => {
+        console.log(`🔍 Processing card ${comboIndex}-${cardIndex}:`, card);
+        if (!card.starterCard || card.starterCard.trim() === '') {
+          console.log('⚠️ Skipping empty card name');
+          return;
+        }
         
         const cardKey = `${card.starterCard}-${card.cardId || 'custom'}`;
         if (!cardMapping.has(cardKey)) {
@@ -247,7 +255,9 @@ const OpeningHandService = {
     });
 
     // Build deck according to hypergeometric distribution principles
-    cardMapping.forEach((cardInfo) => {
+    console.log('🚀 Final cardMapping:', Array.from(cardMapping.entries()));
+    cardMapping.forEach((cardInfo, cardKey) => {
+      console.log(`🔨 Building deck with card "${cardKey}":`, cardInfo);
       for (let i = 0; i < cardInfo.totalInDeck; i++) {
         deck.push({
           id: cardInfo.id,
@@ -257,6 +267,7 @@ const OpeningHandService = {
         });
       }
     });
+    console.log('🎴 Deck after adding combo cards (length):', deck.length);
 
     // Fill remaining deck slots with blank cards (representing non-combo cards)
     while (deck.length < deckSize) {
@@ -273,22 +284,29 @@ const OpeningHandService = {
     // Draw opening hand - this represents the hypergeometric distribution
     // in practice (drawing without replacement from a finite population)
     const hand = [];
+    console.log('🎯 Drawing opening hand from deck. First 10 cards:', deck.slice(0, 10));
     for (let i = 0; i < handSize; i++) {
+      console.log(`🎴 Drawing card ${i}: deck[${i}] =`, deck[i]);
       if (i < deck.length && deck[i]) {
-        hand.push({
+        const cardData = {
           type: 'card',
           cardName: deck[i].name,
           cardId: deck[i].cardId,
           isCustom: deck[i].isCustom
-        });
+        };
+        console.log(`✅ Adding real card to hand:`, cardData);
+        hand.push(cardData);
       } else {
-        hand.push({
+        const blankCard = {
           type: 'blank',
           cardName: null,
           isCustom: false
-        });
+        };
+        console.log(`⚪ Adding blank card to hand:`, blankCard);
+        hand.push(blankCard);
       }
     }
+    console.log('🏁 Final hand before return:', hand);
 
     return hand;
   },
@@ -297,16 +315,27 @@ const OpeningHandService = {
   generateProbabilisticHand: (combos, deckSize, handSize) => {
     // Use Monte Carlo approach to generate hands that reflect true probability
     // This will show both successful hands AND brick hands based on real odds
+    console.log('🎰 generateProbabilisticHand starting...');
     const numAttempts = 10; // Try multiple hands and pick one randomly
     const possibleHands = [];
 
     for (let attempt = 0; attempt < numAttempts; attempt++) {
       const hand = OpeningHandService.generateHand(combos, deckSize, handSize);
+      console.log(`🎰 Attempt ${attempt + 1}:`, hand.filter(card => card.type === 'card').length, 'real cards');
       possibleHands.push(hand);
     }
 
-    // Return a random hand from the possibilities (ensures true randomness)
-    return possibleHands[Math.floor(Math.random() * possibleHands.length)];
+    // Prefer hands with real cards, but allow blanks if no real cards exist
+    const handsWithCards = possibleHands.filter(hand => 
+      hand.some(card => card.type === 'card')
+    );
+    
+    const finalHand = handsWithCards.length > 0 
+      ? handsWithCards[Math.floor(Math.random() * handsWithCards.length)]
+      : possibleHands[Math.floor(Math.random() * possibleHands.length)];
+      
+    console.log('🎰 Final selected hand:', finalHand.filter(card => card.type === 'card').length, 'real cards');
+    return finalHand;
   }
 };
 
@@ -371,6 +400,7 @@ const TitleGeneratorService = {
 
 // Card Image component
 const CardImage = ({ cardData, size = 'small' }) => {
+  console.log('🖼️ CardImage rendered with:', { cardData, size });
   const [imageError, setImageError] = useState(false);
   const [blankImageError, setBlankImageError] = useState(false);
   
@@ -507,7 +537,7 @@ const CardImage = ({ cardData, size = 'small' }) => {
     );
   }
 
-  // Regular card with image
+  // Regular card with image using Vercel Blob
   const imageProps = CardDatabaseService.getImageProps(cardData.cardName, cardData.cardId, size);
   
   return (
@@ -521,7 +551,8 @@ const CardImage = ({ cardData, size = 'small' }) => {
       }}
     >
       <img
-        {...imageProps}
+        src={imageProps.src}
+        crossOrigin="anonymous"
         style={{
           width: '100%',
           height: '100%',
@@ -529,13 +560,19 @@ const CardImage = ({ cardData, size = 'small' }) => {
           borderRadius: '4px'
         }}
         onError={(e) => {
+          console.log('❌ Vercel Blob image failed to load:', e.target.src);
+          console.log('Error details:', e);
           if (!imageError) {
             setImageError(true);
-            // Fallback to blank card style
+            // Don't fallback to YGOPro - show blank card instead
             e.target.style.display = 'none';
           }
         }}
+        onLoad={(e) => {
+          console.log('Image loaded successfully:', e.target.src);
+        }}
         alt={cardData.cardName || 'Yu-Gi-Oh Card'}
+        loading="lazy"
       />
       {imageError && (
         <div
@@ -659,9 +696,9 @@ const Tooltip = ({ text, children }) => {
           width: '16px',
           height: '16px',
           borderRadius: '50%',
-          backgroundColor: 'transparent',
-          border: '1px solid var(--icon-main)',
-          color: 'var(--icon-main)',
+          backgroundColor: '#333333',
+          border: '1px solid #666666',
+          color: '#ffffff',
           fontSize: '12px',
           fontWeight: 'bold',
           cursor: 'pointer',
@@ -679,9 +716,9 @@ const Tooltip = ({ text, children }) => {
             position: 'fixed',
             left: `${position.x}px`,
             top: `${position.y}px`,
-            backgroundColor: 'var(--bg-secondary)',
-            border: `1px solid var(--border-main)`,
-            color: 'var(--text-main)',
+            backgroundColor: '#000000',
+            border: `1px solid #333333`,
+            color: '#ffffff',
             padding: 'var(--spacing-sm) 12px',
             borderRadius: '6px',
             fontSize: 'var(--font-body-size)',
@@ -1063,36 +1100,6 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
 };
 
 // Typing animation component
-const TypewriterText = ({ text, onComplete }) => {
-  const [displayedText, setDisplayedText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const intervalRef = useRef(null);
-
-  useEffect(() => {
-    // Reset when text changes
-    setDisplayedText('');
-    setCurrentIndex(0);
-  }, [text]);
-
-  useEffect(() => {
-    if (currentIndex < text.length) {
-      intervalRef.current = setTimeout(() => {
-        setDisplayedText(prev => prev + text[currentIndex]);
-        setCurrentIndex(prev => prev + 1);
-      }, 50);
-    } else if (onComplete) {
-      onComplete();
-    }
-
-    return () => {
-      if (intervalRef.current) {
-        clearTimeout(intervalRef.current);
-      }
-    };
-  }, [currentIndex, text, onComplete]);
-
-  return <span>{displayedText}</span>;
-};
 const Toast = ({ message, onClose }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
@@ -1208,8 +1215,6 @@ export default function TCGCalculator() {
   const [ydkCards, setYdkCards] = useState([]);
   const [ydkCardCounts, setYdkCardCounts] = useState({});
   const [staticCardDatabase, setStaticCardDatabase] = useState({});
-  const [showClipboardField, setShowClipboardField] = useState(false);
-  const [clipboardContent, setClipboardContent] = useState('');
 
   // Top Decks data
   const topDecks = [
@@ -1586,8 +1591,19 @@ export default function TCGCalculator() {
   const hasValidationErrors = Object.keys(errors).length > 0 || deckSize < handSize;
 
   const generateOpeningHand = () => {
+    console.log('🎲 Generating opening hand with:', { combos, deckSize, handSize });
     const hand = OpeningHandService.generateProbabilisticHand(combos, deckSize, handSize);
+    console.log('🃏 Generated opening hand:', hand);
+    console.log('🃏 Opening hand details:', hand.map((card, index) => ({ 
+      index, 
+      type: card.type, 
+      cardName: card.cardName, 
+      cardId: card.cardId,
+      isCustom: card.isCustom 
+    })));
+    console.log('💾 About to call setOpeningHand with:', hand);
     setOpeningHand(hand);
+    console.log('💾 Called setOpeningHand - state should update on next render');
   };
 
   const refreshOpeningHand = () => {
@@ -1668,6 +1684,7 @@ export default function TCGCalculator() {
   };
 
   const updateCombo = (id, cardIndex, field, value) => {
+    console.log(`🔄 updateCombo called: combo ${id}, card ${cardIndex}, field "${field}", value:`, value);
     setCombos(prevCombos => prevCombos.map(combo => {
       if (combo.id !== id) return combo;
       
@@ -1689,6 +1706,7 @@ export default function TCGCalculator() {
         updatedCombo.cards[cardIndex].maxCopiesInHand = value;
       }
       
+      console.log('🔄 Final updated combo:', updatedCombo);
       return updatedCombo;
     }));
   };
@@ -1806,36 +1824,6 @@ export default function TCGCalculator() {
     }
   };
 
-  const generateResultText = (result) => {
-    const cards = result.cards;
-    const probability = result.probability;
-    
-    if (!cards || cards.length === 0) {
-      return `Calculation error: ${probability.toFixed(2)}%`;
-    }
-    
-    if (cards.length === 1) {
-      const card = cards[0];
-      if (card.minCopiesInHand === card.maxCopiesInHand) {
-        return `Chances of seeing exactly ${card.minCopiesInHand} copies of ${card.starterCard} in your opening hand: ${probability.toFixed(2)}%`;
-      } else {
-        return `Chances of seeing between ${card.minCopiesInHand} and ${card.maxCopiesInHand} copies of ${card.starterCard} in your opening hand: ${probability.toFixed(2)}%`;
-      }
-    } else {
-      const card1 = cards[0];
-      const card2 = cards[1];
-      
-      const card1Text = card1.minCopiesInHand === card1.maxCopiesInHand 
-        ? `exactly ${card1.minCopiesInHand} copies of ${card1.starterCard}`
-        : `between ${card1.minCopiesInHand} and ${card1.maxCopiesInHand} copies of ${card1.starterCard}`;
-        
-      const card2Text = card2.minCopiesInHand === card2.maxCopiesInHand
-        ? `exactly ${card2.minCopiesInHand} copies of ${card2.starterCard}`
-        : `between ${card2.minCopiesInHand} and ${card2.maxCopiesInHand} copies of ${card2.starterCard}`;
-      
-      return `Chances of seeing ${card1Text}, and ${card2Text} in your opening hand: ${probability.toFixed(2)}%`;
-    }
-  };
   const handleCopyLink = () => {
   if (!showToast) { // Prevent multiple toasts
     navigator.clipboard.writeText(shareableUrl);
@@ -1858,6 +1846,11 @@ useEffect(() => {
   useEffect(() => {
     generateOpeningHand();
   }, [deckSize, handSize, combos]);
+
+  // Debug when opening hand state actually changes
+  useEffect(() => {
+    console.log('🔄 Opening hand state updated:', openingHand);
+  }, [openingHand]);
 
   // Cleanup debounce timer on unmount
   useEffect(() => {
@@ -1892,46 +1885,7 @@ useEffect(() => {
           label:hover,
           [role="button"]:hover,
           .cursor-pointer:hover {
-            transition-duration: 153.51ms;
-            transition-timing-function: linear(
-              0 0%,
-              0.038294 1%,
-              0.126287 2%,
-              0.235428 3%,
-              0.348573 4%,
-              0.456037 5%,
-              0.552897 6%,
-              0.637194 7%,
-              0.708724 8%,
-              0.768266 9%,
-              0.817082 10%,
-              0.856612 11%,
-              0.888293 12%,
-              0.913459 13%,
-              0.933298 14%,
-              0.948831 15%,
-              0.960919 16%,
-              0.970275 17%,
-              0.97748 18%,
-              0.983003 19%,
-              0.987217 20%,
-              0.99042 21%,
-              0.992846 22%,
-              0.994675 23%,
-              0.996049 24%,
-              0.997079 25%,
-              0.997848 26%,
-              0.998419 27%,
-              0.998843 28%,
-              0.999156 29%,
-              0.999387 30%,
-              0.999556 31%,
-              0.99968 32%,
-              0.99977 33%,
-              0.999836 34%,
-              0.999883 35%,
-              0.999917 36%
-            );
+            transition: opacity 150ms ease;
           }
         `}
       </style>
@@ -2030,191 +1984,29 @@ useEffect(() => {
         <div className="p-0" style={{ margin: 0, paddingBottom: '16px' }}>
           <h2 className="mb-4" style={{...typography.h2, color: 'var(--text-main)'}}>Define a Combo</h2>
           
-          {/* YDK File Upload Section */}
-          <div className="flex items-center mb-4" style={{ gap: '24px' }}>
-            <h3 style={{...typography.h3, color: 'var(--text-main)', margin: 0}}>Upload YDK file</h3>
-            
-            {!uploadedYdkFile && (
-              <div className="flex items-center" style={{ gap: '8px' }}>
-                <button
-                  onClick={handleFromClipboard}
-                  className="inline-flex items-center px-0 py-2 cursor-pointer hover:opacity-80 transition-opacity"
-                  style={{
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    color: 'var(--text-main)',
-                    borderRadius: '999px',
-                    ...typography.body
-                  }}
-                >
-                  From clipboard
-                </button>
-                <div
-                  style={{
-                    width: '1px',
-                    height: '16px',
-                    backgroundColor: 'var(--text-secondary)',
-                    opacity: 0.3
-                  }}
-                />
-                <input
-                  type="file"
-                  accept=".ydk"
-                  onChange={handleYdkFileUpload}
-                  style={{ display: 'none' }}
-                  id="ydk-file-input"
-                />
-                <label
-                  htmlFor="ydk-file-input"
-                  className="inline-flex items-center px-0 py-2 cursor-pointer hover:opacity-80 transition-opacity"
-                  style={{
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    color: 'var(--text-main)',
-                    borderRadius: '999px',
-                    ...typography.body
-                  }}
-                >
-                  Upload
-                </label>
-              </div>
-            )}
-            
-            {uploadedYdkFile && uploadedYdkFile.name === "Clipboard YDK" && (
-              <button
-                onClick={handleClearClipboard}
-                className="inline-flex items-center px-0 py-2 cursor-pointer hover:opacity-80 transition-opacity"
-                style={{
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  color: 'var(--text-secondary)',
-                  borderRadius: '999px',
-                  ...typography.body
-                }}
-              >
-                Clear YDK
-              </button>
-            )}
-          </div>
+          <YdkImporter 
+            uploadedYdkFile={uploadedYdkFile}
+            setUploadedYdkFile={setUploadedYdkFile}
+            ydkCards={ydkCards}
+            setYdkCards={setYdkCards}
+            ydkCardCounts={ydkCardCounts}
+            setYdkCardCounts={setYdkCardCounts}
+            deckSize={deckSize}
+            setDeckSize={setDeckSize}
+            cardDatabase={staticCardDatabase}
+            typography={typography}
+          />
           
-          {showClipboardField && (
-            <div className="mb-4">
-              <textarea
-                value={clipboardContent}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setClipboardContent(value);
-                  
-                  // Debounce the processing to avoid processing every keystroke
-                  if (window.clipboardProcessTimeout) {
-                    clearTimeout(window.clipboardProcessTimeout);
-                  }
-                  
-                  window.clipboardProcessTimeout = setTimeout(() => {
-                    if (value.trim()) {
-                      processClipboardContent(value);
-                    }
-                  }, 1000); // Wait 1 second after user stops typing
-                }}
-                onPaste={(e) => {
-                  // Process immediately on paste
-                  setTimeout(() => {
-                    const textarea = e.target;
-                    const value = textarea.value;
-                    if (value.trim()) {
-                      processClipboardContent(value);
-                    }
-                  }, 100); // Small delay to ensure paste content is set
-                }}
-                placeholder="Paste your YDK file content here..."
-                className="w-full p-3 border rounded-lg"
-                style={{
-                  backgroundColor: 'var(--bg-input)',
-                  border: `1px solid var(--border-main)`,
-                  borderRadius: '16px',
-                  color: 'var(--text-main)',
-                  fontFamily: 'Geist Regular, sans-serif',
-                  fontSize: '14px',
-                  lineHeight: '20px',
-                  resize: 'vertical',
-                  minHeight: '80px'
-                }}
-              />
-            </div>
-          )}
-          
-          {uploadedYdkFile && (
-            <div className="mb-4 p-3 border rounded-lg" 
-                 style={{ 
-                   backgroundColor: 'var(--bg-secondary)', 
-                   border: `1px solid var(--border-main)`,
-                   borderRadius: '16px'
-                 }}>
-              <div style={{...typography.body, color: 'var(--text-main)', fontWeight: 'medium'}}>
-                {uploadedYdkFile.name}
-              </div>
-              <div style={{...typography.body, color: 'var(--text-secondary)', fontSize: '14px'}}>
-                {deckSize} Main deck cards loaded ({ydkCards.length} unique)
-              </div>
-            </div>
-          )}
-          
-          <div className="space-y-4">
-            <div>
-              <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
-                Deck size:
-                <Tooltip text="Your total deck size, 40-60 cards" />
-              </label>
-              <input
-                type="number"
-                value={deckSize}
-                onChange={(e) => setDeckSize(parseInt(e.target.value) || 0)}
-                className={`w-full px-3 border ${
-                  errors.deckSize ? 'border-red-500' : ''
-                }`}
-                style={{ 
-                  backgroundColor: 'var(--bg-secondary)', 
-                  border: `1px solid var(--border-main)`,
-                  color: 'var(--text-main)',
-                  borderRadius: '999px',
-                  height: '40px',
-                  cursor: 'text',
-                  ...typography.body
-                }}
-              />
-              {errors.deckSize && (
-                <p className="text-red-500 mt-1" style={typography.body}>{errors.deckSize}</p>
-              )}
-            </div>
+          <DeckInputs 
+            deckSize={deckSize}
+            setDeckSize={setDeckSize}
+            handSize={handSize}
+            setHandSize={setHandSize}
+            errors={errors}
+            typography={typography}
+          />
 
-            <div>
-              <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
-                Hand size:
-                <Tooltip text="Cards you draw to start the game. 5 going first, 6 going second" />
-              </label>
-              <input
-                type="number"
-                value={handSize}
-                onChange={(e) => setHandSize(parseInt(e.target.value) || 0)}
-                className={`w-full px-3 border ${
-                  errors.handSize ? 'border-red-500' : ''
-                }`}
-                style={{ 
-                  backgroundColor: 'var(--bg-secondary)', 
-                  border: `1px solid var(--border-main)`,
-                  color: 'var(--text-main)',
-                  borderRadius: '999px',
-                  height: '40px',
-                  cursor: 'text',
-                  ...typography.body
-                }}
-              />
-              {errors.handSize && (
-                <p className="text-red-500 mt-1" style={typography.body}>{errors.handSize}</p>
-              )}
-            </div>
-
-            {combos.map((combo, index) => (
+          {combos.map((combo, index) => (
               <div key={combo.id} className="border-t pt-4" style={{ borderColor: 'var(--border-secondary)' }}>
                 <div className="flex justify-between items-center mb-2">
                   {editingComboId === combo.id ? (
@@ -2516,34 +2308,33 @@ useEffect(() => {
               </div>
             ))}
 
-            {combos.length < 10 && (
-              <div>
-                <hr className="my-4" style={{ borderColor: 'var(--border-secondary)', borderTop: '1px solid var(--border-secondary)' }} />
-                <div className="flex items-center">
-                  <button
-                    onClick={addCombo}
-                    className="font-medium transition-colors hover:opacity-80"
-                    style={{ 
-                      boxSizing: 'border-box',
-                      width: '200px',
-                      height: '40px',
-                      display: 'block',
-                      backgroundColor: 'var(--bg-secondary)',
-                      overflow: 'visible',
-                      gap: '7px',
-                      borderRadius: '999px',
-                      color: 'var(--text-main)',
-                      border: 'none',
-                      ...typography.body
-                    }}
-                  >
-                    + Add another combo
-                  </button>
-                  <Tooltip text="Test multiple combo lines to see your deck's overall consistency options" />
-                </div>
+          {combos.length < 10 && (
+            <div>
+              <hr className="my-4" style={{ borderColor: 'var(--border-secondary)', borderTop: '1px solid var(--border-secondary)' }} />
+              <div className="flex items-center">
+                <button
+                  onClick={addCombo}
+                  className="font-medium transition-colors hover:opacity-80"
+                  style={{ 
+                    boxSizing: 'border-box',
+                    width: '200px',
+                    height: '40px',
+                    display: 'block',
+                    backgroundColor: 'var(--bg-secondary)',
+                    overflow: 'visible',
+                    gap: '7px',
+                    borderRadius: '999px',
+                    color: 'var(--text-main)',
+                    border: 'none',
+                    ...typography.body
+                  }}
+                >
+                  + Add another combo
+                </button>
+                <Tooltip text="Test multiple combo lines to see your deck's overall consistency options" />
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           <div className="flex space-x-4 mt-6">
             <button
@@ -2600,212 +2391,46 @@ useEffect(() => {
         </div>
 
         {/* Top Decks Section */}
-        <div className="p-0" style={{ margin: 0, paddingBottom: '16px' }}>
-          <h2 style={{ ...typography.h2, marginBottom: '16px' }}>Top Decks</h2>
+        <section className="px-0 mb-8">
+          <div className="flex items-center mb-4" style={{ gap: '8px' }}>
+            <span role="img" aria-label="star" style={{ fontSize: '16px' }}>⭐</span>
+            <h2 style={{...typography.h2, color: 'var(--text-main)'}}>Top Decks</h2>
+          </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div className="space-y-3">
             {topDecks.map((deck, index) => (
-              <div
+              <div 
                 key={index}
-                onClick={() => handleTopDeckClick(deck.link, deck.title)}
-                className="cursor-pointer transition-colors hover:opacity-80"
-                style={{
-                  width: '100%',
-                  maxWidth: '580px',
-                  height: 'fit-content',
-                  display: 'flex',
-                  alignItems: 'flex-start'
-                }}
-              >
-                <div
-                  className="flex-shrink-0 flex items-center justify-center"
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    backgroundColor: 'var(--bg-secondary)',
-                    border: '1px solid var(--border-main)',
-                    borderRadius: '8px',
-                    marginRight: '12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <span style={{ fontSize: '20px', lineHeight: '1' }}>⭐</span>
-                </div>
-                <div style={{ flex: 1, textAlign: 'left' }}>
-                  <h3 style={{
-                    ...typography.h3,
-                    marginBottom: '4px',
-                    fontWeight: '600'
-                  }}>
-                    {deck.title}
-                  </h3>
-                  <p style={{
-                    ...typography.body,
-                    color: 'var(--text-secondary)',
-                    fontSize: '13px',
-                    lineHeight: '18px'
-                  }}>
-                    {deck.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="p-0" style={{ margin: 0, paddingBottom: '16px' }}>
-          <h2 className="mb-4" style={typography.h2}>Calculation Dashboard</h2>
-          
-          <div className="space-y-2">
-            <p style={typography.body}>
-              <span className="font-medium">Deck size:</span> {dashboardValues.deckSize}
-            </p>
-            <p style={typography.body}>
-              <span className="font-medium">Hand size:</span> {dashboardValues.handSize}
-            </p>
-            
-            {dashboardValues.combos.map((combo, index) => (
-              <div key={combo.id} className="pl-4 border-l-2" style={{ borderColor: 'var(--border-secondary)' }}>
-                <p className="font-medium" style={typography.body}>{combo.name}</p>
-                {combo.cards.map((card, cardIndex) => (
-                  <div key={cardIndex} className={cardIndex > 0 ? 'mt-2' : ''}>
-                    <p style={typography.body}>
-                      <span className="font-medium">{card.starterCard || '-'}</span>
-                    </p>
-                    <p style={typography.body}>
-                      <span className="font-medium">Copies in deck:</span> {card.startersInDeck}
-                    </p>
-                    <p style={typography.body}>
-                      <span className="font-medium">Min in hand:</span> {card.minCopiesInHand}
-                    </p>
-                    <p style={typography.body}>
-                      <span className="font-medium">Max in hand:</span> {card.maxCopiesInHand}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-
-          {/* Opening Hand Display */}
-          <div className="mt-6">
-            <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
-              <h3 style={{...typography.h3, color: 'var(--text-main)'}}>Opening hand</h3>
-              <button
-                onClick={refreshOpeningHand}
-                disabled={isRefreshing}
-                className={`px-4 py-2 font-medium transition-colors ${
-                  isRefreshing ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-80'
-                }`}
+                className="cursor-pointer hover:opacity-80 transition-opacity p-4 rounded-lg border"
                 style={{ 
-                  backgroundColor: 'transparent', 
-                  color: 'var(--text-main)',
-                  border: 'none',
-                  borderRadius: '20px',
-                  fontSize: '14px',
-                  lineHeight: '20px',
-                  fontFamily: 'Geist Regular, sans-serif'
+                  backgroundColor: 'var(--bg-secondary)', 
+                  borderColor: 'var(--border-secondary)' 
                 }}
+                onClick={() => handleTopDeckClick(deck.link, deck.title)}
               >
-                {isRefreshing ? 'Shuffling...' : 'Refresh'}
-              </button>
-            </div>
-            
-            <p className="mb-4" style={{...typography.body, color: 'var(--text-secondary)'}}>
-              *This is a probabilistic example of your opening hand based on defined combos
-            </p>
-            
-            <div 
-              style={{
-                display: 'flex',
-                gap: '8px',
-                flexWrap: 'wrap',
-                justifyContent: 'flex-start'
-              }}
-            >
-              {openingHand.map((cardData, index) => (
-                <CardImage key={index} cardData={cardData} size="small" />
-              ))}
-            </div>
-          </div>
-
-          {results.individual.length > 0 && (
-            <div className="mt-6 space-y-2">
-              {/* Combined probability result - only show if multiple combos */}
-              {results.combined !== null && (
-                <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-action)', border: `1px solid var(--border-main)` }}>
-                  <div className="flex items-center">
-                    <p className="font-semibold" style={{...typography.body, color: 'var(--text-action)'}}>
-                      Chances of opening any of the desired combos: {results.combined.toFixed(2)}%
-                    </p>
-                    <Tooltip text="Chance of opening ANY of your defined combos. Shows overall deck consistency (hitting at least one combo from ones you defined)" />
-                  </div>
-                </div>
-              )}
-              
-              {/* Individual combo results */}
-              {results.individual.map((result, index) => (
-                <div key={result.id} className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-secondary)', border: `1px solid var(--border-main)` }}>
-                  <p className="font-semibold" style={typography.body}>
-                    {generateResultText(result)}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {results.individual.length > 0 && generatedTitle && (
-          <div className="p-0" style={{ margin: 0, paddingBottom: '16px' }}>
-            <h2 className="mb-4" style={typography.h2}>Deck list link</h2>
-            
-            <div className="mb-4">
-              <h3 className="mb-2" style={typography.h3}>
-                <TypewriterText text={generatedTitle} />
-              </h3>
-            </div>
-            
-            <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-secondary)', border: `1px solid var(--border-main)` }}>
-              <div className="flex items-center mb-2">
-                <p style={typography.body}>Shareable link:</p>
-                <Tooltip text="Export your calculation as a link to share with your testing group or save your work for later" />
+                <h3 style={{...typography.h3, color: 'var(--text-main)', marginBottom: '8px'}}>
+                  {deck.title}
+                </h3>
+                <p style={{...typography.body, color: 'var(--text-secondary)'}}>
+                  {deck.description}
+                </p>
               </div>
-              <p style={{...typography.body, color: 'var(--text-secondary)', marginBottom: '8px'}}>Save & share your deck ratios</p>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="text"
-                  value={shareableUrl}
-                  readOnly
-                  className="flex-1 px-3 border"
-                  style={{ 
-                    backgroundColor: 'var(--bg-tertiary)', 
-                    border: `1px solid var(--border-main)`,
-                    color: 'var(--text-main)',
-                    borderRadius: '999px',
-                    height: '40px',
-                    cursor: 'text',
-                    ...typography.body
-                  }}
-                />
-                <button
-                  onClick={handleCopyLink}
-                  className="px-4 py-2 font-medium transition-colors hover:opacity-80"
-                  style={{ 
-                    backgroundColor: 'var(--bg-action)', 
-                    color: 'var(--text-action)',
-                    border: 'none',
-                    borderRadius: '999px',
-                    ...typography.body
-                  }}
-                >
-                  Copy
-                </button>
-              </div>
-            </div>
+            ))}
           </div>
-        )}
+        </section>
+
+        <ResultsDisplay 
+          results={results}
+          dashboardValues={dashboardValues}  
+          openingHand={openingHand}
+          isRefreshing={isRefreshing}
+          refreshOpeningHand={refreshOpeningHand}
+          generatedTitle={generatedTitle}
+          shareableUrl={shareableUrl}
+          handleCopyLink={handleCopyLink}
+          showToast={showToast}
+          typography={typography}
+        />
 
         <div className="p-0" style={{ marginTop: 'var(--spacing-lg)' }}>
           <h2 className="font-semibold mb-3" style={typography.h2}>Understanding Your Probability Results</h2>
@@ -2843,12 +2468,6 @@ useEffect(() => {
           </p>
         </div>
       </div>
-      {showToast && (
-        <Toast 
-          message="Link copied ✅" 
-          onClose={() => setShowToast(false)} 
-        />
-      )}
     </div>
   );
-}
+};
