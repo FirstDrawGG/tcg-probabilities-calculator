@@ -848,16 +848,14 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
       isCustom: card.isCustom
     });
     
-    // If this is a YDK card, also update the copies in deck and max in hand immediately
+    // AC01: If this is a YDK card with 1 or 2 copies, auto-set the copies in deck value
     if (ydkCardCounts && ydkCardCounts[card.name] && updateCombo && comboId !== undefined && cardIndex !== undefined) {
       const cardCount = ydkCardCounts[card.name];
       
-      // Update copies in deck
-      updateCombo(comboId, cardIndex, 'startersInDeck', cardCount);
-      
-      // Update max copies in hand to match deck count (but don't exceed reasonable limits)
-      const maxInHand = Math.min(cardCount, 3); // Cap at 3 for reasonable hand size
-      updateCombo(comboId, cardIndex, 'maxCopiesInHand', maxInHand);
+      // Only auto-set for cards with 1 or 2 copies (as per AC01)
+      if (cardCount === 1 || cardCount === 2) {
+        updateCombo(comboId, cardIndex, 'startersInDeck', cardCount);
+      }
     }
     
     // Close dropdown and clear search - let useEffect handle isEditing
@@ -1564,10 +1562,14 @@ export default function TCGCalculator() {
         if (card.maxCopiesInHand < 0) newErrors[`${cardPrefix}-maxCopiesInHand`] = 'Please enter valid value';
         if (card.starterCard.length > 50) newErrors[`${cardPrefix}-starterCard`] = 'Please enter valid value';
         
-        if (card.maxCopiesInHand < card.minCopiesInHand) newErrors[`${cardPrefix}-maxCopiesInHand`] = 'Can\'t be less than minimum copies in hand';
+        // AC03: Min in hand must be <= Max in hand
+        if (card.minCopiesInHand > card.maxCopiesInHand) newErrors[`${cardPrefix}-minCopiesInHand`] = 'Can\'t be more than Max in hand';
+        
         if (card.minCopiesInHand > handSize) newErrors[`${cardPrefix}-minCopiesInHand`] = 'Please enter valid value';
         if (card.maxCopiesInHand > handSize) newErrors[`${cardPrefix}-maxCopiesInHand`] = 'Please enter valid value';
-        if (card.maxCopiesInHand > card.startersInDeck) newErrors[`${cardPrefix}-maxCopiesInHand`] = 'Please enter valid value';
+        
+        // AC02: Max in hand must be <= Copies in deck
+        if (card.maxCopiesInHand > card.startersInDeck) newErrors[`${cardPrefix}-maxCopiesInHand`] = 'Can\'t be more than Copies in deck';
         if (card.minCopiesInHand > card.startersInDeck) newErrors[`${cardPrefix}-minCopiesInHand`] = 'Please enter valid value';
         if (card.startersInDeck > deckSize) newErrors[`${cardPrefix}-startersInDeck`] = 'Please enter valid value';
       });
@@ -1683,6 +1685,43 @@ export default function TCGCalculator() {
     setCombos(updatedCombos);
   };
 
+  // Validation functions for input constraints
+  const validateAndUpdateCombo = (id, cardIndex, field, value) => {
+    const combo = combos.find(c => c.id === id);
+    if (!combo) return;
+    
+    const currentCard = combo.cards[cardIndex];
+    const fieldPrefix = `combo-${id}-card-${cardIndex}-${field}`;
+    
+    // AC02: Prevent Max in hand from exceeding Copies in deck
+    if (field === 'maxCopiesInHand' && value > currentCard.startersInDeck) {
+      setErrors(prev => ({
+        ...prev,
+        [fieldPrefix]: "Can't be more than Copies in deck"
+      }));
+      return; // Prevent the update
+    }
+    
+    // AC03: Prevent Min in hand from exceeding Max in hand
+    if (field === 'minCopiesInHand' && value > currentCard.maxCopiesInHand) {
+      setErrors(prev => ({
+        ...prev,
+        [fieldPrefix]: "Can't be more than Max in hand"
+      }));
+      return; // Prevent the update
+    }
+    
+    // Clear any existing errors for this field since validation passed
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[fieldPrefix];
+      return newErrors;
+    });
+    
+    // Apply the update using the existing updateCombo function
+    updateCombo(id, cardIndex, field, value);
+  };
+
   const updateCombo = (id, cardIndex, field, value) => {
     console.log(`🔄 updateCombo called: combo ${id}, card ${cardIndex}, field "${field}", value:`, value);
     setCombos(prevCombos => prevCombos.map(combo => {
@@ -1690,6 +1729,7 @@ export default function TCGCalculator() {
       
       const updatedCombo = { ...combo };
       updatedCombo.cards = [...combo.cards];
+      const currentCard = combo.cards[cardIndex];
       
       if (field === 'starterCard' && typeof value === 'object') {
         updatedCombo.cards[cardIndex] = { 
@@ -1702,8 +1742,38 @@ export default function TCGCalculator() {
         updatedCombo.cards[cardIndex] = { ...combo.cards[cardIndex], [field]: value };
       }
       
-      if (field === 'minCopiesInHand' && value > combo.cards[cardIndex].maxCopiesInHand) {
-        updatedCombo.cards[cardIndex].maxCopiesInHand = value;
+      // Apply automatic adjustment logic based on acceptance criteria
+      const card = updatedCombo.cards[cardIndex];
+      
+      // AC06: Auto-adjust Max in hand when Copies in deck decreases
+      if (field === 'startersInDeck' && value < currentCard.maxCopiesInHand) {
+        if (currentCard.maxCopiesInHand === currentCard.startersInDeck) {
+          card.maxCopiesInHand = value;
+          // Clear any errors for maxCopiesInHand since we auto-adjusted it
+          setErrors(prev => {
+            const newErrors = { ...prev };
+            delete newErrors[`combo-${id}-card-${cardIndex}-maxCopiesInHand`];
+            return newErrors;
+          });
+        }
+      }
+      
+      // AC07: Auto-adjust Min in hand when Max in hand decreases
+      if (field === 'maxCopiesInHand' && value < currentCard.minCopiesInHand) {
+        if (currentCard.minCopiesInHand === currentCard.maxCopiesInHand) {
+          card.minCopiesInHand = value;
+          // Clear any errors for minCopiesInHand since we auto-adjusted it
+          setErrors(prev => {
+            const newErrors = { ...prev };
+            delete newErrors[`combo-${id}-card-${cardIndex}-minCopiesInHand`];
+            return newErrors;
+          });
+        }
+      }
+      
+      // Legacy logic: ensure min doesn't exceed max
+      if (field === 'minCopiesInHand' && value > currentCard.maxCopiesInHand) {
+        card.maxCopiesInHand = value;
       }
       
       console.log('🔄 Final updated combo:', updatedCombo);
@@ -2162,7 +2232,7 @@ useEffect(() => {
                           </label>
                           <div className="flex items-center space-x-3">
                             <button
-                              onClick={() => updateCombo(combo.id, cardIndex, 'minCopiesInHand', Math.max(0, card.minCopiesInHand - 1))}
+                              onClick={() => validateAndUpdateCombo(combo.id, cardIndex, 'minCopiesInHand', Math.max(0, card.minCopiesInHand - 1))}
                               className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                               style={{ 
                                 backgroundColor: 'var(--bg-secondary)', 
@@ -2179,7 +2249,7 @@ useEffect(() => {
                             <input
                               type="number"
                               value={card.minCopiesInHand}
-                              onChange={(e) => updateCombo(combo.id, cardIndex, 'minCopiesInHand', parseInt(e.target.value) || 0)}
+                              onChange={(e) => validateAndUpdateCombo(combo.id, cardIndex, 'minCopiesInHand', parseInt(e.target.value) || 0)}
                               className={`text-center border ${
                                 errors[`combo-${combo.id}-card-${cardIndex}-minCopiesInHand`] ? 'border-red-500' : ''
                               }`}
@@ -2196,7 +2266,7 @@ useEffect(() => {
                               }}
                             />
                             <button
-                              onClick={() => updateCombo(combo.id, cardIndex, 'minCopiesInHand', card.minCopiesInHand + 1)}
+                              onClick={() => validateAndUpdateCombo(combo.id, cardIndex, 'minCopiesInHand', card.minCopiesInHand + 1)}
                               className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                               style={{ 
                                 backgroundColor: 'var(--bg-secondary)', 
@@ -2212,7 +2282,7 @@ useEffect(() => {
                             </button>
                           </div>
                           {errors[`combo-${combo.id}-card-${cardIndex}-minCopiesInHand`] && (
-                            <p className="text-red-500 mt-1" style={typography.body}>{errors[`combo-${combo.id}-card-${cardIndex}-minCopiesInHand`]}</p>
+                            <p className="text-red-500 mt-1" style={{...typography.body, fontSize: '10px'}}>{errors[`combo-${combo.id}-card-${cardIndex}-minCopiesInHand`]}</p>
                           )}
                         </div>
 
@@ -2223,7 +2293,7 @@ useEffect(() => {
                           </label>
                           <div className="flex items-center space-x-3">
                             <button
-                              onClick={() => updateCombo(combo.id, cardIndex, 'maxCopiesInHand', Math.max(0, card.maxCopiesInHand - 1))}
+                              onClick={() => validateAndUpdateCombo(combo.id, cardIndex, 'maxCopiesInHand', Math.max(0, card.maxCopiesInHand - 1))}
                               className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                               style={{ 
                                 backgroundColor: 'var(--bg-secondary)', 
@@ -2240,7 +2310,7 @@ useEffect(() => {
                             <input
                               type="number"
                               value={card.maxCopiesInHand}
-                              onChange={(e) => updateCombo(combo.id, cardIndex, 'maxCopiesInHand', parseInt(e.target.value) || 0)}
+                              onChange={(e) => validateAndUpdateCombo(combo.id, cardIndex, 'maxCopiesInHand', parseInt(e.target.value) || 0)}
                               className={`text-center border ${
                                 errors[`combo-${combo.id}-card-${cardIndex}-maxCopiesInHand`] ? 'border-red-500' : ''
                               }`}
@@ -2257,7 +2327,7 @@ useEffect(() => {
                               }}
                             />
                             <button
-                              onClick={() => updateCombo(combo.id, cardIndex, 'maxCopiesInHand', card.maxCopiesInHand + 1)}
+                              onClick={() => validateAndUpdateCombo(combo.id, cardIndex, 'maxCopiesInHand', card.maxCopiesInHand + 1)}
                               className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                               style={{ 
                                 backgroundColor: 'var(--bg-secondary)', 
@@ -2273,7 +2343,7 @@ useEffect(() => {
                             </button>
                           </div>
                           {errors[`combo-${combo.id}-card-${cardIndex}-maxCopiesInHand`] && (
-                            <p className="text-red-500 mt-1" style={typography.body}>{errors[`combo-${combo.id}-card-${cardIndex}-maxCopiesInHand`]}</p>
+                            <p className="text-red-500 mt-1" style={{...typography.body, fontSize: '10px'}}>{errors[`combo-${combo.id}-card-${cardIndex}-maxCopiesInHand`]}</p>
                           )}
                         </div>
                       </div>
