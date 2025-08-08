@@ -748,8 +748,8 @@ const Tooltip = ({ text, children }) => {
           width: '16px',
           height: '16px',
           borderRadius: '50%',
-          backgroundColor: '#333333',
-          border: '1px solid #666666',
+          backgroundColor: 'var(--bg-main)',
+          border: '1px solid var(--border-main)',
           color: '#ffffff',
           fontSize: '12px',
           fontWeight: 'bold',
@@ -1261,11 +1261,22 @@ export default function TCGCalculator() {
   const [openingHand, setOpeningHand] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const refreshDebounceRef = useRef(null);
+  const calculationDashboardRef = useRef(null);
   const [uploadedYdkFile, setUploadedYdkFile] = useState(null);
   const [ydkCards, setYdkCards] = useState([]);
   const [ydkCardCounts, setYdkCardCounts] = useState({});
   const [staticCardDatabase, setStaticCardDatabase] = useState({});
   const [testHandFromDecklist, setTestHandFromDecklist] = useState(true);
+
+  // Scroll to Calculation Dashboard function
+  const scrollToCalculationDashboard = () => {
+    if (calculationDashboardRef.current) {
+      calculationDashboardRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
 
   // Top Decks data
   const topDecks = [
@@ -1325,9 +1336,9 @@ export default function TCGCalculator() {
         // Generate title
         const title = TitleGeneratorService.generateFunTitle(loadedCombos, data.d, calculatedResults.individual);
         setGeneratedTitle(title);
-        
-        // Auto-scroll to top of page
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Auto-scroll to Calculation Dashboard
+        setTimeout(() => scrollToCalculationDashboard(), 200);
       }, 100);
       
     } catch (error) {
@@ -1392,6 +1403,9 @@ export default function TCGCalculator() {
             combos: urlData.combos.map(c => ({ ...c }))
           });
           setIsRestoringFromURL(false);
+          
+          // Auto-scroll to Calculation Dashboard
+          setTimeout(() => scrollToCalculationDashboard(), 200);
         }, 100);
       }
     };
@@ -1602,10 +1616,8 @@ export default function TCGCalculator() {
     const newErrors = {};
     
     if (deckSize < 1) newErrors.deckSize = 'Please enter valid value';
-    if (handSize < 1 || handSize > 6) newErrors.handSize = 'Please enter valid value';
     
     if (deckSize < handSize) newErrors.deckSize = "Can't be lower than Hand size";
-    if (handSize > deckSize) newErrors.handSize = 'Please enter valid value';
     
     combos.forEach((combo, index) => {
       combo.cards.forEach((card, cardIndex) => {
@@ -1711,6 +1723,29 @@ export default function TCGCalculator() {
     // Generate title using individual results for compatibility
     const title = TitleGeneratorService.generateFunTitle(combos, deckSize, calculatedResults.individual);
     setGeneratedTitle(title);
+
+    // Auto-scroll to Calculation Dashboard
+    setTimeout(() => scrollToCalculationDashboard(), 100);
+  };
+
+  const clearPreviousCalculationData = () => {
+    // Clear calculation-related state when new YDK is loaded
+    setCombos([createCombo(1, 0)]);
+    setResults({ individual: [], combined: null });
+    setErrors({});
+    setDashboardValues({
+      deckSize: deckSize,
+      handSize: handSize,
+      combos: []
+    });
+    setEditingComboId(null);
+    setTempComboName('');
+    setGeneratedTitle('');
+    setShareableUrl('');
+    setOpeningHand([]);
+    ProbabilityService.clearCache();
+    
+    window.history.replaceState(null, '', window.location.pathname);
   };
 
   const handleReset = () => {
@@ -2118,30 +2153,6 @@ useEffect(() => {
           </a>
         </div>
         
-        {/* CTA Section */}
-        <section className="px-0 mb-8">
-          <div 
-            className="grid grid-cols-2"
-            style={{ gap: '4px' }}
-          >
-            <div className="flex items-center" style={{ gap: '8px' }}>
-              <span role="img" aria-label="checkmark">✅</span>
-              <span style={typography.body}>Add your cards</span>
-            </div>
-            <div className="flex items-center" style={{ gap: '8px' }}>
-              <span role="img" aria-label="checkmark">✅</span>
-              <span style={typography.body}>See your odds</span>
-            </div>
-            <div className="flex items-center" style={{ gap: '8px' }}>
-              <span role="img" aria-label="checkmark">✅</span>
-              <span style={typography.body}>Fix your ratios</span>
-            </div>
-            <div className="flex items-center" style={{ gap: '8px' }}>
-              <span role="img" aria-label="checkmark">✅</span>
-              <span style={typography.body}>Win more games</span>
-            </div>
-          </div>
-        </section>
         
         <div className="p-0" style={{ margin: 0, paddingBottom: '16px' }}>
           <h2 className="mb-4" style={{...typography.h2, color: 'var(--text-main)'}}>Define a Combo</h2>
@@ -2157,19 +2168,22 @@ useEffect(() => {
             setDeckSize={setDeckSize}
             cardDatabase={staticCardDatabase}
             typography={typography}
+            clearPreviousCalculationData={clearPreviousCalculationData}
           />
           
-          <DeckInputs 
-            deckSize={deckSize}
-            setDeckSize={setDeckSize}
-            handSize={handSize}
-            setHandSize={setHandSize}
-            errors={errors}
-            typography={typography}
-          />
+          <div className="mb-4">
+            <DeckInputs 
+              deckSize={deckSize}
+              setDeckSize={setDeckSize}
+              handSize={handSize}
+              setHandSize={setHandSize}
+              errors={errors}
+              typography={typography}
+            />
+          </div>
 
           {combos.map((combo, index) => (
-              <div key={combo.id} className="border-t pt-4" style={{ borderColor: 'var(--border-secondary)' }}>
+              <div key={combo.id} className="border-t pt-4 pb-4" style={{ borderColor: 'var(--border-secondary)' }}>
                 <div className="flex justify-between items-center mb-2">
                   {editingComboId === combo.id ? (
                     <input
@@ -2457,9 +2471,9 @@ useEffect(() => {
                         overflow: 'visible',
                         gap: '7px',
                         borderRadius: '999px',
-                        color: 'var(--text-main)',
-                        border: 'none',
-                        ...typography.body
+                        border: '1px solid var(--border-main)',
+                        ...typography.body,
+                        color: 'var(--text-main)'
                       }}
                     >
                       + Add 2nd card
@@ -2486,9 +2500,9 @@ useEffect(() => {
                     overflow: 'visible',
                     gap: '7px',
                     borderRadius: '999px',
-                    color: 'var(--text-main)',
-                    border: 'none',
-                    ...typography.body
+                    border: '1px solid var(--border-main)',
+                    ...typography.body,
+                    color: 'var(--text-main)'
                   }}
                 >
                   + Add another combo
@@ -2504,12 +2518,12 @@ useEffect(() => {
               disabled={!allFieldsFilled || hasValidationErrors}
               className={`flex-1 font-semibold transition-colors ${
                 allFieldsFilled && !hasValidationErrors
-                  ? 'hover:opacity-80'
+                  ? ''
                   : 'cursor-not-allowed opacity-50'
               }`}
               style={{ 
                 backgroundColor: allFieldsFilled && !hasValidationErrors ? 'var(--bg-action)' : 'var(--border-secondary)',
-                color: allFieldsFilled && !hasValidationErrors ? 'var(--text-action)' : 'var(--text-placeholder)',
+                color: allFieldsFilled && !hasValidationErrors ? 'var(--text-black)' : 'var(--text-placeholder)',
                 fontFamily: 'Geist Regular, sans-serif',
                 fontSize: '14px',
                 lineHeight: '20px',
@@ -2581,22 +2595,24 @@ useEffect(() => {
           </div>
         </section>
 
-        <ResultsDisplay 
-          results={results}
-          dashboardValues={dashboardValues}  
-          openingHand={openingHand}
-          isRefreshing={isRefreshing}
-          refreshOpeningHand={refreshOpeningHand}
-          generatedTitle={generatedTitle}
-          shareableUrl={shareableUrl}
-          handleCopyLink={handleCopyLink}
-          showToast={showToast}
-          typography={typography}
-          testHandFromDecklist={testHandFromDecklist}
-          setTestHandFromDecklist={setTestHandFromDecklist}
-          ydkCards={ydkCards}
-          combos={combos}
-        />
+        <div ref={calculationDashboardRef}>
+          <ResultsDisplay 
+            results={results}
+            dashboardValues={dashboardValues}  
+            openingHand={openingHand}
+            isRefreshing={isRefreshing}
+            refreshOpeningHand={refreshOpeningHand}
+            generatedTitle={generatedTitle}
+            shareableUrl={shareableUrl}
+            handleCopyLink={handleCopyLink}
+            showToast={showToast}
+            typography={typography}
+            testHandFromDecklist={testHandFromDecklist}
+            setTestHandFromDecklist={setTestHandFromDecklist}
+            ydkCards={ydkCards}
+            combos={combos}
+          />
+        </div>
 
         <div className="p-0" style={{ marginTop: 'var(--spacing-lg)' }}>
           <h2 className="font-semibold mb-3" style={typography.h2}>Understanding Your Probability Results</h2>

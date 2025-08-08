@@ -205,61 +205,33 @@ const ResultsDisplay = ({
     <div className="p-0" style={{ margin: 0, paddingBottom: '16px' }}>
       <h2 className="mb-4" style={typography.h2}>Calculation Dashboard</h2>
       
-      <div className="space-y-2">
-        <p style={typography.body}>
-          <span className="font-medium">Deck size:</span> {dashboardValues.deckSize}
-        </p>
-        <p style={typography.body}>
-          <span className="font-medium">Hand size:</span> {dashboardValues.handSize}
-        </p>
-        
-        {dashboardValues.combos.map((combo, index) => (
-          <div key={combo.id} className="pl-4 border-l-2" style={{ borderColor: 'var(--border-secondary)' }}>
-            <p className="font-medium" style={typography.body}>{combo.name}</p>
-            {combo.cards.map((card, cardIndex) => (
-              <div key={cardIndex} className={cardIndex > 0 ? 'mt-2' : ''}>
-                <p style={typography.body}>
-                  <span className="font-medium">{card.starterCard || '-'}</span>
-                </p>
-                <p style={typography.body}>
-                  <span className="font-medium">Copies in deck:</span> {card.startersInDeck}
-                </p>
-                <p style={typography.body}>
-                  <span className="font-medium">Min in hand:</span> {card.minCopiesInHand}
-                </p>
-                <p style={typography.body}>
-                  <span className="font-medium">Max in hand:</span> {card.maxCopiesInHand}
-                </p>
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
 
       {/* Opening Hand Display */}
       <div className="mt-6">
         <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
           <div className="flex items-center gap-2">
             <h3 style={{...typography.h3, color: 'var(--text-main)'}}>Opening hand</h3>
-            <label className={`flex items-center gap-1 ${isToggleDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
-              <input
-                type="checkbox"
-                checked={testHandFromDecklist}
-                onChange={(e) => !isToggleDisabled && setTestHandFromDecklist(e.target.checked)}
-                disabled={isToggleDisabled}
-                style={{
+            {ydkCards && ydkCards.length > 0 && (
+              <label className={`flex items-center gap-1 ${isToggleDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                <input
+                  type="checkbox"
+                  checked={testHandFromDecklist}
+                  onChange={(e) => !isToggleDisabled && setTestHandFromDecklist(e.target.checked)}
+                  disabled={isToggleDisabled}
+                  style={{
+                    opacity: isToggleDisabled ? 0.5 : 1
+                  }}
+                />
+                <span style={{
+                  ...typography.body, 
+                  color: isToggleDisabled ? 'var(--text-tertiary)' : 'var(--text-secondary)', 
+                  fontSize: '14px',
                   opacity: isToggleDisabled ? 0.5 : 1
-                }}
-              />
-              <span style={{
-                ...typography.body, 
-                color: isToggleDisabled ? 'var(--text-tertiary)' : 'var(--text-secondary)', 
-                fontSize: '14px',
-                opacity: isToggleDisabled ? 0.5 : 1
-              }}>
-                Test hand from decklist
-              </span>
-            </label>
+                }}>
+                  Test hand from decklist
+                </span>
+              </label>
+            )}
           </div>
           <button
             onClick={refreshOpeningHand}
@@ -388,14 +360,14 @@ const ResultsDisplay = ({
               />
               <button
                 onClick={handleCopyLink}
-                className="px-4 py-2 font-medium transition-colors hover:opacity-80"
+                className="px-4 py-2 font-medium transition-colors"
                 style={{ 
                   backgroundColor: 'var(--bg-action)', 
-                  color: 'var(--text-action)',
                   border: 'none',
                   borderRadius: '999px',
                   height: '40px',
-                  ...typography.body
+                  ...typography.body,
+                  color: 'var(--text-black)'
                 }}
               >
                 Copy
@@ -418,6 +390,40 @@ const ResultsDisplay = ({
           )}
         </div>
       )}
+      
+      {/* Dashboard Details */}
+      <div className="mt-6 space-y-2">
+        <p style={typography.body}>
+          <span className="font-medium">Deck size:</span> {dashboardValues.deckSize}
+        </p>
+        <p style={typography.body}>
+          <span className="font-medium">Hand size:</span> {dashboardValues.handSize}
+        </p>
+        
+        <div className="grid grid-cols-3 gap-4">
+          {dashboardValues.combos.map((combo, index) => (
+            <div key={combo.id} className="pl-4 border-l-2" style={{ borderColor: 'var(--border-secondary)' }}>
+              <p className="font-medium mb-2" style={typography.body}>{combo.name}</p>
+              {combo.cards.map((card, cardIndex) => (
+                <div key={cardIndex} className={cardIndex > 0 ? 'mt-2' : ''}>
+                  <p style={typography.body}>
+                    <span className="font-medium">{card.starterCard || '-'}</span>
+                  </p>
+                  <p style={typography.body}>
+                    <span className="font-medium">Copies:</span> {card.startersInDeck}
+                  </p>
+                  <p style={typography.body}>
+                    <span className="font-medium">Min:</span> {card.minCopiesInHand}
+                  </p>
+                  <p style={typography.body}>
+                    <span className="font-medium">Max:</span> {card.maxCopiesInHand}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

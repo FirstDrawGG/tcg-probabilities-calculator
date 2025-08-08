@@ -63,23 +63,27 @@ const Tooltip = ({ text, children }) => {
         onMouseEnter={() => setIsVisible(true)}
         onMouseLeave={() => setIsVisible(false)}
         className="inline-flex items-center cursor-help"
-        style={{ marginLeft: '4px' }}
+        style={{ marginLeft: '8px' }}
       >
         {children ? children : (
           <span style={{
             width: '16px',
             height: '16px',
             borderRadius: '50%',
-            backgroundColor: 'var(--bg-tertiary)',
-            color: 'var(--text-secondary)',
+            backgroundColor: 'var(--bg-main)',
+            border: '1px solid var(--border-main)',
+            color: '#ffffff',
             fontSize: '12px',
             fontWeight: 'bold',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontFamily: 'Geist Regular, sans-serif'
+            fontFamily: 'Geist Regular, sans-serif',
+            cursor: 'pointer',
+            flexShrink: 0,
+            userSelect: 'none'
           }}>
-            ?
+            i
           </span>
         )}
       </span>
@@ -91,13 +95,18 @@ const Tooltip = ({ text, children }) => {
           style={{
             left: `${position.x}px`,
             top: `${position.y}px`,
-            backgroundColor: 'var(--bg-tooltip)',
-            color: 'var(--text-tooltip)',
-            fontSize: '12px',
-            lineHeight: '16px',
+            backgroundColor: '#000000',
+            border: '1px solid #333333',
+            color: '#ffffff',
+            padding: '8px 12px',
+            borderRadius: '6px',
+            fontSize: '14px',
+            lineHeight: '20px',
+            maxWidth: '240px',
+            width: 'max-content',
+            zIndex: 1000,
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
             fontFamily: 'Geist Regular, sans-serif',
-            border: '1px solid var(--border-main)',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
             whiteSpace: 'normal',
             wordWrap: 'break-word'
           }}
@@ -146,35 +155,41 @@ const DeckInputs = ({
         )}
       </div>
 
-      <div>
+      <div className="mb-4">
         <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
           Hand size:
           <Tooltip text="Cards you draw to start the game. 5 going first, 6 going second" />
         </label>
-        <input
-          type="number"
-          value={handSize}
-          onChange={(e) => {
-            const value = parseInt(e.target.value) || 0;
-            setHandSize(Math.min(value, 6)); // Max hand size is 6
-          }}
-          max="6"
-          className={`w-full px-3 border ${
-            errors.handSize ? 'border-red-500' : ''
-          }`}
-          style={{ 
-            backgroundColor: 'var(--bg-secondary)', 
-            border: `1px solid var(--border-main)`,
-            color: 'var(--text-main)',
-            borderRadius: '999px',
-            height: '40px',
-            cursor: 'text',
-            ...typography.body
-          }}
-        />
-        {errors.handSize && (
-          <p className="text-red-500 mt-1" style={typography.body}>{errors.handSize}</p>
-        )}
+        <div className="flex space-x-2">
+          <button
+            onClick={() => setHandSize(5)}
+            className="flex-1 font-medium transition-colors"
+            style={{
+              backgroundColor: handSize === 5 ? 'var(--bg-action)' : 'var(--bg-secondary)',
+              color: handSize === 5 ? 'var(--text-black)' : 'var(--text-main)',
+              border: `1px solid var(--border-main)`,
+              borderRadius: '999px',
+              height: '40px',
+              ...typography.body
+            }}
+          >
+            5
+          </button>
+          <button
+            onClick={() => setHandSize(6)}
+            className="flex-1 font-medium transition-colors"
+            style={{
+              backgroundColor: handSize === 6 ? 'var(--bg-action)' : 'var(--bg-secondary)',
+              color: handSize === 6 ? 'var(--text-black)' : 'var(--text-main)',
+              border: `1px solid var(--border-main)`,
+              borderRadius: '999px',
+              height: '40px',
+              ...typography.body
+            }}
+          >
+            6
+          </button>
+        </div>
       </div>
     </div>
   );

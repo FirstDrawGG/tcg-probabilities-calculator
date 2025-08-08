@@ -11,7 +11,8 @@ const YdkImporter = ({
   deckSize,
   setDeckSize,
   cardDatabase,
-  typography
+  typography,
+  clearPreviousCalculationData
 }) => {
   const [showClipboardField, setShowClipboardField] = useState(false);
   const [clipboardContent, setClipboardContent] = useState('');
@@ -48,8 +49,11 @@ const YdkImporter = ({
       });
       
       const mainDeckCardCount = parseResult.cards.length;
-      setDeckSize(mainDeckCardCount);
       
+      // Clear previous calculation data before applying new deck
+      clearPreviousCalculationData();
+      
+      setDeckSize(mainDeckCardCount);
       setUploadedYdkFile({
         name: file.name,
         content: content
@@ -90,8 +94,11 @@ const YdkImporter = ({
       });
       
       const mainDeckCardCount = parseResult.cards.length;
-      setDeckSize(mainDeckCardCount);
       
+      // Clear previous calculation data before applying new deck
+      clearPreviousCalculationData();
+      
+      setDeckSize(mainDeckCardCount);
       setUploadedYdkFile({
         name: 'Clipboard YDK',
         content: content
@@ -118,6 +125,19 @@ const YdkImporter = ({
     setYdkCardCounts({});
     setShowClipboardField(false);
     setClipboardContent('');
+  };
+
+  const handleRemoveDecklist = () => {
+    // Clear all YDK-related data and return to default state
+    setUploadedYdkFile(null);
+    setYdkCards([]);
+    setYdkCardCounts({});
+    
+    // Clear previous calculation data
+    clearPreviousCalculationData();
+    
+    // Reset deck size to default
+    setDeckSize(40);
   };
 
   return (
@@ -233,13 +253,28 @@ const YdkImporter = ({
       )}
       
       {uploadedYdkFile && (
-        <div className="mb-4 p-3 border rounded-lg" 
+        <div className="mb-4 p-3 border rounded-lg relative" 
              style={{ 
                backgroundColor: 'var(--bg-secondary)', 
                border: `1px solid var(--border-main)`,
                borderRadius: '16px'
              }}>
-          <div style={{...typography.body, color: 'var(--text-main)', fontWeight: 'medium'}}>
+          <button
+            onClick={handleRemoveDecklist}
+            className="absolute top-2 right-2 hover:opacity-80 transition-colors"
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              color: 'var(--text-secondary)',
+              fontSize: '16px',
+              lineHeight: '16px',
+              padding: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            ×
+          </button>
+          <div style={{...typography.body, color: 'var(--text-main)', fontWeight: 'medium', paddingRight: '24px'}}>
             {uploadedYdkFile.name}
           </div>
           <div style={{...typography.body, color: 'var(--text-secondary)', fontSize: '14px'}}>
