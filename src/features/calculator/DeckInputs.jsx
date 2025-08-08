@@ -154,7 +154,11 @@ const DeckInputs = ({
         <input
           type="number"
           value={handSize}
-          onChange={(e) => setHandSize(parseInt(e.target.value) || 0)}
+          onChange={(e) => {
+            const value = parseInt(e.target.value) || 0;
+            setHandSize(Math.min(value, 6)); // Max hand size is 6
+          }}
+          max="6"
           className={`w-full px-3 border ${
             errors.handSize ? 'border-red-500' : ''
           }`}

@@ -8,7 +8,7 @@ import YdkImporter from './features/deck-import/YdkImporter';
 
 // URL encoding/decoding utilities
 const URLService = {
-  encodeCalculation: (deckSize, handSize, combos, ydkFile = null) => {
+  encodeCalculation: (deckSize, handSize, combos, ydkFile = null, testHandFromDecklist = true) => {
     try {
       const data = {
         d: deckSize,
@@ -24,7 +24,8 @@ const URLService = {
             min: card.minCopiesInHand,
             max: card.maxCopiesInHand
           }))
-        }))
+        })),
+        testHand: testHandFromDecklist
       };
       
       // Add YDK file data if present
@@ -71,7 +72,8 @@ const URLService = {
             minCopiesInHand: card.min,
             maxCopiesInHand: card.max
           }))
-        }))
+        })),
+        testHandFromDecklist: data.testHand !== undefined ? data.testHand : true
       };
       
       // Add YDK file data if present
@@ -89,8 +91,8 @@ const URLService = {
     }
   },
 
-  updateURL: (deckSize, handSize, combos, ydkFile = null) => {
-    const encoded = URLService.encodeCalculation(deckSize, handSize, combos, ydkFile);
+  updateURL: (deckSize, handSize, combos, ydkFile = null, testHandFromDecklist = true) => {
+    const encoded = URLService.encodeCalculation(deckSize, handSize, combos, ydkFile, testHandFromDecklist);
     if (encoded) {
       window.history.replaceState(null, '', `#calc=${encoded}`);
     }
@@ -336,6 +338,56 @@ const OpeningHandService = {
       
     console.log('🎰 Final selected hand:', finalHand.filter(card => card.type === 'card').length, 'real cards');
     return finalHand;
+  },
+
+  // AC#3: Generate opening hand from YDK cards
+  generateHandFromYdkCards: (ydkCards, ydkCardCounts, handSize) => {
+    console.log('🎯 generateHandFromYdkCards starting with:', { ydkCards: ydkCards?.length, handSize });
+    
+    if (!ydkCards || ydkCards.length === 0 || !ydkCardCounts || Object.keys(ydkCardCounts).length === 0) {
+      console.log('❌ No YDK cards available, returning blank cards');
+      return Array(handSize).fill(null).map(() => ({ type: 'blank', cardName: null, isCustom: false }));
+    }
+
+    // Build a weighted deck array based on card counts
+    const deck = [];
+    Object.entries(ydkCardCounts).forEach(([cardName, count]) => {
+      const cardData = ydkCards.find(card => card.name === cardName);
+      if (cardData) {
+        for (let i = 0; i < count; i++) {
+          deck.push({
+            type: 'card',
+            cardName: cardData.name,
+            cardId: cardData.id,
+            isCustom: cardData.isCustom || false
+          });
+        }
+      }
+    });
+
+    console.log('🃏 Built deck with', deck.length, 'cards');
+
+    // AC#4: Handle empty deck case
+    if (deck.length === 0) {
+      console.log('❌ Empty deck, returning blank cards');
+      return Array(handSize).fill(null).map(() => ({ type: 'blank', cardName: null, isCustom: false }));
+    }
+
+    // Shuffle and draw opening hand
+    const shuffledDeck = [...deck].sort(() => Math.random() - 0.5);
+    const hand = [];
+    
+    for (let i = 0; i < handSize; i++) {
+      if (i < shuffledDeck.length) {
+        hand.push(shuffledDeck[i]);
+      } else {
+        // Fill remaining slots with blank cards if deck is smaller than hand size
+        hand.push({ type: 'blank', cardName: null, isCustom: false });
+      }
+    }
+
+    console.log('🎯 Generated YDK hand:', hand);
+    return hand;
   }
 };
 
@@ -1213,6 +1265,7 @@ export default function TCGCalculator() {
   const [ydkCards, setYdkCards] = useState([]);
   const [ydkCardCounts, setYdkCardCounts] = useState({});
   const [staticCardDatabase, setStaticCardDatabase] = useState({});
+  const [testHandFromDecklist, setTestHandFromDecklist] = useState(true);
 
   // Top Decks data
   const topDecks = [
@@ -1237,6 +1290,7 @@ export default function TCGCalculator() {
       // Load the deck data into the app
       setDeckSize(data.d);
       setHandSize(data.h);
+      setTestHandFromDecklist(data.testHandFromDecklist !== undefined ? data.testHandFromDecklist : true);
       
       const loadedCombos = data.c.map(combo => ({
         id: combo.i,
@@ -1264,7 +1318,7 @@ export default function TCGCalculator() {
         });
         
         // Generate shareable URL
-        URLService.updateURL(data.d, data.h, loadedCombos, uploadedYdkFile);
+        URLService.updateURL(data.d, data.h, loadedCombos, uploadedYdkFile, data.testHandFromDecklist);
         const url = window.location.href;
         setShareableUrl(url);
         
@@ -1548,7 +1602,7 @@ export default function TCGCalculator() {
     const newErrors = {};
     
     if (deckSize < 1) newErrors.deckSize = 'Please enter valid value';
-    if (handSize < 1) newErrors.handSize = 'Please enter valid value';
+    if (handSize < 1 || handSize > 6) newErrors.handSize = 'Please enter valid value';
     
     if (deckSize < handSize) newErrors.deckSize = "Can't be lower than Hand size";
     if (handSize > deckSize) newErrors.handSize = 'Please enter valid value';
@@ -1593,8 +1647,19 @@ export default function TCGCalculator() {
   const hasValidationErrors = Object.keys(errors).length > 0 || deckSize < handSize;
 
   const generateOpeningHand = () => {
-    console.log('🎲 Generating opening hand with:', { combos, deckSize, handSize });
-    const hand = OpeningHandService.generateProbabilisticHand(combos, deckSize, handSize);
+    console.log('🎲 Generating opening hand with:', { combos, deckSize, handSize, testHandFromDecklist, ydkCards });
+    
+    let hand;
+    
+    // AC#3: Use YDK cards when toggle is ON and YDK cards are available
+    if (testHandFromDecklist && ydkCards && ydkCards.length > 0 && ydkCardCounts && Object.keys(ydkCardCounts).length > 0) {
+      console.log('🎯 Using YDK cards for opening hand');
+      hand = OpeningHandService.generateHandFromYdkCards(ydkCards, ydkCardCounts, handSize);
+    } else {
+      console.log('🎯 Using combos for opening hand');
+      hand = OpeningHandService.generateProbabilisticHand(combos, deckSize, handSize);
+    }
+    
     console.log('🃏 Generated opening hand:', hand);
     console.log('🃏 Opening hand details:', hand.map((card, index) => ({ 
       index, 
@@ -1639,7 +1704,7 @@ export default function TCGCalculator() {
     setResults(calculatedResults);
     
     // Generate shareable URL
-    URLService.updateURL(deckSize, handSize, combos, uploadedYdkFile);
+    URLService.updateURL(deckSize, handSize, combos, uploadedYdkFile, testHandFromDecklist);
     const url = window.location.href;
     setShareableUrl(url);
     
@@ -1915,12 +1980,39 @@ useEffect(() => {
 
   useEffect(() => {
     generateOpeningHand();
-  }, [deckSize, handSize, combos]);
+  }, [deckSize, handSize, combos, testHandFromDecklist, ydkCards, ydkCardCounts]);
 
   // Debug when opening hand state actually changes
   useEffect(() => {
     console.log('🔄 Opening hand state updated:', openingHand);
   }, [openingHand]);
+
+  // AC#5 & AC#6: Auto-disable toggle when non-decklist cards are used
+  useEffect(() => {
+    if (!ydkCards || ydkCards.length === 0) return;
+
+    // Check if any combo cards are not from the YDK decklist
+    const hasNonDecklistCards = combos.some(combo => 
+      combo.cards.some(card => {
+        if (!card.starterCard.trim()) return false; // Skip empty card names
+        
+        // Check if this card name exists in the YDK cards
+        const cardExistsInYdk = ydkCards.some(ydkCard => 
+          ydkCard.name.toLowerCase() === card.starterCard.toLowerCase()
+        );
+        
+        return !cardExistsInYdk;
+      })
+    );
+
+    console.log('🔍 Checking cards against decklist:', { hasNonDecklistCards, combos: combos.length });
+
+    // AC#5: Turn toggle OFF if non-decklist cards are found
+    if (hasNonDecklistCards && testHandFromDecklist) {
+      console.log('🚫 Non-decklist cards detected, turning toggle OFF');
+      setTestHandFromDecklist(false);
+    }
+  }, [combos, ydkCards, testHandFromDecklist]);
 
   // Cleanup debounce timer on unmount
   useEffect(() => {
@@ -2500,6 +2592,10 @@ useEffect(() => {
           handleCopyLink={handleCopyLink}
           showToast={showToast}
           typography={typography}
+          testHandFromDecklist={testHandFromDecklist}
+          setTestHandFromDecklist={setTestHandFromDecklist}
+          ydkCards={ydkCards}
+          combos={combos}
         />
 
         <div className="p-0" style={{ marginTop: 'var(--spacing-lg)' }}>

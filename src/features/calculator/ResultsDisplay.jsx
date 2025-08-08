@@ -150,9 +150,26 @@ const ResultsDisplay = ({
   shareableUrl,
   handleCopyLink,
   showToast,
-  typography
+  typography,
+  testHandFromDecklist,
+  setTestHandFromDecklist,
+  ydkCards,
+  combos
 }) => {
   console.log('📊 ResultsDisplay rendered with openingHand:', openingHand);
+  
+  // AC#6: Check if toggle should be disabled due to non-decklist cards
+  const hasNonDecklistCards = ydkCards && ydkCards.length > 0 && combos.some(combo => 
+    combo.cards.some(card => {
+      if (!card.starterCard.trim()) return false;
+      return !ydkCards.some(ydkCard => 
+        ydkCard.name.toLowerCase() === card.starterCard.toLowerCase()
+      );
+    })
+  );
+  
+  const isToggleDisabled = hasNonDecklistCards;
+
   const generateResultText = (result) => {
     const cards = result.cards;
     const probability = result.probability;
@@ -222,7 +239,28 @@ const ResultsDisplay = ({
       {/* Opening Hand Display */}
       <div className="mt-6">
         <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
-          <h3 style={{...typography.h3, color: 'var(--text-main)'}}>Opening hand</h3>
+          <div className="flex items-center gap-2">
+            <h3 style={{...typography.h3, color: 'var(--text-main)'}}>Opening hand</h3>
+            <label className={`flex items-center gap-1 ${isToggleDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+              <input
+                type="checkbox"
+                checked={testHandFromDecklist}
+                onChange={(e) => !isToggleDisabled && setTestHandFromDecklist(e.target.checked)}
+                disabled={isToggleDisabled}
+                style={{
+                  opacity: isToggleDisabled ? 0.5 : 1
+                }}
+              />
+              <span style={{
+                ...typography.body, 
+                color: isToggleDisabled ? 'var(--text-tertiary)' : 'var(--text-secondary)', 
+                fontSize: '14px',
+                opacity: isToggleDisabled ? 0.5 : 1
+              }}>
+                Test hand from decklist
+              </span>
+            </label>
+          </div>
           <button
             onClick={refreshOpeningHand}
             disabled={isRefreshing}
@@ -244,7 +282,10 @@ const ResultsDisplay = ({
         </div>
         
         <p className="mb-4" style={{...typography.body, color: 'var(--text-secondary)'}}>
-          *This is a probabilistic example of your opening hand based on defined combos
+          {testHandFromDecklist && ydkCards && ydkCards.length > 0 && !isToggleDisabled
+            ? '*This is a simulated opening hand drawn from your uploaded decklist'
+            : '*This is a probabilistic example of your opening hand based on defined combos'
+          }
         </p>
         
         <div 
@@ -255,10 +296,35 @@ const ResultsDisplay = ({
             justifyContent: 'flex-start'
           }}
         >
-          {openingHand.map((cardData, index) => {
-            console.log(`🎴 Rendering card ${index}:`, cardData);
-            return <CardImage key={index} cardData={cardData} size="small" />;
-          })}
+          {/* AC#7: Lazy-load opening hand display */}
+          {isRefreshing ? (
+            // Show loading placeholders during refresh
+            Array(5).fill(null).map((_, index) => (
+              <div
+                key={`loading-${index}`}
+                style={{
+                  width: '80px',
+                  height: '112px',
+                  backgroundColor: 'var(--bg-secondary)',
+                  border: '1px solid var(--border-main)',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  animation: 'pulse 1.5s ease-in-out infinite'
+                }}
+              >
+                <span style={{...typography.body, color: 'var(--text-secondary)', fontSize: '12px'}}>
+                  ...
+                </span>
+              </div>
+            ))
+          ) : (
+            openingHand.map((cardData, index) => {
+              console.log(`🎴 Rendering card ${index}:`, cardData);
+              return <CardImage key={index} cardData={cardData} size="small" />;
+            })
+          )}
         </div>
       </div>
 
