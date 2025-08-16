@@ -1,0 +1,316 @@
+{
+  "summary": {
+    "timestamp": "2025-07-21T16:11:44.183Z",
+    "duration": "1.5s",
+    "totalStorageMB": "0.00",
+    "validation": {
+      "expectedCards": 13808,
+      "foundCards": 0,
+      "expectedImages": 27616,
+      "foundImages": 0,
+      "completeness": "0%",
+      "accessibility": "100%"
+    }
+  },
+  "results": {
+    "missingCards": 13808,
+    "structureIssues": 1000,
+    "qualityIssues": 0,
+    "inaccessibleImages": 0
+  },
+  "details": {
+    "missing": [
+      {
+        "cardId": 34541863,
+        "name": "\"A\" Cell Breeding Device",
+        "sanitizedName": "a-cell-breeding-device",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 64163367,
+        "name": "\"A\" Cell Incubator",
+        "sanitizedName": "a-cell-incubator",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 91231901,
+        "name": "\"A\" Cell Recombination Device",
+        "sanitizedName": "a-cell-recombination-device",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 73262676,
+        "name": "\"A\" Cell Scatter Burst",
+        "sanitizedName": "a-cell-scatter-burst",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 80181649,
+        "name": "\"Case of K9\"",
+        "sanitizedName": "case-of-k9",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 98319530,
+        "name": "\"Infernoble Arms - Almace\"",
+        "sanitizedName": "infernoble-arms---almace",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 37478723,
+        "name": "\"Infernoble Arms - Durendal\"",
+        "sanitizedName": "infernoble-arms---durendal",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 64867422,
+        "name": "\"Infernoble Arms - Hauteclere\"",
+        "sanitizedName": "infernoble-arms---hauteclere",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 90861137,
+        "name": "\"Infernoble Arms - Joyeuse\"",
+        "sanitizedName": "infernoble-arms---joyeuse",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 44256816,
+        "name": "1st Movement Solo",
+        "sanitizedName": "1st-movement-solo",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 86988864,
+        "name": "3-Hump Lacooda",
+        "sanitizedName": "3-hump-lacooda",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 11714098,
+        "name": "30,000-Year White Turtle",
+        "sanitizedName": "30000-year-white-turtle",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 83994646,
+        "name": "4-Starred Ladybug of Doom",
+        "sanitizedName": "4-starred-ladybug-of-doom",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 67048711,
+        "name": "7",
+        "sanitizedName": "7",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 23771716,
+        "name": "7 Colored Fish",
+        "sanitizedName": "7-colored-fish",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 86198326,
+        "name": "7 Completed",
+        "sanitizedName": "7-completed",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 14261867,
+        "name": "8-Claws Scorpion",
+        "sanitizedName": "8-claws-scorpion",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 4731783,
+        "name": "A Bao A Qu, the Lightless Shadow",
+        "sanitizedName": "a-bao-a-qu-the-lightless-shadow",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 24140059,
+        "name": "A Cat of Ill Omen",
+        "sanitizedName": "a-cat-of-ill-omen",
+        "reason": "Not found in Blob storage"
+      },
+      {
+        "cardId": 6850209,
+        "name": "A Deal with Dark Ruler",
+        "sanitizedName": "a-deal-with-dark-ruler",
+        "reason": "Not found in Blob storage"
+      }
+    ],
+    "structureIssues": [
+      {
+        "path": "cards-small/10000040.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/10002346.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/10004783.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/10012614.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/1003028.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/10032958.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/10040267.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/10045474.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/10065487.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/10117149.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/101206080.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/10125011.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/101302006.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/101302008.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/101302009.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/101302010.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/101302023.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/101302035.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/101302036.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      },
+      {
+        "path": "cards-small/101302037.webp",
+        "issue": "Invalid path structure",
+        "expected": "cards/{filename}.webp"
+      }
+    ],
+    "qualityIssues": [],
+    "inaccessible": [],
+    "accessible": [
+      {
+        "path": "cards-small/23265313.webp",
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/23265313.webp",
+        "size": 10232,
+        "status": "accessible"
+      },
+      {
+        "path": "cards-small/21051146.webp",
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/21051146.webp",
+        "size": 15878,
+        "status": "accessible"
+      },
+      {
+        "path": "cards-small/18036057.webp",
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/18036057.webp",
+        "size": 13960,
+        "status": "accessible"
+      },
+      {
+        "path": "cards-small/10365322.webp",
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/10365322.webp",
+        "size": 14832,
+        "status": "accessible"
+      },
+      {
+        "path": "cards-small/12877076.webp",
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/12877076.webp",
+        "size": 12388,
+        "status": "accessible"
+      },
+      {
+        "path": "cards-small/12160911.webp",
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/12160911.webp",
+        "size": 13542,
+        "status": "accessible"
+      },
+      {
+        "path": "cards-small/21831848.webp",
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/21831848.webp",
+        "size": 12550,
+        "status": "accessible"
+      },
+      {
+        "path": "cards-small/10065487.webp",
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/10065487.webp",
+        "size": 14480,
+        "status": "accessible"
+      },
+      {
+        "path": "cards-small/10406322.webp",
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/10406322.webp",
+        "size": 16538,
+        "status": "accessible"
+      },
+      {
+        "path": "cards-small/15028680.webp",
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/15028680.webp",
+        "size": 13798,
+        "status": "accessible"
+      }
+    ]
+  },
+  "sizes": {
+    "fullSize": 0,
+    "smallSize": 0,
+    "totalStorageBytes": 0
+  }
+}

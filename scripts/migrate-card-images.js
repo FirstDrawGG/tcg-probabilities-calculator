@@ -20,6 +20,9 @@
  * - Cost optimization (under 3GB total)
  */
 
+// Load environment variables
+require('dotenv').config({ path: '.env.local' });
+
 const { put, list } = require('@vercel/blob');
 const sharp = require('sharp');
 const fetch = require('node-fetch');

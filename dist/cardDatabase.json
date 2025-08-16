@@ -4931,7 +4931,7 @@
     "name": "PSY-Framelord Lambda",
     "isExtraDeck": true
   },
-  "8805661": {
+  "8805651": {
     "name": "Megalith Phuloch",
     "isExtraDeck": false
   },
@@ -54789,6 +54789,122 @@
   },
   "100000101": {
     "name": "Ojamandala",
+    "isExtraDeck": false
+  },
+  "100348001": {
+    "name": "Fullspeed Warrior",
+    "isExtraDeck": false
+  },
+  "100348002": {
+    "name": "Anchorbolt Hedgehog",
+    "isExtraDeck": false
+  },
+  "100348004": {
+    "name": "Scrap Synchron",
+    "isExtraDeck": false
+  },
+  "100348005": {
+    "name": "Synchro Fellows",
+    "isExtraDeck": false
+  },
+  "100348032": {
+    "name": "Junk Warrior Extreme",
+    "isExtraDeck": true
+  },
+  "100348033": {
+    "name": "Scrap Warrior",
+    "isExtraDeck": true
+  },
+  "100446001": {
+    "name": "Hecahands Ibel",
+    "isExtraDeck": false
+  },
+  "100446002": {
+    "name": "Hecahands Yadel",
+    "isExtraDeck": false
+  },
+  "100446003": {
+    "name": "Hecahands Goddus",
+    "isExtraDeck": false
+  },
+  "100446004": {
+    "name": "Hecahands Gygas",
+    "isExtraDeck": false
+  },
+  "100446005": {
+    "name": "Hecahands Breus",
+    "isExtraDeck": false
+  },
+  "100446006": {
+    "name": "Hecahands Jawza",
+    "isExtraDeck": true
+  },
+  "100446007": {
+    "name": "Hecahands Xeno",
+    "isExtraDeck": true
+  },
+  "100446009": {
+    "name": "Hecahands Tartarus",
+    "isExtraDeck": false
+  },
+  "100446010": {
+    "name": "Ipt al Hecahands",
+    "isExtraDeck": false
+  },
+  "100446011": {
+    "name": "Yad al Hecahands",
+    "isExtraDeck": false
+  },
+  "100446024": {
+    "name": "Enneapolis, the Sinquisition City",
+    "isExtraDeck": false
+  },
+  "100446025": {
+    "name": "Enneacraft - Release",
+    "isExtraDeck": false
+  },
+  "100446026": {
+    "name": "Enneacraft - Rebirth",
+    "isExtraDeck": false
+  },
+  "100446031": {
+    "name": "Killer Tune Mix",
+    "isExtraDeck": false
+  },
+  "100446032": {
+    "name": "Killer Tune Clip",
+    "isExtraDeck": false
+  },
+  "100446033": {
+    "name": "Killer Tune Reco",
+    "isExtraDeck": false
+  },
+  "100446035": {
+    "name": "Killer Tune Track Maker",
+    "isExtraDeck": true
+  },
+  "100446036": {
+    "name": "Killer Tune Remix",
+    "isExtraDeck": true
+  },
+  "100446037": {
+    "name": "Killer Tune Red Seal",
+    "isExtraDeck": true
+  },
+  "100446038": {
+    "name": "Killer Tune Loudness War",
+    "isExtraDeck": true
+  },
+  "100446039": {
+    "name": "Killer Tune Synchro",
+    "isExtraDeck": false
+  },
+  "100446040": {
+    "name": "Juke Joint \"Killer Tune\"",
+    "isExtraDeck": false
+  },
+  "100446041": {
+    "name": "Killer Tune Playlist",
     "isExtraDeck": false
   },
   "101206080": {

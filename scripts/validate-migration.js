@@ -7,6 +7,9 @@
  * It checks for completeness, quality, and accessibility of uploaded images.
  */
 
+// Load environment variables
+require('dotenv').config({ path: '.env.local' });
+
 const { list } = require('@vercel/blob');
 const fetch = require('node-fetch');
 const { writeFileSync } = require('fs');

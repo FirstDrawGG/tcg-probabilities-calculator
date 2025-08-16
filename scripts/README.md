@@ -1,4 +1,4 @@
-# Yu-Gi-Oh Card Image Migration
+# Yu-Gi-Oh Card Image Migration - Final Implementation
 
 This directory contains scripts for migrating Yu-Gi-Oh card images from the YGOPro API to Vercel Blob Storage.
 
@@ -6,11 +6,12 @@ This directory contains scripts for migrating Yu-Gi-Oh card images from the YGOP
 
 The migration system downloads all ~13,000 card images from the YGOPro API and stores them in Vercel Blob Storage with:
 
-- **Multiple formats**: WebP (85% quality) and JPEG (90% quality) for browser compatibility
-- **Multiple sizes**: Full size (420x614px) and small thumbnails (168x245px)
-- **Optimized storage**: Under 3GB total (~$0.45/month cost)
+- **WebP format only**: 85% quality for optimal size/quality balance
+- **Multiple sizes**: Full size (~420x614px) and small thumbnails (168x245px)
+- **Card name-based URLs**: `/cards/{cardName}.webp` structure for easy frontend integration
+- **Optimized storage**: Under 3GB total (~$0.42/month cost)
 - **Rate limiting**: 100ms delay between requests to respect API limits
-- **Error handling**: Robust retry logic and failure tracking
+- **Minimal retries**: Cost-optimized error handling with 1 retry max
 
 ## Setup
 
@@ -38,12 +39,30 @@ npm install @vercel/blob sharp node-fetch
 
 ## Usage
 
-### Full Migration
+### Primary Migration Script (Recommended)
 
-To migrate all card images:
+To migrate all card images using the final implementation:
 
 ```bash
-node scripts/migrate-card-images.js
+npm run migrate:images:final
+```
+
+This runs the `migrate-card-images-final.js` script which implements all acceptance criteria:
+- WebP format with 85% quality
+- Card name-based URLs structure
+- Cost optimization with minimal retries
+- Comprehensive progress tracking
+
+### Alternative Scripts
+
+Legacy scripts available for reference:
+
+```bash
+# Original multi-format script
+npm run migrate:images
+
+# Optimized WebP-only script (old version)
+npm run migrate:images:optimized
 ```
 
 ### Environment Setup
@@ -67,35 +86,60 @@ The script follows this process:
 
 ## Storage Structure
 
-Images are stored with the following structure:
+Images are stored with the following structure (new card name-based format):
 
 ```
 cards/
-├── full/
-│   ├── 12345.webp    (420x614px WebP)
-│   ├── 12345.jpg     (420x614px JPEG)
-│   └── ...
-└── small/
-    ├── 12345.webp    (168x245px WebP)
-    ├── 12345.jpg     (168x245px JPEG)
-    └── ...
+├── blue-eyes-white-dragon.webp        (420x614px full size)
+├── blue-eyes-white-dragon-small.webp  (168x245px small size)
+├── dark-magician.webp                 (420x614px full size)
+├── dark-magician-small.webp           (168x245px small size)
+└── ...
 ```
+
+### Card Name Sanitization
+
+Card names are processed for URL-safe filenames:
+- Remove special characters (keep alphanumeric, spaces, hyphens)
+- Replace spaces with hyphens  
+- Convert to lowercase
+- Limit to 50 characters
+
+Example: `"Blue-Eyes White Dragon"` → `"blue-eyes-white-dragon"`
 
 ## Cost Optimization
 
-- **WebP compression**: 25-35% smaller than equivalent JPEG
-- **Quality settings**: Balanced for optimal size/quality ratio
-- **Total storage**: ~2.5GB for full database (~$0.42/month)
+- **WebP format only**: 25-35% smaller than equivalent JPEG quality
+- **Quality setting**: 85% for optimal size/quality balance
+- **Minimal retries**: Only 1 retry per operation to avoid waste
+- **Total storage**: <3GB limit (~$0.42/month target)
 - **CDN delivery**: Fast global access through Vercel's network
+- **Batch limiting**: Max 15,000 cards per run to prevent runaway costs
 
 ## Error Handling
 
 The script includes comprehensive error handling:
 
-- **Retry logic**: Up to 3 retries for failed downloads/uploads
-- **Graceful continuation**: Script continues if individual cards fail
+- **Minimal retry logic**: 1 retry for cost optimization
+- **Graceful continuation**: Script continues if individual cards fail  
 - **Detailed logging**: All failures logged with card ID and error details
 - **Resumable**: Can be re-run to retry failed uploads without duplicating
+- **Storage limit monitoring**: Stops at 3GB to prevent cost overruns
+
+## Validation
+
+After migration, validate the results:
+
+```bash
+npm run validate:migration:final
+```
+
+The validation script checks:
+- **Completeness**: All cards with images have been migrated
+- **Structure**: Proper file naming and organization
+- **Accessibility**: Sample images can be accessed via direct URLs
+- **Quality**: Images maintain expected visual quality
+- **Costs**: Storage size within expected limits
 
 ## Monitoring
 
@@ -110,7 +154,7 @@ The script provides real-time progress updates:
 
 ### Results File
 
-After completion, detailed results are saved to `migration-results.json`:
+After completion, detailed results are saved to `migration-results-final.json`:
 
 ```json
 {

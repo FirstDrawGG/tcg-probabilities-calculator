@@ -1,0 +1,446 @@
+{
+  "summary": {
+    "timestamp": "2025-07-21T15:19:43.616Z",
+    "duration": 5,
+    "validation": "FAILED",
+    "totalCards": 13806,
+    "expectedImages": 55224,
+    "foundImages": 1000,
+    "uniqueCards": 0,
+    "completeness": 2,
+    "storage": {
+      "totalSize": 13558948,
+      "totalGB": 0.012627754360437393,
+      "monthlyCost": 0.001894163154065609,
+      "sizeBuckets": {
+        "under-10kb": 42,
+        "10-50kb": 958,
+        "50-100kb": 0,
+        "over-100kb": 0
+      }
+    }
+  },
+  "breakdown": {
+    "byFormat": {
+      "webp": 0,
+      "jpg": 0
+    },
+    "bySize": {
+      "full": 0,
+      "small": 0
+    }
+  },
+  "issues": {
+    "missing": 55224,
+    "inaccessible": 0,
+    "broken": 0
+  },
+  "details": {
+    "missing": [
+      {
+        "cardId": "34541863",
+        "cardName": "\"A\" Cell Breeding Device",
+        "path": "cards/full/34541863.webp",
+        "size": "full",
+        "format": "webp"
+      },
+      {
+        "cardId": "34541863",
+        "cardName": "\"A\" Cell Breeding Device",
+        "path": "cards/full/34541863.jpg",
+        "size": "full",
+        "format": "jpg"
+      },
+      {
+        "cardId": "34541863",
+        "cardName": "\"A\" Cell Breeding Device",
+        "path": "cards/small/34541863.webp",
+        "size": "small",
+        "format": "webp"
+      },
+      {
+        "cardId": "34541863",
+        "cardName": "\"A\" Cell Breeding Device",
+        "path": "cards/small/34541863.jpg",
+        "size": "small",
+        "format": "jpg"
+      },
+      {
+        "cardId": "64163367",
+        "cardName": "\"A\" Cell Incubator",
+        "path": "cards/full/64163367.webp",
+        "size": "full",
+        "format": "webp"
+      },
+      {
+        "cardId": "64163367",
+        "cardName": "\"A\" Cell Incubator",
+        "path": "cards/full/64163367.jpg",
+        "size": "full",
+        "format": "jpg"
+      },
+      {
+        "cardId": "64163367",
+        "cardName": "\"A\" Cell Incubator",
+        "path": "cards/small/64163367.webp",
+        "size": "small",
+        "format": "webp"
+      },
+      {
+        "cardId": "64163367",
+        "cardName": "\"A\" Cell Incubator",
+        "path": "cards/small/64163367.jpg",
+        "size": "small",
+        "format": "jpg"
+      },
+      {
+        "cardId": "91231901",
+        "cardName": "\"A\" Cell Recombination Device",
+        "path": "cards/full/91231901.webp",
+        "size": "full",
+        "format": "webp"
+      },
+      {
+        "cardId": "91231901",
+        "cardName": "\"A\" Cell Recombination Device",
+        "path": "cards/full/91231901.jpg",
+        "size": "full",
+        "format": "jpg"
+      },
+      {
+        "cardId": "91231901",
+        "cardName": "\"A\" Cell Recombination Device",
+        "path": "cards/small/91231901.webp",
+        "size": "small",
+        "format": "webp"
+      },
+      {
+        "cardId": "91231901",
+        "cardName": "\"A\" Cell Recombination Device",
+        "path": "cards/small/91231901.jpg",
+        "size": "small",
+        "format": "jpg"
+      },
+      {
+        "cardId": "73262676",
+        "cardName": "\"A\" Cell Scatter Burst",
+        "path": "cards/full/73262676.webp",
+        "size": "full",
+        "format": "webp"
+      },
+      {
+        "cardId": "73262676",
+        "cardName": "\"A\" Cell Scatter Burst",
+        "path": "cards/full/73262676.jpg",
+        "size": "full",
+        "format": "jpg"
+      },
+      {
+        "cardId": "73262676",
+        "cardName": "\"A\" Cell Scatter Burst",
+        "path": "cards/small/73262676.webp",
+        "size": "small",
+        "format": "webp"
+      },
+      {
+        "cardId": "73262676",
+        "cardName": "\"A\" Cell Scatter Burst",
+        "path": "cards/small/73262676.jpg",
+        "size": "small",
+        "format": "jpg"
+      },
+      {
+        "cardId": "80181649",
+        "cardName": "\"Case of K9\"",
+        "path": "cards/full/80181649.webp",
+        "size": "full",
+        "format": "webp"
+      },
+      {
+        "cardId": "80181649",
+        "cardName": "\"Case of K9\"",
+        "path": "cards/full/80181649.jpg",
+        "size": "full",
+        "format": "jpg"
+      },
+      {
+        "cardId": "80181649",
+        "cardName": "\"Case of K9\"",
+        "path": "cards/small/80181649.webp",
+        "size": "small",
+        "format": "webp"
+      },
+      {
+        "cardId": "80181649",
+        "cardName": "\"Case of K9\"",
+        "path": "cards/small/80181649.jpg",
+        "size": "small",
+        "format": "jpg"
+      },
+      {
+        "cardId": "98319530",
+        "cardName": "\"Infernoble Arms - Almace\"",
+        "path": "cards/full/98319530.webp",
+        "size": "full",
+        "format": "webp"
+      },
+      {
+        "cardId": "98319530",
+        "cardName": "\"Infernoble Arms - Almace\"",
+        "path": "cards/full/98319530.jpg",
+        "size": "full",
+        "format": "jpg"
+      },
+      {
+        "cardId": "98319530",
+        "cardName": "\"Infernoble Arms - Almace\"",
+        "path": "cards/small/98319530.webp",
+        "size": "small",
+        "format": "webp"
+      },
+      {
+        "cardId": "98319530",
+        "cardName": "\"Infernoble Arms - Almace\"",
+        "path": "cards/small/98319530.jpg",
+        "size": "small",
+        "format": "jpg"
+      },
+      {
+        "cardId": "37478723",
+        "cardName": "\"Infernoble Arms - Durendal\"",
+        "path": "cards/full/37478723.webp",
+        "size": "full",
+        "format": "webp"
+      },
+      {
+        "cardId": "37478723",
+        "cardName": "\"Infernoble Arms - Durendal\"",
+        "path": "cards/full/37478723.jpg",
+        "size": "full",
+        "format": "jpg"
+      },
+      {
+        "cardId": "37478723",
+        "cardName": "\"Infernoble Arms - Durendal\"",
+        "path": "cards/small/37478723.webp",
+        "size": "small",
+        "format": "webp"
+      },
+      {
+        "cardId": "37478723",
+        "cardName": "\"Infernoble Arms - Durendal\"",
+        "path": "cards/small/37478723.jpg",
+        "size": "small",
+        "format": "jpg"
+      },
+      {
+        "cardId": "64867422",
+        "cardName": "\"Infernoble Arms - Hauteclere\"",
+        "path": "cards/full/64867422.webp",
+        "size": "full",
+        "format": "webp"
+      },
+      {
+        "cardId": "64867422",
+        "cardName": "\"Infernoble Arms - Hauteclere\"",
+        "path": "cards/full/64867422.jpg",
+        "size": "full",
+        "format": "jpg"
+      },
+      {
+        "cardId": "64867422",
+        "cardName": "\"Infernoble Arms - Hauteclere\"",
+        "path": "cards/small/64867422.webp",
+        "size": "small",
+        "format": "webp"
+      },
+      {
+        "cardId": "64867422",
+        "cardName": "\"Infernoble Arms - Hauteclere\"",
+        "path": "cards/small/64867422.jpg",
+        "size": "small",
+        "format": "jpg"
+      },
+      {
+        "cardId": "90861137",
+        "cardName": "\"Infernoble Arms - Joyeuse\"",
+        "path": "cards/full/90861137.webp",
+        "size": "full",
+        "format": "webp"
+      },
+      {
+        "cardId": "90861137",
+        "cardName": "\"Infernoble Arms - Joyeuse\"",
+        "path": "cards/full/90861137.jpg",
+        "size": "full",
+        "format": "jpg"
+      },
+      {
+        "cardId": "90861137",
+        "cardName": "\"Infernoble Arms - Joyeuse\"",
+        "path": "cards/small/90861137.webp",
+        "size": "small",
+        "format": "webp"
+      },
+      {
+        "cardId": "90861137",
+        "cardName": "\"Infernoble Arms - Joyeuse\"",
+        "path": "cards/small/90861137.jpg",
+        "size": "small",
+        "format": "jpg"
+      },
+      {
+        "cardId": "44256816",
+        "cardName": "1st Movement Solo",
+        "path": "cards/full/44256816.webp",
+        "size": "full",
+        "format": "webp"
+      },
+      {
+        "cardId": "44256816",
+        "cardName": "1st Movement Solo",
+        "path": "cards/full/44256816.jpg",
+        "size": "full",
+        "format": "jpg"
+      },
+      {
+        "cardId": "44256816",
+        "cardName": "1st Movement Solo",
+        "path": "cards/small/44256816.webp",
+        "size": "small",
+        "format": "webp"
+      },
+      {
+        "cardId": "44256816",
+        "cardName": "1st Movement Solo",
+        "path": "cards/small/44256816.jpg",
+        "size": "small",
+        "format": "jpg"
+      },
+      {
+        "cardId": "86988864",
+        "cardName": "3-Hump Lacooda",
+        "path": "cards/full/86988864.webp",
+        "size": "full",
+        "format": "webp"
+      },
+      {
+        "cardId": "86988864",
+        "cardName": "3-Hump Lacooda",
+        "path": "cards/full/86988864.jpg",
+        "size": "full",
+        "format": "jpg"
+      },
+      {
+        "cardId": "86988864",
+        "cardName": "3-Hump Lacooda",
+        "path": "cards/small/86988864.webp",
+        "size": "small",
+        "format": "webp"
+      },
+      {
+        "cardId": "86988864",
+        "cardName": "3-Hump Lacooda",
+        "path": "cards/small/86988864.jpg",
+        "size": "small",
+        "format": "jpg"
+      },
+      {
+        "cardId": "11714098",
+        "cardName": "30,000-Year White Turtle",
+        "path": "cards/full/11714098.webp",
+        "size": "full",
+        "format": "webp"
+      },
+      {
+        "cardId": "11714098",
+        "cardName": "30,000-Year White Turtle",
+        "path": "cards/full/11714098.jpg",
+        "size": "full",
+        "format": "jpg"
+      },
+      {
+        "cardId": "11714098",
+        "cardName": "30,000-Year White Turtle",
+        "path": "cards/small/11714098.webp",
+        "size": "small",
+        "format": "webp"
+      },
+      {
+        "cardId": "11714098",
+        "cardName": "30,000-Year White Turtle",
+        "path": "cards/small/11714098.jpg",
+        "size": "small",
+        "format": "jpg"
+      },
+      {
+        "cardId": "83994646",
+        "cardName": "4-Starred Ladybug of Doom",
+        "path": "cards/full/83994646.webp",
+        "size": "full",
+        "format": "webp"
+      },
+      {
+        "cardId": "83994646",
+        "cardName": "4-Starred Ladybug of Doom",
+        "path": "cards/full/83994646.jpg",
+        "size": "full",
+        "format": "jpg"
+      }
+    ],
+    "inaccessible": [],
+    "broken": [],
+    "accessible": [
+      {
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/15595052.webp",
+        "pathname": "cards-small/15595052.webp",
+        "size": "12464"
+      },
+      {
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/17881964.webp",
+        "pathname": "cards-small/17881964.webp",
+        "size": "12948"
+      },
+      {
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/10789972.webp",
+        "pathname": "cards-small/10789972.webp",
+        "size": "14012"
+      },
+      {
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/10602628.webp",
+        "pathname": "cards-small/10602628.webp",
+        "size": "15382"
+      },
+      {
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/1050355.webp",
+        "pathname": "cards-small/1050355.webp",
+        "size": "12782"
+      },
+      {
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/300103005.webp",
+        "pathname": "cards-small/300103005.webp",
+        "size": "13850"
+      },
+      {
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/1174075.webp",
+        "pathname": "cards-small/1174075.webp",
+        "size": "16426"
+      },
+      {
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/25419323.webp",
+        "pathname": "cards-small/25419323.webp",
+        "size": "16222"
+      },
+      {
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/2102065.webp",
+        "pathname": "cards-small/2102065.webp",
+        "size": "14464"
+      },
+      {
+        "url": "https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com/cards-small/10218411.webp",
+        "pathname": "cards-small/10218411.webp",
+        "size": "13162"
+      }
+    ]
+  }
+}

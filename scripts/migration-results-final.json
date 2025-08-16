@@ -1,0 +1,31 @@
+{
+  "summary": {
+    "total": 13808,
+    "processed": 13808,
+    "uploaded": 0,
+    "failed": 0,
+    "skipped": 0,
+    "duration": 44659.463,
+    "totalSizeMB": "0.00",
+    "timestamp": "2025-07-22T06:18:48.511Z",
+    "configuration": {
+      "webpQuality": 85,
+      "sizes": {
+        "full": {
+          "width": 420,
+          "height": 614,
+          "suffix": ""
+        },
+        "small": {
+          "width": 168,
+          "height": 245,
+          "suffix": "-small"
+        }
+      },
+      "rateLimit": 100,
+      "maxRetries": 1
+    }
+  },
+  "failed": [],
+  "skipped": []
+}
