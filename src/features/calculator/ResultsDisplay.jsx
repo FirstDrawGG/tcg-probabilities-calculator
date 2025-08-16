@@ -186,18 +186,33 @@ const ResultsDisplay = ({
         return `Chances of seeing between ${card.minCopiesInHand} and ${card.maxCopiesInHand} copies of ${card.starterCard} in your opening hand: ${probability.toFixed(2)}%`;
       }
     } else {
-      const card1 = cards[0];
-      const card2 = cards[1];
+      // Multi-card combo with AND/OR logic
+      let resultText = "Chances of seeing ";
       
-      const card1Text = card1.minCopiesInHand === card1.maxCopiesInHand 
-        ? `exactly ${card1.minCopiesInHand} copies of ${card1.starterCard}`
-        : `between ${card1.minCopiesInHand} and ${card1.maxCopiesInHand} copies of ${card1.starterCard}`;
+      // Build the text dynamically based on logic operators
+      for (let i = 0; i < cards.length; i++) {
+        const card = cards[i];
+        const cardText = card.minCopiesInHand === card.maxCopiesInHand 
+          ? `exactly ${card.minCopiesInHand} copies of ${card.starterCard}`
+          : `between ${card.minCopiesInHand} and ${card.maxCopiesInHand} copies of ${card.starterCard}`;
         
-      const card2Text = card2.minCopiesInHand === card2.maxCopiesInHand
-        ? `exactly ${card2.minCopiesInHand} copies of ${card2.starterCard}`
-        : `between ${card2.minCopiesInHand} and ${card2.maxCopiesInHand} copies of ${card2.starterCard}`;
+        if (i === 0) {
+          // First card - no logic operator
+          resultText += cardText;
+        } else {
+          // Subsequent cards - use their logic operator
+          const logicOp = card.logicOperator || 'AND';
+          // AC #8 & #9: Display logic in capitalized letters
+          if (logicOp === 'OR') {
+            resultText += `, OR ${cardText}`;
+          } else {
+            resultText += `, AND ${cardText}`;
+          }
+        }
+      }
       
-      return `Chances of seeing ${card1Text}, and ${card2Text} in your opening hand: ${probability.toFixed(2)}%`;
+      resultText += ` in your opening hand: ${probability.toFixed(2)}%`;
+      return resultText;
     }
   };
 

@@ -22,7 +22,8 @@ const URLService = {
             iC: card.isCustom,
             deck: card.startersInDeck,
             min: card.minCopiesInHand,
-            max: card.maxCopiesInHand
+            max: card.maxCopiesInHand,
+            logic: card.logicOperator || 'AND'  // AC #6: Save AND/OR logic in URLs
           }))
         })),
         testHand: testHandFromDecklist
@@ -70,7 +71,8 @@ const URLService = {
             isCustom: card.iC || false,
             startersInDeck: card.deck,
             minCopiesInHand: card.min,
-            maxCopiesInHand: card.max
+            maxCopiesInHand: card.max,
+            logicOperator: card.logic || 'AND'  // AC #6: Default to AND for old URLs
           }))
         })),
         testHandFromDecklist: data.testHand !== undefined ? data.testHand : true
@@ -1236,7 +1238,8 @@ const createCombo = (id, index) => ({
     isCustom: false,
     startersInDeck: 3,
     minCopiesInHand: 1,
-    maxCopiesInHand: 3
+    maxCopiesInHand: 3,
+    logicOperator: 'AND'  // Default to AND, only relevant for 2nd+ cards
   }]
 });
 
@@ -1902,7 +1905,8 @@ export default function TCGCalculator() {
             isCustom: false,
             startersInDeck: 3,
             minCopiesInHand: 1,
-            maxCopiesInHand: 3
+            maxCopiesInHand: 3,
+            logicOperator: 'AND'  // AC #3: Default to AND
           }
         ]
       };

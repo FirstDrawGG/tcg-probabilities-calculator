@@ -22,7 +22,7 @@ class ProbabilityService {
    */
   getCacheKey(combo, deckSize, handSize) {
     const cardsKey = combo.cards.map(card => 
-      `${card.startersInDeck}-${card.minCopiesInHand}-${card.maxCopiesInHand}`
+      `${card.startersInDeck}-${card.minCopiesInHand}-${card.maxCopiesInHand}-${card.logicOperator || 'AND'}`
     ).join('|');
     return `${cardsKey}-${deckSize}-${handSize}`;
   }
@@ -33,7 +33,7 @@ class ProbabilityService {
   getCombinedCacheKey(combos, deckSize, handSize) {
     const combosKey = combos.map(combo => 
       combo.cards.map(card => 
-        `${card.startersInDeck}-${card.minCopiesInHand}-${card.maxCopiesInHand}`
+        `${card.startersInDeck}-${card.minCopiesInHand}-${card.maxCopiesInHand}-${card.logicOperator || 'AND'}`
       ).join('|')
     ).join('||');
     return `combined-${combosKey}-${deckSize}-${handSize}`;
@@ -87,19 +87,40 @@ class ProbabilityService {
         }
       }
       
-      // Check if combo criteria are met
-      let allCardsCriteriaMet = true;
-      for (let cardIndex = 0; cardIndex < combo.cards.length; cardIndex++) {
-        const card = combo.cards[cardIndex];
-        const drawnCount = cardCounts[cardIndex];
+      // Check if combo criteria are met with AND/OR logic
+      let comboMet = false;
+      
+      if (combo.cards.length === 1) {
+        // Single card combo - just check the one card
+        const card = combo.cards[0];
+        const drawnCount = cardCounts[0];
+        comboMet = (drawnCount >= card.minCopiesInHand && drawnCount <= card.maxCopiesInHand);
+      } else {
+        // Multi-card combo - evaluate the expression left to right
+        // Start with the first card (always required)
+        const firstCard = combo.cards[0];
+        const firstCardMet = (cardCounts[0] >= firstCard.minCopiesInHand && cardCounts[0] <= firstCard.maxCopiesInHand);
         
-        if (drawnCount < card.minCopiesInHand || drawnCount > card.maxCopiesInHand) {
-          allCardsCriteriaMet = false;
-          break;
+        let result = firstCardMet;
+        
+        // Process each subsequent card with its logic operator
+        for (let cardIndex = 1; cardIndex < combo.cards.length; cardIndex++) {
+          const card = combo.cards[cardIndex];
+          const drawnCount = cardCounts[cardIndex];
+          const cardMet = (drawnCount >= card.minCopiesInHand && drawnCount <= card.maxCopiesInHand);
+          const logicOp = card.logicOperator || 'AND';
+          
+          if (logicOp === 'AND') {
+            result = result && cardMet;
+          } else if (logicOp === 'OR') {
+            result = result || cardMet;
+          }
         }
+        
+        comboMet = result;
       }
       
-      if (allCardsCriteriaMet) {
+      if (comboMet) {
         successes++;
       }
     }
@@ -185,17 +206,41 @@ class ProbabilityService {
       let anyComboSucceeds = false;
       
       for (const combo of combos) {
-        let comboSucceeds = true;
+        let comboSucceeds = false;
         
-        for (const card of combo.cards) {
+        if (combo.cards.length === 1) {
+          // Single card combo
+          const card = combo.cards[0];
           const cardKey = `${card.starterCard}-${card.cardId || 'custom'}`;
           const cardInfo = allUniqueCards.get(cardKey);
           const drawnCount = handCounts.get(cardInfo.id) || 0;
+          comboSucceeds = (drawnCount >= card.minCopiesInHand && drawnCount <= card.maxCopiesInHand);
+        } else {
+          // Multi-card combo with AND/OR logic
+          const firstCard = combo.cards[0];
+          const firstCardKey = `${firstCard.starterCard}-${firstCard.cardId || 'custom'}`;
+          const firstCardInfo = allUniqueCards.get(firstCardKey);
+          const firstDrawnCount = handCounts.get(firstCardInfo.id) || 0;
+          const firstCardMet = (firstDrawnCount >= firstCard.minCopiesInHand && firstDrawnCount <= firstCard.maxCopiesInHand);
           
-          if (drawnCount < card.minCopiesInHand || drawnCount > card.maxCopiesInHand) {
-            comboSucceeds = false;
-            break;
+          let result = firstCardMet;
+          
+          for (let cardIndex = 1; cardIndex < combo.cards.length; cardIndex++) {
+            const card = combo.cards[cardIndex];
+            const cardKey = `${card.starterCard}-${card.cardId || 'custom'}`;
+            const cardInfo = allUniqueCards.get(cardKey);
+            const drawnCount = handCounts.get(cardInfo.id) || 0;
+            const cardMet = (drawnCount >= card.minCopiesInHand && drawnCount <= card.maxCopiesInHand);
+            const logicOp = card.logicOperator || 'AND';
+            
+            if (logicOp === 'AND') {
+              result = result && cardMet;
+            } else if (logicOp === 'OR') {
+              result = result || cardMet;
+            }
           }
+          
+          comboSucceeds = result;
         }
         
         if (comboSucceeds) {
