@@ -124,7 +124,8 @@ const DeckInputs = ({
   handSize,
   setHandSize,
   errors,
-  typography
+  typography,
+  minHandSize = 1
 }) => {
   return (
     <div className="space-y-4">
@@ -163,7 +164,8 @@ const DeckInputs = ({
         <div className="flex space-x-2">
           <button
             onClick={() => setHandSize(5)}
-            className="flex-1 font-medium transition-colors"
+            disabled={5 < minHandSize}
+            className="flex-1 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
               backgroundColor: handSize === 5 ? 'var(--bg-action)' : 'var(--bg-secondary)',
               color: handSize === 5 ? 'var(--text-black)' : 'var(--text-main)',
@@ -177,7 +179,8 @@ const DeckInputs = ({
           </button>
           <button
             onClick={() => setHandSize(6)}
-            className="flex-1 font-medium transition-colors"
+            disabled={6 < minHandSize}
+            className="flex-1 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
               backgroundColor: handSize === 6 ? 'var(--bg-action)' : 'var(--bg-secondary)',
               color: handSize === 6 ? 'var(--text-black)' : 'var(--text-main)',
@@ -189,7 +192,29 @@ const DeckInputs = ({
           >
             6
           </button>
+          {/* AC #7: Show current minimum if it's higher than 6 */}
+          {minHandSize > 6 && (
+            <button
+              onClick={() => setHandSize(minHandSize)}
+              className="flex-1 font-medium transition-colors"
+              style={{
+                backgroundColor: handSize === minHandSize ? 'var(--bg-action)' : 'var(--bg-secondary)',
+                color: handSize === minHandSize ? 'var(--text-black)' : 'var(--text-main)',
+                border: `1px solid var(--border-main)`,
+                borderRadius: '999px',
+                height: '40px',
+                ...typography.body
+              }}
+            >
+              {minHandSize}
+            </button>
+          )}
         </div>
+        {minHandSize > handSize && (
+          <p className="text-yellow-500 mt-2" style={{...typography.body, fontSize: '14px'}}>
+            Hand size must be at least {minHandSize} to accommodate your combo requirements
+          </p>
+        )}
       </div>
     </div>
   );

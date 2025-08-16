@@ -1891,7 +1891,7 @@ export default function TCGCalculator() {
     }));
   };
 
-  const addSecondCard = (comboId) => {
+  const addCard = (comboId) => {
     setCombos(combos.map(combo => {
       if (combo.id !== comboId) return combo;
       
@@ -1906,7 +1906,7 @@ export default function TCGCalculator() {
             startersInDeck: 3,
             minCopiesInHand: 1,
             maxCopiesInHand: 3,
-            logicOperator: 'AND'  // AC #3: Default to AND
+            logicOperator: 'AND'  // Default to AND
           }
         ]
       };
@@ -1922,6 +1922,46 @@ export default function TCGCalculator() {
         cards: [combo.cards[0]]
       };
     }));
+  };
+
+  // AC #6: Remove specific card from combo
+  const removeCard = (comboId, cardIndex) => {
+    setCombos(combos.map(combo => {
+      if (combo.id !== comboId) return combo;
+      
+      const newCards = combo.cards.filter((_, index) => index !== cardIndex);
+      
+      // Ensure at least one card remains
+      if (newCards.length === 0) {
+        return {
+          ...combo,
+          cards: [{
+            starterCard: '',
+            cardId: null,
+            isCustom: false,
+            startersInDeck: 3,
+            minCopiesInHand: 1,
+            maxCopiesInHand: 3,
+            logicOperator: 'AND'
+          }]
+        };
+      }
+      
+      return { ...combo, cards: newCards };
+    }));
+  };
+
+  // AC #4: Check if adding a card would exceed hand size
+  const canAddCard = (combo) => {
+    const currentMinSum = combo.cards.reduce((sum, card) => sum + card.minCopiesInHand, 0);
+    return currentMinSum + 1 <= handSize; // +1 for the new card's default min (1)
+  };
+
+  // AC #7: Get the highest min in hand sum across all combos
+  const getHighestMinInHandSum = () => {
+    return Math.max(...combos.map(combo => 
+      combo.cards.reduce((sum, card) => sum + card.minCopiesInHand, 0)
+    ));
   };
 
   const startEditingComboName = (combo) => {
@@ -2183,6 +2223,7 @@ useEffect(() => {
               setHandSize={setHandSize}
               errors={errors}
               typography={typography}
+              minHandSize={getHighestMinInHandSum()}
             />
           </div>
 
@@ -2242,16 +2283,22 @@ useEffect(() => {
                           Card name:
                           <Tooltip text="Search for any Yu-Gi-Oh card or create a custom placeholder (e.g. 'Any Dragon monster' or 'Any Unchained Card')" />
                         </label>
-                        {cardIndex === 1 && (
+                        {/* AC #6: [X] remove option for each card except the first */}
+                        {cardIndex > 0 && (
                           <button
-                            onClick={() => removeSecondCard(combo.id)}
-                            className="font-medium hover:opacity-80 transition-opacity"
+                            onClick={() => removeCard(combo.id, cardIndex)}
+                            className="font-medium hover:opacity-80 transition-opacity w-8 h-8 flex items-center justify-center"
                             style={{
-                              ...typography.body,
-                              color: 'var(--text-main)'
+                              backgroundColor: 'var(--bg-secondary)',
+                              border: '1px solid var(--border-main)',
+                              borderRadius: '50%',
+                              color: 'var(--text-main)',
+                              fontSize: '18px',
+                              fontWeight: 'bold'
                             }}
+                            title="Remove this card"
                           >
-                            Remove
+                            ×
                           </button>
                         )}
                       </div>
@@ -2503,30 +2550,33 @@ useEffect(() => {
                   </div>
                 ))}
                 
-                {combo.cards.length === 1 && (
-                  <div className="flex items-center mt-4">
-                    <button
-                      onClick={() => addSecondCard(combo.id)}
-                      className="font-medium transition-colors hover:opacity-80"
-                      style={{ 
-                        boxSizing: 'border-box',
-                        width: '200px',
-                        height: '40px',
-                        display: 'block',
-                        backgroundColor: 'var(--bg-secondary)',
-                        overflow: 'visible',
-                        gap: '7px',
-                        borderRadius: '999px',
-                        border: '1px solid var(--border-main)',
-                        ...typography.body,
-                        color: 'var(--text-main)'
-                      }}
-                    >
-                      + Add 2nd card
-                    </button>
-                    <Tooltip text="Test 2-card combos by adding a second required piece to this setup" />
-                  </div>
-                )}
+                {/* AC #1, #2, #3, #4: Dynamic Add Card button */}
+                <div className="flex items-center mt-4">
+                  <button
+                    onClick={() => addCard(combo.id)}
+                    disabled={!canAddCard(combo)}
+                    className="font-medium transition-colors hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ 
+                      boxSizing: 'border-box',
+                      width: '200px',
+                      height: '40px',
+                      display: 'block',
+                      backgroundColor: canAddCard(combo) ? 'var(--bg-secondary)' : 'var(--bg-main)',
+                      overflow: 'visible',
+                      gap: '7px',
+                      borderRadius: '999px',
+                      border: '1px solid var(--border-main)',
+                      ...typography.body,
+                      color: canAddCard(combo) ? 'var(--text-main)' : 'var(--text-secondary)'
+                    }}
+                  >
+                    + Add card
+                  </button>
+                  <Tooltip text={canAddCard(combo) 
+                    ? "Add another card to create more complex combos" 
+                    : "Your combo would exceed the defined Hand size"
+                  } />
+                </div>
               </div>
             ))}
 
