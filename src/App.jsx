@@ -2272,6 +2272,48 @@ useEffect(() => {
                       )}
                     </div>
 
+                    {/* AC #1: Add AND/OR toggle for each card except the first */}
+                    {cardIndex > 0 && (
+                      <div className="mb-3">
+                        <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
+                          Logic:
+                          <Tooltip text="AND = need all cards, OR = need any of these cards" />
+                        </label>
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => updateCombo(combo.id, cardIndex, 'logicOperator', 'AND')}
+                            className="px-4 py-2 rounded font-medium transition-colors"
+                            style={{
+                              backgroundColor: (card.logicOperator || 'AND') === 'AND' ? 'var(--bg-action)' : 'var(--bg-secondary)',
+                              color: (card.logicOperator || 'AND') === 'AND' ? 'var(--text-black)' : 'var(--text-main)',
+                              border: '1px solid var(--border-main)',
+                              borderRadius: '999px',
+                              height: '40px',
+                              minWidth: '60px',
+                              ...typography.body
+                            }}
+                          >
+                            AND
+                          </button>
+                          <button
+                            onClick={() => updateCombo(combo.id, cardIndex, 'logicOperator', 'OR')}
+                            className="px-4 py-2 rounded font-medium transition-colors"
+                            style={{
+                              backgroundColor: (card.logicOperator || 'AND') === 'OR' ? 'var(--bg-action)' : 'var(--bg-secondary)',
+                              color: (card.logicOperator || 'AND') === 'OR' ? 'var(--text-black)' : 'var(--text-main)',
+                              border: '1px solid var(--border-main)',
+                              borderRadius: '999px',
+                              height: '40px',
+                              minWidth: '60px',
+                              ...typography.body
+                            }}
+                          >
+                            OR
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
                     <div className="space-y-4">
                       <div>
                         <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
