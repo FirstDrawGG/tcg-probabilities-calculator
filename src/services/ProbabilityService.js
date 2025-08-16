@@ -96,28 +96,39 @@ class ProbabilityService {
         const drawnCount = cardCounts[0];
         comboMet = (drawnCount >= card.minCopiesInHand && drawnCount <= card.maxCopiesInHand);
       } else {
-        // Multi-card combo - evaluate the expression left to right
-        // Start with the first card (always required)
+        // Multi-card combo: 1st AND 2nd AND/OR 3rd+ cards
         const firstCard = combo.cards[0];
         const firstCardMet = (cardCounts[0] >= firstCard.minCopiesInHand && cardCounts[0] <= firstCard.maxCopiesInHand);
         
-        let result = firstCardMet;
-        
-        // Process each subsequent card with its logic operator
-        for (let cardIndex = 1; cardIndex < combo.cards.length; cardIndex++) {
-          const card = combo.cards[cardIndex];
-          const drawnCount = cardCounts[cardIndex];
-          const cardMet = (drawnCount >= card.minCopiesInHand && drawnCount <= card.maxCopiesInHand);
-          const logicOp = card.logicOperator || 'AND';
+        if (combo.cards.length === 2) {
+          // Two-card combo: 1st AND 2nd
+          const secondCard = combo.cards[1];
+          const secondCardMet = (cardCounts[1] >= secondCard.minCopiesInHand && cardCounts[1] <= secondCard.maxCopiesInHand);
+          comboMet = firstCardMet && secondCardMet;
+        } else {
+          // Three+ card combo: 1st AND 2nd, then AND/OR for 3rd+ cards
+          const secondCard = combo.cards[1];
+          const secondCardMet = (cardCounts[1] >= secondCard.minCopiesInHand && cardCounts[1] <= secondCard.maxCopiesInHand);
           
-          if (logicOp === 'AND') {
-            result = result && cardMet;
-          } else if (logicOp === 'OR') {
-            result = result || cardMet;
+          // First two cards must be met (AND logic)
+          let baseResult = firstCardMet && secondCardMet;
+          
+          // Process 3rd+ cards with their logic operators against the base (1st AND 2nd)
+          for (let cardIndex = 2; cardIndex < combo.cards.length; cardIndex++) {
+            const card = combo.cards[cardIndex];
+            const drawnCount = cardCounts[cardIndex];
+            const cardMet = (drawnCount >= card.minCopiesInHand && drawnCount <= card.maxCopiesInHand);
+            const logicOp = card.logicOperator || 'AND';
+            
+            if (logicOp === 'AND') {
+              baseResult = baseResult && cardMet;
+            } else if (logicOp === 'OR') {
+              baseResult = baseResult || cardMet;
+            }
           }
+          
+          comboMet = baseResult;
         }
-        
-        comboMet = result;
       }
       
       if (comboMet) {
@@ -216,31 +227,50 @@ class ProbabilityService {
           const drawnCount = handCounts.get(cardInfo.id) || 0;
           comboSucceeds = (drawnCount >= card.minCopiesInHand && drawnCount <= card.maxCopiesInHand);
         } else {
-          // Multi-card combo with AND/OR logic
+          // Multi-card combo: 1st AND 2nd AND/OR 3rd+ cards
           const firstCard = combo.cards[0];
           const firstCardKey = `${firstCard.starterCard}-${firstCard.cardId || 'custom'}`;
           const firstCardInfo = allUniqueCards.get(firstCardKey);
           const firstDrawnCount = handCounts.get(firstCardInfo.id) || 0;
           const firstCardMet = (firstDrawnCount >= firstCard.minCopiesInHand && firstDrawnCount <= firstCard.maxCopiesInHand);
           
-          let result = firstCardMet;
-          
-          for (let cardIndex = 1; cardIndex < combo.cards.length; cardIndex++) {
-            const card = combo.cards[cardIndex];
-            const cardKey = `${card.starterCard}-${card.cardId || 'custom'}`;
-            const cardInfo = allUniqueCards.get(cardKey);
-            const drawnCount = handCounts.get(cardInfo.id) || 0;
-            const cardMet = (drawnCount >= card.minCopiesInHand && drawnCount <= card.maxCopiesInHand);
-            const logicOp = card.logicOperator || 'AND';
+          if (combo.cards.length === 2) {
+            // Two-card combo: 1st AND 2nd
+            const secondCard = combo.cards[1];
+            const secondCardKey = `${secondCard.starterCard}-${secondCard.cardId || 'custom'}`;
+            const secondCardInfo = allUniqueCards.get(secondCardKey);
+            const secondDrawnCount = handCounts.get(secondCardInfo.id) || 0;
+            const secondCardMet = (secondDrawnCount >= secondCard.minCopiesInHand && secondDrawnCount <= secondCard.maxCopiesInHand);
+            comboSucceeds = firstCardMet && secondCardMet;
+          } else {
+            // Three+ card combo: 1st AND 2nd, then AND/OR for 3rd+ cards
+            const secondCard = combo.cards[1];
+            const secondCardKey = `${secondCard.starterCard}-${secondCard.cardId || 'custom'}`;
+            const secondCardInfo = allUniqueCards.get(secondCardKey);
+            const secondDrawnCount = handCounts.get(secondCardInfo.id) || 0;
+            const secondCardMet = (secondDrawnCount >= secondCard.minCopiesInHand && secondDrawnCount <= secondCard.maxCopiesInHand);
             
-            if (logicOp === 'AND') {
-              result = result && cardMet;
-            } else if (logicOp === 'OR') {
-              result = result || cardMet;
+            // First two cards must be met (AND logic)
+            let baseResult = firstCardMet && secondCardMet;
+            
+            // Process 3rd+ cards with their logic operators against the base (1st AND 2nd)
+            for (let cardIndex = 2; cardIndex < combo.cards.length; cardIndex++) {
+              const card = combo.cards[cardIndex];
+              const cardKey = `${card.starterCard}-${card.cardId || 'custom'}`;
+              const cardInfo = allUniqueCards.get(cardKey);
+              const drawnCount = handCounts.get(cardInfo.id) || 0;
+              const cardMet = (drawnCount >= card.minCopiesInHand && drawnCount <= card.maxCopiesInHand);
+              const logicOp = card.logicOperator || 'AND';
+              
+              if (logicOp === 'AND') {
+                baseResult = baseResult && cardMet;
+              } else if (logicOp === 'OR') {
+                baseResult = baseResult || cardMet;
+              }
             }
+            
+            comboSucceeds = baseResult;
           }
-          
-          comboSucceeds = result;
         }
         
         if (comboSucceeds) {

@@ -1953,15 +1953,18 @@ export default function TCGCalculator() {
 
   // AC #4: Check if adding a card would exceed hand size
   const canAddCard = (combo) => {
-    const currentMinSum = combo.cards.reduce((sum, card) => sum + card.minCopiesInHand, 0);
+    if (!combo || !combo.cards) return false;
+    const currentMinSum = combo.cards.reduce((sum, card) => sum + (card.minCopiesInHand || 0), 0);
     return currentMinSum + 1 <= handSize; // +1 for the new card's default min (1)
   };
 
   // AC #7: Get the highest min in hand sum across all combos
   const getHighestMinInHandSum = () => {
-    return Math.max(...combos.map(combo => 
-      combo.cards.reduce((sum, card) => sum + card.minCopiesInHand, 0)
-    ));
+    if (!combos || combos.length === 0) return 1;
+    const sums = combos.map(combo => 
+      combo.cards.reduce((sum, card) => sum + (card.minCopiesInHand || 0), 0)
+    );
+    return Math.max(1, ...sums);
   };
 
   const startEditingComboName = (combo) => {
@@ -2319,8 +2322,8 @@ useEffect(() => {
                       )}
                     </div>
 
-                    {/* AC #1: Add AND/OR toggle for each card except the first */}
-                    {cardIndex > 0 && (
+                    {/* AND/OR toggle only for 3rd+ cards (cardIndex > 1) */}
+                    {cardIndex > 1 && (
                       <div className="mb-3">
                         <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
                           Logic:

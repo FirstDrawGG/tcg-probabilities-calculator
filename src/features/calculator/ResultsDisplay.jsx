@@ -186,10 +186,10 @@ const ResultsDisplay = ({
         return `Chances of seeing between ${card.minCopiesInHand} and ${card.maxCopiesInHand} copies of ${card.starterCard} in your opening hand: ${probability.toFixed(2)}%`;
       }
     } else {
-      // Multi-card combo with AND/OR logic
+      // Multi-card combo: 1st AND 2nd AND/OR 3rd+ cards
       let resultText = "Chances of seeing ";
       
-      // Build the text dynamically based on logic operators
+      // Build the text based on new logic structure
       for (let i = 0; i < cards.length; i++) {
         const card = cards[i];
         const cardText = card.minCopiesInHand === card.maxCopiesInHand 
@@ -199,10 +199,12 @@ const ResultsDisplay = ({
         if (i === 0) {
           // First card - no logic operator
           resultText += cardText;
+        } else if (i === 1) {
+          // Second card - always AND with first
+          resultText += `, AND ${cardText}`;
         } else {
-          // Subsequent cards - use their logic operator
+          // Third+ cards - use their logic operator
           const logicOp = card.logicOperator || 'AND';
-          // AC #8 & #9: Display logic in capitalized letters
           if (logicOp === 'OR') {
             resultText += `, OR ${cardText}`;
           } else {
