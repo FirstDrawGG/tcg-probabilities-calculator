@@ -6056,7 +6056,7 @@
     "isExtraDeck": false
   },
   "10732060": {
-    "name": "Hi-Speedroid Glider 2",
+    "name": "Hi-Speedroid Glider #2",
     "isExtraDeck": true
   },
   "10736540": {
@@ -11560,7 +11560,7 @@
     "isExtraDeck": false
   },
   "20726052": {
-    "name": "Maliss C GWC-06",
+    "name": "Maliss GWC-06",
     "isExtraDeck": false
   },
   "20727787": {
@@ -11680,7 +11680,7 @@
     "isExtraDeck": false
   },
   "20938824": {
-    "name": "Maliss P March Hare",
+    "name": "Maliss March Hare",
     "isExtraDeck": false
   },
   "20939559": {
@@ -12204,7 +12204,7 @@
     "isExtraDeck": false
   },
   "21848500": {
-    "name": "Maliss Q Hearts Crypter",
+    "name": "Maliss Hearts Crypter",
     "isExtraDeck": true
   },
   "21858819": {
@@ -16943,6 +16943,10 @@
     "name": "Prediction Ritual",
     "isExtraDeck": false
   },
+  "30394645": {
+    "name": "Dogmatika Chaplain",
+    "isExtraDeck": false
+  },
   "30398342": {
     "name": "Yang Zing Creation",
     "isExtraDeck": false
@@ -17892,7 +17896,7 @@
     "isExtraDeck": false
   },
   "32061192": {
-    "name": "Maliss P Dormouse",
+    "name": "Maliss Dormouse",
     "isExtraDeck": false
   },
   "32061744": {
@@ -31908,7 +31912,7 @@
     "isExtraDeck": false
   },
   "57111661": {
-    "name": "Maliss C TB-11",
+    "name": "Maliss TB-11",
     "isExtraDeck": false
   },
   "57115864": {
@@ -37832,7 +37836,7 @@
     "isExtraDeck": false
   },
   "68059897": {
-    "name": "Maliss Q Red Ransom",
+    "name": "Maliss Red Ransom",
     "isExtraDeck": true
   },
   "68073522": {
@@ -38488,7 +38492,7 @@
     "isExtraDeck": false
   },
   "69272449": {
-    "name": "Maliss P White Rabbit",
+    "name": "Maliss White Rabbit",
     "isExtraDeck": false
   },
   "69279219": {
@@ -52032,7 +52036,7 @@
     "isExtraDeck": false
   },
   "94722358": {
-    "name": "Maliss C MTP-07",
+    "name": "Maliss MTP-07",
     "isExtraDeck": false
   },
   "94730900": {
@@ -52412,7 +52416,7 @@
     "isExtraDeck": true
   },
   "95454996": {
-    "name": "Maliss Q White Binder",
+    "name": "Maliss White Binder",
     "isExtraDeck": true
   },
   "95457011": {
@@ -53068,7 +53072,7 @@
     "isExtraDeck": false
   },
   "96676583": {
-    "name": "Maliss P Chessy Cat",
+    "name": "Maliss Chessy Cat",
     "isExtraDeck": false
   },
   "96677818": {
@@ -54855,6 +54859,30 @@
     "name": "Yad al Hecahands",
     "isExtraDeck": false
   },
+  "100446016": {
+    "name": "Enneacraft α' \"orgIA\"",
+    "isExtraDeck": false
+  },
+  "100446017": {
+    "name": "Enneacraft β' \"alazoneIA\"",
+    "isExtraDeck": false
+  },
+  "100446018": {
+    "name": "Enneacraft ϝ' \"tromarIA\"",
+    "isExtraDeck": false
+  },
+  "100446019": {
+    "name": "Enneacraft θ' \"oknirIA\"",
+    "isExtraDeck": false
+  },
+  "100446022": {
+    "name": "Enneacraft - Atoriϝ.MAR",
+    "isExtraDeck": false
+  },
+  "100446023": {
+    "name": "Enneacraft - Archaη.TAIL",
+    "isExtraDeck": false
+  },
   "100446024": {
     "name": "Enneapolis, the Sinquisition City",
     "isExtraDeck": false
@@ -54877,6 +54905,10 @@
   },
   "100446033": {
     "name": "Killer Tune Reco",
+    "isExtraDeck": false
+  },
+  "100446034": {
+    "name": "Killer Tune Cue",
     "isExtraDeck": false
   },
   "100446035": {

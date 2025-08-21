@@ -5,6 +5,7 @@ import ComboBuilder from './features/calculator/ComboBuilder';
 import ResultsDisplay from './features/calculator/ResultsDisplay';
 import DeckInputs from './features/calculator/DeckInputs';
 import YdkImporter from './features/deck-import/YdkImporter';
+import Icon from './components/Icon';
 
 // URL encoding/decoding utilities
 const URLService = {
@@ -747,21 +748,13 @@ const Tooltip = ({ text, children }) => {
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          width: '16px',
-          height: '16px',
-          borderRadius: '50%',
-          backgroundColor: 'var(--bg-main)',
-          border: '1px solid var(--border-main)',
-          color: '#ffffff',
-          fontSize: '12px',
-          fontWeight: 'bold',
           cursor: 'pointer',
           marginLeft: '8px',
           flexShrink: 0,
           userSelect: 'none'
         }}
       >
-        i
+        <Icon name="info" ariaLabel="More information" size={16} variant="secondary" />
       </div>
       {isVisible && (
         <div
@@ -2196,7 +2189,7 @@ useEffect(() => {
             }}
             className="hover:opacity-80 transition-opacity"
           >
-            Help
+            <Icon name="question-mark" ariaLabel="Help" size={24} />
           </a>
         </div>
         
@@ -2234,31 +2227,37 @@ useEffect(() => {
               <div key={combo.id} className="border-t pt-4 pb-4" style={{ borderColor: 'var(--border-secondary)' }}>
                 <div className="flex justify-between items-center mb-2">
                   {editingComboId === combo.id ? (
-                    <input
-                      type="text"
-                      value={tempComboName}
-                      onChange={handleComboNameChange}
-                      onBlur={saveComboName}
-                      onKeyDown={handleComboNameKeyDown}
-                      className="font-medium px-2 py-1 border"
-                      style={{ 
-                        backgroundColor: 'var(--bg-action-secondary)', 
-                        color: 'var(--text-main)',
-                        borderColor: 'var(--border-secondary)',
-                        borderRadius: '999px',
-                        ...typography.body
-                      }}
-                      autoFocus
-                      maxLength={50}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Icon name="asterisk-simple" ariaLabel="Combo" size={16} variant="secondary" />
+                      <input
+                        type="text"
+                        value={tempComboName}
+                        onChange={handleComboNameChange}
+                        onBlur={saveComboName}
+                        onKeyDown={handleComboNameKeyDown}
+                        className="font-medium px-2 py-1 border"
+                        style={{ 
+                          backgroundColor: 'var(--bg-action-secondary)', 
+                          color: 'var(--text-main)',
+                          borderColor: 'var(--border-secondary)',
+                          borderRadius: '999px',
+                          ...typography.body
+                        }}
+                        autoFocus
+                        maxLength={50}
+                      />
+                    </div>
                   ) : (
-                    <h3 
-                      className="cursor-pointer hover:opacity-80 py-1 rounded transition-colors"
-                      style={{...typography.h3, color: 'var(--text-main)'}}
-                      onClick={() => startEditingComboName(combo)}
-                    >
-                      {combo.name}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <Icon name="asterisk-simple" ariaLabel="Combo" size={16} variant="secondary" />
+                      <h3 
+                        className="cursor-pointer hover:opacity-80 py-1 rounded transition-colors"
+                        style={{...typography.h3, color: 'var(--text-main)'}}
+                        onClick={() => startEditingComboName(combo)}
+                      >
+                        {combo.name}
+                      </h3>
+                    </div>
                   )}
                   {index > 0 && (
                     <button
@@ -2380,11 +2379,11 @@ useEffect(() => {
                               width: '40px',
                               height: '40px',
                               borderRadius: '999px',
-                              border: '1px solid var(--border-main)',
+                              border: 'none',
                               boxSizing: 'border-box'
                             }}
                           >
-                            -
+                            <Icon name="minus" ariaLabel="Decrease count" size={16} variant="secondary" />
                           </button>
                           <input
                             type="number"
@@ -2414,11 +2413,11 @@ useEffect(() => {
                               width: '40px',
                               height: '40px',
                               borderRadius: '999px',
-                              border: '1px solid var(--border-main)',
+                              border: 'none',
                               boxSizing: 'border-box'
                             }}
                           >
-                            +
+                            <Icon name="plus" ariaLabel="Increase count" size={16} variant="secondary" />
                           </button>
                         </div>
                         {errors[`combo-${combo.id}-card-${cardIndex}-startersInDeck`] && (
@@ -2446,7 +2445,7 @@ useEffect(() => {
                                 boxSizing: 'border-box'
                               }}
                             >
-                              -
+                              <Icon name="minus" ariaLabel="Decrease count" size={16} variant="secondary" />
                             </button>
                             <input
                               type="number"
@@ -2480,7 +2479,7 @@ useEffect(() => {
                                 boxSizing: 'border-box'
                               }}
                             >
-                              +
+                              <Icon name="plus" ariaLabel="Increase count" size={16} variant="secondary" />
                             </button>
                           </div>
                           {errors[`combo-${combo.id}-card-${cardIndex}-minCopiesInHand`] && (
@@ -2507,7 +2506,7 @@ useEffect(() => {
                                 boxSizing: 'border-box'
                               }}
                             >
-                              -
+                              <Icon name="minus" ariaLabel="Decrease count" size={16} variant="secondary" />
                             </button>
                             <input
                               type="number"
@@ -2541,7 +2540,7 @@ useEffect(() => {
                                 boxSizing: 'border-box'
                               }}
                             >
-                              +
+                              <Icon name="plus" ariaLabel="Increase count" size={16} variant="secondary" />
                             </button>
                           </div>
                           {errors[`combo-${combo.id}-card-${cardIndex}-maxCopiesInHand`] && (
@@ -2668,7 +2667,7 @@ useEffect(() => {
         {/* Top Decks Section */}
         <section className="px-0 mb-8">
           <div className="flex items-center mb-4" style={{ gap: '8px' }}>
-            <span role="img" aria-label="star" style={{ fontSize: '16px' }}>⭐</span>
+            <Icon name="star-four" ariaLabel="Top decks" size={16} />
             <h2 style={{...typography.h2, color: 'var(--text-main)'}}>Top Decks</h2>
           </div>
           

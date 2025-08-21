@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import YdkParser from '../../services/YdkParser';
+import Icon from '../../components/Icon';
 
 const YdkImporter = ({ 
   uploadedYdkFile,
@@ -149,7 +150,10 @@ const YdkImporter = ({
   return (
     <div>
       <div className="flex items-center mb-4" style={{ gap: '24px' }}>
-        <h3 style={{...typography.h3, color: 'var(--text-main)', margin: 0}}>Upload YDK file</h3>
+        <div className="flex items-center" style={{ gap: '8px' }}>
+          <Icon name="tray-arrow-up" ariaLabel="Upload YDK file" size={16} />
+          <h3 style={{...typography.h3, color: 'var(--text-main)', margin: 0}}>YDK file</h3>
+        </div>
         
         {!uploadedYdkFile && (
           <div className="flex items-center" style={{ gap: '8px' }}>

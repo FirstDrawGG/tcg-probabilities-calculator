@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import CardImage from '../../components/CardImage';
+import Icon from '../../components/Icon';
 
 const Tooltip = ({ text, children }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -227,6 +228,7 @@ const ResultsDisplay = ({
       <div className="mt-6">
         <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
           <div className="flex items-center gap-2">
+            <Icon name="hand" ariaLabel="Opening hand" size={16} />
             <h3 style={{...typography.h3, color: 'var(--text-main)'}}>Opening hand</h3>
             {ydkCards && ydkCards.length > 0 && (
               <label className={`flex items-center gap-1 ${isToggleDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
