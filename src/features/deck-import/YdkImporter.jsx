@@ -31,6 +31,12 @@ const YdkImporter = ({
     if (!file) return;
 
     try {
+      // Close clipboard field if it's open
+      if (showClipboardField) {
+        setShowClipboardField(false);
+        setClipboardContent('');
+      }
+
       const content = await readFileAsText(file);
       const parseResult = YdkParser.parseYdkFile(content, cardDatabase);
       
