@@ -192,8 +192,8 @@ const SearchableCardInput = ({
             backgroundColor: 'var(--bg-secondary)', 
             border: `1px solid var(--border-main)`,
             color: 'var(--text-main)',
-            borderRadius: '999px',
-            height: '40px',
+            borderRadius: '8px',
+            height: '28px',
             cursor: 'text',
             ...typography.body
           }}
