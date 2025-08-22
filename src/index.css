@@ -151,3 +151,8 @@ input:-ms-input-placeholder {
 .enhanced-button-add {
   max-width: 220px;
 }
+
+/* Enhanced button with fixed width for Reset button */
+.enhanced-button-reset {
+  width: 120px;
+}

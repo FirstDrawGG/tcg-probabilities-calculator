@@ -2597,7 +2597,7 @@ useEffect(() => {
             </button>
             <button
               onClick={handleReset}
-              className="enhanced-button"
+              className="enhanced-button enhanced-button-reset"
             >
               <Icon name="arrow-counter-clockwise" ariaLabel="Reset" size={14} className="button-icon" style={{ color: '#141414' }} />
               <span className="button-text">Reset</span>
