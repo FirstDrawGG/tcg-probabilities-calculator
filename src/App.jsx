@@ -2597,25 +2597,10 @@ useEffect(() => {
             </button>
             <button
               onClick={handleReset}
-              className="transition-colors hover:opacity-80"
-              style={{ 
-                backgroundColor: 'var(--bg-secondary)', 
-                color: 'var(--text-main)',
-                fontFamily: 'Geist Regular, sans-serif',
-                fontSize: '14px',
-                lineHeight: '20px',
-                borderRadius: '999px',
-                border: 'none',
-                height: '40px',
-                paddingLeft: '16px',
-                paddingRight: '16px',
-                textAlign: 'center',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
+              className="enhanced-button"
             >
-              Reset
+              <Icon name="arrow-counter-clockwise" ariaLabel="Reset" size={14} className="button-icon" style={{ color: '#141414' }} />
+              <span className="button-text">Reset</span>
             </button>
           </div>
         </div>

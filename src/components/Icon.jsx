@@ -12,7 +12,8 @@ import {
   AsteriskSimple,
   Calculator,
   StackPlus,
-  RowsPlusBottom 
+  RowsPlusBottom,
+  ArrowCounterClockwise 
 } from '@phosphor-icons/react';
 
 const Icon = ({ name, variant = 'main', ariaLabel, className = '', style = {}, ...props }) => {
@@ -29,7 +30,8 @@ const Icon = ({ name, variant = 'main', ariaLabel, className = '', style = {}, .
     'asterisk-simple': AsteriskSimple,
     'calculator': Calculator,
     'stack-plus': StackPlus,
-    'rows-plus-bottom': RowsPlusBottom
+    'rows-plus-bottom': RowsPlusBottom,
+    'arrow-counter-clockwise': ArrowCounterClockwise
   };
 
   const IconComponent = iconMap[name];
