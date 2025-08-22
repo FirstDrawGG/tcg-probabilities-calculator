@@ -156,3 +156,28 @@ input:-ms-input-placeholder {
 .enhanced-button-reset {
   width: 120px;
 }
+
+/* Enhanced Input Component */
+.enhanced-input {
+  height: 28px !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--border-main) !important;
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-main) !important;
+  font-size: var(--font-body-size) !important;
+  line-height: var(--font-body-line-height) !important;
+  font-family: 'Geist Regular, sans-serif' !important;
+  padding: 0 12px !important;
+  box-sizing: border-box !important;
+  transition: border-color 0.2s ease !important;
+}
+
+.enhanced-input:focus {
+  border-color: var(--border-action) !important;
+  outline: none !important;
+}
+
+.enhanced-input:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}

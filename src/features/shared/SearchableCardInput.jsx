@@ -183,25 +183,7 @@ const SearchableCardInput = ({
           onChange={handleInputChange}
           onClick={handleInputClick}
           placeholder={placeholder}
-          className={`w-full px-3 border ${errors ? 'border-red-500' : ''}`}
-          style={{ 
-            backgroundColor: 'var(--bg-secondary)', 
-            border: `1px solid var(--border-main)`,
-            color: 'var(--text-main)',
-            borderRadius: '999px',
-            height: '40px',
-            cursor: 'text',
-            outline: 'none',
-            ...typography.body
-          }}
-          onFocus={(e) => {
-            e.target.style.border = '1px solid var(--border-action)';
-            e.target.style.color = 'var(--text-main)';
-          }}
-          onBlur={(e) => {
-            e.target.style.border = `1px solid var(--border-main)`;
-            e.target.style.color = 'var(--text-main)';
-          }}
+          className={`enhanced-input w-full ${errors ? 'border-red-500' : ''}`}
         />
       ) : (
         <div 

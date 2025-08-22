@@ -366,15 +366,10 @@ const ResultsDisplay = ({
                 type="text"
                 value={shareableUrl}
                 readOnly
-                className="flex-1 px-3 border"
+                className="enhanced-input flex-1"
                 style={{ 
-                  backgroundColor: 'var(--bg-tertiary)', 
-                  border: `1px solid var(--border-main)`,
-                  color: 'var(--text-main)',
-                  borderRadius: '999px',
-                  height: '40px',
-                  cursor: 'text',
-                  ...typography.body
+                  backgroundColor: 'var(--bg-tertiary)',
+                  cursor: 'text'
                 }}
               />
               <button

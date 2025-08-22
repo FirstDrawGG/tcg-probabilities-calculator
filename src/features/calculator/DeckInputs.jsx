@@ -138,18 +138,9 @@ const DeckInputs = ({
           type="number"
           value={deckSize}
           onChange={(e) => setDeckSize(parseInt(e.target.value) || 0)}
-          className={`w-full px-3 border ${
+          className={`enhanced-input w-full ${
             errors.deckSize ? 'border-red-500' : ''
           }`}
-          style={{ 
-            backgroundColor: 'var(--bg-secondary)', 
-            border: `1px solid var(--border-main)`,
-            color: 'var(--text-main)',
-            borderRadius: '999px',
-            height: '40px',
-            cursor: 'text',
-            ...typography.body
-          }}
         />
         {errors.deckSize && (
           <p className="text-red-500 mt-1" style={typography.body}>{errors.deckSize}</p>
@@ -170,8 +161,8 @@ const DeckInputs = ({
               backgroundColor: handSize === 5 ? 'var(--bg-action)' : 'var(--bg-secondary)',
               color: handSize === 5 ? 'var(--text-black)' : 'var(--text-main)',
               border: `1px solid var(--border-main)`,
-              borderRadius: '999px',
-              height: '40px',
+              borderRadius: '8px',
+              height: '28px',
               ...typography.body
             }}
           >
@@ -185,8 +176,8 @@ const DeckInputs = ({
               backgroundColor: handSize === 6 ? 'var(--bg-action)' : 'var(--bg-secondary)',
               color: handSize === 6 ? 'var(--text-black)' : 'var(--text-main)',
               border: `1px solid var(--border-main)`,
-              borderRadius: '999px',
-              height: '40px',
+              borderRadius: '8px',
+              height: '28px',
               ...typography.body
             }}
           >
@@ -201,8 +192,8 @@ const DeckInputs = ({
                 backgroundColor: handSize === minHandSize ? 'var(--bg-action)' : 'var(--bg-secondary)',
                 color: handSize === minHandSize ? 'var(--text-black)' : 'var(--text-main)',
                 border: `1px solid var(--border-main)`,
-                borderRadius: '999px',
-                height: '40px',
+                borderRadius: '8px',
+                height: '28px',
                 ...typography.body
               }}
             >

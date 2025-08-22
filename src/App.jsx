@@ -2235,13 +2235,9 @@ useEffect(() => {
                         onChange={handleComboNameChange}
                         onBlur={saveComboName}
                         onKeyDown={handleComboNameKeyDown}
-                        className="font-medium px-2 py-1 border"
+                        className="enhanced-input font-medium"
                         style={{ 
-                          backgroundColor: 'var(--bg-action-secondary)', 
-                          color: 'var(--text-main)',
-                          borderColor: 'var(--border-secondary)',
-                          borderRadius: '999px',
-                          ...typography.body
+                          backgroundColor: 'var(--bg-action-secondary)'
                         }}
                         autoFocus
                         maxLength={50}
@@ -2336,8 +2332,8 @@ useEffect(() => {
                               backgroundColor: (card.logicOperator || 'AND') === 'AND' ? 'var(--bg-action)' : 'var(--bg-secondary)',
                               color: (card.logicOperator || 'AND') === 'AND' ? 'var(--text-black)' : 'var(--text-main)',
                               border: '1px solid var(--border-main)',
-                              borderRadius: '999px',
-                              height: '40px',
+                              borderRadius: '8px',
+                              height: '28px',
                               minWidth: '60px',
                               ...typography.body
                             }}
@@ -2351,8 +2347,8 @@ useEffect(() => {
                               backgroundColor: (card.logicOperator || 'AND') === 'OR' ? 'var(--bg-action)' : 'var(--bg-secondary)',
                               color: (card.logicOperator || 'AND') === 'OR' ? 'var(--text-black)' : 'var(--text-main)',
                               border: '1px solid var(--border-main)',
-                              borderRadius: '999px',
-                              height: '40px',
+                              borderRadius: '8px',
+                              height: '28px',
                               minWidth: '60px',
                               ...typography.body
                             }}
@@ -2389,19 +2385,11 @@ useEffect(() => {
                             type="number"
                             value={card.startersInDeck}
                             onChange={(e) => updateCombo(combo.id, cardIndex, 'startersInDeck', parseInt(e.target.value) || 0)}
-                            className={`text-center border ${
+                            className={`enhanced-input text-center ${
                               errors[`combo-${combo.id}-card-${cardIndex}-startersInDeck`] ? 'border-red-500' : ''
                             }`}
                             style={{ 
-                              backgroundColor: 'var(--bg-secondary)', 
-                              color: 'var(--text-main)',
-                              width: '64px',
-                              height: '40px',
-                              borderRadius: '999px',
-                              border: '1px solid var(--border-main)',
-                              boxSizing: 'border-box',
-                              textAlign: 'center',
-                              ...typography.body
+                              width: '64px'
                             }}
                           />
                           <button
@@ -2451,19 +2439,11 @@ useEffect(() => {
                               type="number"
                               value={card.minCopiesInHand}
                               onChange={(e) => validateAndUpdateCombo(combo.id, cardIndex, 'minCopiesInHand', parseInt(e.target.value) || 0)}
-                              className={`text-center border ${
+                              className={`enhanced-input text-center ${
                                 errors[`combo-${combo.id}-card-${cardIndex}-minCopiesInHand`] ? 'border-red-500' : ''
                               }`}
                               style={{ 
-                                backgroundColor: 'var(--bg-secondary)', 
-                                color: 'var(--text-main)',
-                                width: '64px',
-                                height: '40px',
-                                borderRadius: '999px',
-                                border: '1px solid var(--border-main)',
-                                boxSizing: 'border-box',
-                                textAlign: 'center',
-                                ...typography.body
+                                width: '64px'
                               }}
                             />
                             <button
@@ -2512,19 +2492,11 @@ useEffect(() => {
                               type="number"
                               value={card.maxCopiesInHand}
                               onChange={(e) => validateAndUpdateCombo(combo.id, cardIndex, 'maxCopiesInHand', parseInt(e.target.value) || 0)}
-                              className={`text-center border ${
+                              className={`enhanced-input text-center ${
                                 errors[`combo-${combo.id}-card-${cardIndex}-maxCopiesInHand`] ? 'border-red-500' : ''
                               }`}
                               style={{ 
-                                backgroundColor: 'var(--bg-secondary)', 
-                                color: 'var(--text-main)',
-                                width: '64px',
-                                height: '40px',
-                                borderRadius: '999px',
-                                border: '1px solid var(--border-main)',
-                                boxSizing: 'border-box',
-                                textAlign: 'center',
-                                ...typography.body
+                                width: '64px'
                               }}
                             />
                             <button
