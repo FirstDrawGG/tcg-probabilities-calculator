@@ -2557,22 +2557,10 @@ useEffect(() => {
                   <button
                     onClick={() => addCard(combo.id)}
                     disabled={!canAddCard(combo)}
-                    className="font-medium transition-colors hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ 
-                      boxSizing: 'border-box',
-                      width: '200px',
-                      height: '40px',
-                      display: 'block',
-                      backgroundColor: canAddCard(combo) ? 'var(--bg-secondary)' : 'var(--bg-main)',
-                      overflow: 'visible',
-                      gap: '7px',
-                      borderRadius: '999px',
-                      border: '1px solid var(--border-main)',
-                      ...typography.body,
-                      color: canAddCard(combo) ? 'var(--text-main)' : 'var(--text-secondary)'
-                    }}
+                    className="enhanced-button enhanced-button-add"
                   >
-                    + Add card
+                    <Icon name="stack-plus" ariaLabel="Add card" size={14} className="button-icon" style={{ color: '#141414' }} />
+                    <span className="button-text">Add card</span>
                   </button>
                   <Tooltip text={canAddCard(combo) 
                     ? "Add another card to create more complex combos" 
@@ -2588,22 +2576,10 @@ useEffect(() => {
               <div className="flex items-center">
                 <button
                   onClick={addCombo}
-                  className="font-medium transition-colors hover:opacity-80"
-                  style={{ 
-                    boxSizing: 'border-box',
-                    width: '200px',
-                    height: '40px',
-                    display: 'block',
-                    backgroundColor: 'var(--bg-secondary)',
-                    overflow: 'visible',
-                    gap: '7px',
-                    borderRadius: '999px',
-                    border: '1px solid var(--border-main)',
-                    ...typography.body,
-                    color: 'var(--text-main)'
-                  }}
+                  className="enhanced-button enhanced-button-add"
                 >
-                  + Add another combo
+                  <Icon name="rows-plus-bottom" ariaLabel="Add combo" size={14} className="button-icon" style={{ color: '#141414' }} />
+                  <span className="button-text">Add combo</span>
                 </button>
                 <Tooltip text="Test multiple combo lines to see your deck's overall consistency options" />
               </div>
@@ -2614,30 +2590,10 @@ useEffect(() => {
             <button
               onClick={runCalculation}
               disabled={!allFieldsFilled || hasValidationErrors}
-              className={`flex-1 font-semibold transition-colors ${
-                allFieldsFilled && !hasValidationErrors
-                  ? ''
-                  : 'cursor-not-allowed opacity-50'
-              }`}
-              style={{ 
-                backgroundColor: allFieldsFilled && !hasValidationErrors ? 'var(--bg-action)' : 'var(--border-secondary)',
-                color: allFieldsFilled && !hasValidationErrors ? 'var(--text-black)' : 'var(--text-placeholder)',
-                fontFamily: 'Geist Regular, sans-serif',
-                fontSize: '14px',
-                lineHeight: '20px',
-                borderRadius: '999px',
-                border: 'none',
-                height: '40px',
-                minWidth: '160px',
-                paddingLeft: '16px',
-                paddingRight: '16px',
-                textAlign: 'center',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
+              className="enhanced-button"
             >
-              Calculate
+              <Icon name="calculator" ariaLabel="Calculate" size={14} className="button-icon" style={{ color: '#141414' }} />
+              <span className="button-text">Calculate</span>
             </button>
             <button
               onClick={handleReset}

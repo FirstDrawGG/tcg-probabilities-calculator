@@ -9,7 +9,10 @@ import {
   QuestionMark, 
   TrayArrowUp,
   Hand,
-  AsteriskSimple 
+  AsteriskSimple,
+  Calculator,
+  StackPlus,
+  RowsPlusBottom 
 } from '@phosphor-icons/react';
 
 const Icon = ({ name, variant = 'main', ariaLabel, className = '', style = {}, ...props }) => {
@@ -23,7 +26,10 @@ const Icon = ({ name, variant = 'main', ariaLabel, className = '', style = {}, .
     'question-mark': QuestionMark,
     'tray-arrow-up': TrayArrowUp,
     'hand': Hand,
-    'asterisk-simple': AsteriskSimple
+    'asterisk-simple': AsteriskSimple,
+    'calculator': Calculator,
+    'stack-plus': StackPlus,
+    'rows-plus-bottom': RowsPlusBottom
   };
 
   const IconComponent = iconMap[name];
