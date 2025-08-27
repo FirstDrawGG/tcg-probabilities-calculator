@@ -32,7 +32,8 @@
       "WebFetch(domain:ws8edzxhvgmmgmdj.public.blob.vercel-storage.com)",
       "Bash(npm run:*)",
       "Bash(rm:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(npm test:*)"
     ],
     "deny": []
   }

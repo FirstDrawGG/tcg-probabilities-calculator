@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import YdkParser from '../../services/YdkParser';
+import HandTrapService from '../../services/HandTrapService';
 import Icon from '../../components/Icon';
 
 const YdkImporter = ({ 
@@ -290,6 +291,23 @@ const YdkImporter = ({
           <div style={{...typography.body, color: 'var(--text-secondary)', fontSize: '14px'}}>
             {deckSize} Main deck cards loaded ({ydkCards.length} unique)
           </div>
+          {(() => {
+            // Calculate hand-trap count from YDK cards
+            const handTrapCards = ydkCards.filter(card => HandTrapService.isHandTrap(card));
+            const handTrapCount = handTrapCards.reduce((total, card) => {
+              return total + (ydkCardCounts[card.name] || 0);
+            }, 0);
+            
+            if (handTrapCount > 0) {
+              return (
+                <div style={{...typography.body, color: 'var(--icon-main)', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px'}}>
+                  <Icon name="bomb" style={{ fontSize: '14px' }} />
+                  Hand-Traps: {handTrapCount}/{deckSize} cards
+                </div>
+              );
+            }
+            return null;
+          })()}
         </div>
       )}
     </div>

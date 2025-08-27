@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import HandTrapService from '../../services/HandTrapService';
+import Icon from '../../components/Icon';
 
 const SearchableCardInput = ({ 
   value, 
@@ -10,15 +12,50 @@ const SearchableCardInput = ({
   cardDatabase, 
   ydkCards, 
   ydkCardCounts, 
-  updateCombo 
+  updateCombo,
+  cardId = null // Add cardId to get full card data for hand-trap checking
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCards, setFilteredCards] = useState([]);
   const [isEditing, setIsEditing] = useState(!value);
+  const [showTooltip, setShowTooltip] = useState(false);
   const dropdownRef = useRef(null);
   const inputRef = useRef(null);
   const debounceTimerRef = useRef(null);
+  
+  // Helper function to get full card data for hand-trap checking
+  const getCardData = (cardName, cardId) => {
+    if (!cardName) return null;
+    
+    // First try to find in card database by ID
+    if (cardId && cardDatabase) {
+      const cardById = cardDatabase.find(card => card.id === cardId);
+      if (cardById) return cardById;
+    }
+    
+    // Then try by name in card database
+    if (cardDatabase) {
+      const cardByName = cardDatabase.find(card => 
+        card.name && card.name.toLowerCase() === cardName.toLowerCase()
+      );
+      if (cardByName) return cardByName;
+    }
+    
+    // Finally try YDK cards (though they might not have full data)
+    if (ydkCards) {
+      const ydkCard = ydkCards.find(card => 
+        card.name && card.name.toLowerCase() === cardName.toLowerCase()
+      );
+      if (ydkCard) return ydkCard;
+    }
+    
+    return null;
+  };
+  
+  // Check if current card is a hand-trap
+  const currentCardData = getCardData(value, cardId);
+  const isHandTrap = currentCardData ? HandTrapService.isHandTrap(currentCardData) : false;
   
   const typography = {
     body: {
@@ -202,7 +239,42 @@ const SearchableCardInput = ({
             handleEdit();        
           }}      
         >
-          <span>{value}</span>
+          <div className="flex items-center space-x-2">
+            <span>{value}</span>
+            {isHandTrap && (
+              <div 
+                className="relative"
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+              >
+                <Icon 
+                  name="bomb" 
+                  style={{ 
+                    fontSize: '14px', 
+                    color: 'var(--icon-main)',
+                    cursor: 'help'
+                  }} 
+                  ariaLabel="Hand-trap indicator"
+                />
+                {showTooltip && (
+                  <div 
+                    className="absolute z-20 px-2 py-1 text-xs rounded shadow-lg whitespace-nowrap"
+                    style={{ 
+                      backgroundColor: 'var(--bg-primary)',
+                      border: '1px solid var(--border-main)',
+                      color: 'var(--text-main)',
+                      top: '100%',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      marginTop: '4px'
+                    }}
+                  >
+                    Hand-trap: This card can be activated from your hand during your opponent's turn
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           <div className="flex items-center space-x-2">
             <button
               type="button"
@@ -251,11 +323,23 @@ const SearchableCardInput = ({
                     {(searchTerm.length === 0 ? ydkCards : filteredCards).map((card, index) => (
                       <div
                         key={`${card.id}-${index}`}
-                        className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity"
+                        className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity flex items-center justify-between"
                         style={typography.body}
                         onClick={() => handleCardSelect(card)}
                       >
-                        {card.name}
+                        <div className="flex items-center space-x-2">
+                          <span>{card.name}</span>
+                          {getCardData(card.name, card.id) && HandTrapService.isHandTrap(getCardData(card.name, card.id)) && (
+                            <Icon 
+                              name="bomb" 
+                              style={{ 
+                                fontSize: '12px', 
+                                color: 'var(--icon-main)'
+                              }} 
+                              ariaLabel="Hand-trap"
+                            />
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -295,11 +379,23 @@ const SearchableCardInput = ({
                         {ydkMatches.map((card, index) => (
                           <div
                             key={`ydk-${card.id}-${index}`}
-                            className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity"
+                            className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity flex items-center justify-between"
                             style={typography.body}
                             onClick={() => handleCardSelect(card)}
                           >
-                            {card.name}
+                            <div className="flex items-center space-x-2">
+                              <span>{card.name}</span>
+                              {getCardData(card.name, card.id) && HandTrapService.isHandTrap(getCardData(card.name, card.id)) && (
+                                <Icon 
+                                  name="bomb" 
+                                  style={{ 
+                                    fontSize: '12px', 
+                                    color: 'var(--icon-main)'
+                                  }} 
+                                  ariaLabel="Hand-trap"
+                                />
+                              )}
+                            </div>
                           </div>
                         ))}
                         {otherMatches.length > 0 && (
@@ -312,11 +408,23 @@ const SearchableCardInput = ({
                     {otherMatches.map((card, index) => (
                       <div
                         key={`db-${card.id}-${index}`}
-                        className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity"
+                        className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity flex items-center justify-between"
                         style={typography.body}
                         onClick={() => handleCardSelect(card)}
                       >
-                        {card.name}
+                        <div className="flex items-center space-x-2">
+                          <span>{card.name}</span>
+                          {getCardData(card.name, card.id) && HandTrapService.isHandTrap(getCardData(card.name, card.id)) && (
+                            <Icon 
+                              name="bomb" 
+                              style={{ 
+                                fontSize: '12px', 
+                                color: 'var(--icon-main)'
+                              }} 
+                              ariaLabel="Hand-trap"
+                            />
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>

@@ -143,6 +143,7 @@ const ComboBuilder = ({
                   ydkCards={ydkCards}
                   ydkCardCounts={ydkCardCounts}
                   updateCombo={updateCombo}
+                  cardId={card.cardId}
                 />
                 {errors[`combo-${combo.id}-card-${cardIndex}-starterCard`] && (
                   <p className="text-red-500 mt-1" style={typography.body}>{errors[`combo-${combo.id}-card-${cardIndex}-starterCard`]}</p>

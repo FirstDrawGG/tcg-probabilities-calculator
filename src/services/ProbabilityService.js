@@ -5,6 +5,8 @@
  * of drawing specific card combinations in trading card games.
  */
 
+import HandTrapService from './HandTrapService.js';
+
 class ProbabilityService {
   constructor() {
     this.resultCache = new Map();
@@ -314,6 +316,72 @@ class ProbabilityService {
       individual: individualResults,
       combined: combinedProbability
     };
+  }
+
+  /**
+   * Calculate opening hand-trap probability for a deck
+   * @param {Array} ydkCards - Array of cards in the deck
+   * @param {Object} ydkCardCounts - Card counts in the deck
+   * @param {number} deckSize - Total deck size
+   * @param {number} handSize - Hand size to draw
+   * @param {number} simulations - Number of simulations to run (default: 100000)
+   * @returns {number} Probability percentage of opening at least one hand-trap
+   */
+  calculateHandTrapProbability(ydkCards, ydkCardCounts, deckSize, handSize, simulations = 100000) {
+    if (!ydkCards || !ydkCardCounts) {
+      return 0;
+    }
+
+    // Get all hand-trap cards in the deck
+    const handTrapCards = ydkCards.filter(card => HandTrapService.isHandTrap(card));
+    
+    if (handTrapCards.length === 0) {
+      return 0; // No hand-traps in deck
+    }
+
+    // Create deck array with hand-traps marked
+    const deck = [];
+    let handTrapCardId = 1;
+    const nonHandTrapCardId = 0;
+
+    // Add hand-trap cards to deck
+    handTrapCards.forEach(card => {
+      const cardCount = ydkCardCounts[card.name] || 0;
+      for (let i = 0; i < cardCount; i++) {
+        deck.push(handTrapCardId);
+      }
+    });
+
+    // Fill remaining deck with non-hand-trap cards
+    while (deck.length < deckSize) {
+      deck.push(nonHandTrapCardId);
+    }
+
+    let successCount = 0;
+
+    for (let sim = 0; sim < simulations; sim++) {
+      // Shuffle deck using Fisher-Yates algorithm
+      const shuffledDeck = [...deck];
+      for (let i = shuffledDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledDeck[i], shuffledDeck[j]] = [shuffledDeck[j], shuffledDeck[i]];
+      }
+
+      // Draw opening hand and check for hand-traps
+      let hasHandTrap = false;
+      for (let i = 0; i < Math.min(handSize, shuffledDeck.length); i++) {
+        if (shuffledDeck[i] === handTrapCardId) {
+          hasHandTrap = true;
+          break;
+        }
+      }
+
+      if (hasHandTrap) {
+        successCount++;
+      }
+    }
+
+    return (successCount / simulations) * 100;
   }
 }
 

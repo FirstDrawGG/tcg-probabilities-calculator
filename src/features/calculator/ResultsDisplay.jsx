@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import CardImage from '../../components/CardImage';
 import Icon from '../../components/Icon';
+import ProbabilityService from '../../services/ProbabilityService';
 
 const Tooltip = ({ text, children }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -155,6 +156,9 @@ const ResultsDisplay = ({
   testHandFromDecklist,
   setTestHandFromDecklist,
   ydkCards,
+  ydkCardCounts,
+  deckSize,
+  handSize,
   combos
 }) => {
   console.log('📊 ResultsDisplay rendered with openingHand:', openingHand);
@@ -170,6 +174,11 @@ const ResultsDisplay = ({
   );
   
   const isToggleDisabled = hasNonDecklistCards;
+
+  // Calculate hand-trap probability if YDK data is available
+  const handTrapProbability = (ydkCards && ydkCardCounts && deckSize && handSize) 
+    ? ProbabilityService.calculateHandTrapProbability(ydkCards, ydkCardCounts, deckSize, handSize)
+    : null;
 
   const generateResultText = (result) => {
     const cards = result.cards;
@@ -329,6 +338,19 @@ const ResultsDisplay = ({
                   Chances of opening any of the desired combos: {results.combined.toFixed(2)}%
                 </p>
                 <Tooltip text="Chance of opening ANY of your defined combos. Shows overall deck consistency (hitting at least one combo from ones you defined)" />
+              </div>
+            </div>
+          )}
+          
+          {/* Hand-trap probability - only show if YDK deck loaded and contains hand-traps */}
+          {handTrapProbability !== null && handTrapProbability > 0 && (
+            <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-secondary)', border: `1px solid var(--border-secondary)` }}>
+              <div className="flex items-center space-x-2">
+                <Icon name="bomb" style={{ fontSize: '16px', color: 'var(--icon-main)' }} />
+                <p className="font-semibold" style={{...typography.body, color: 'var(--icon-main)'}}>
+                  Opening Hand-Trap Probability: {handTrapProbability.toFixed(2)}%
+                </p>
+                <Tooltip text="Chance of opening at least one hand-trap in your starting hand. Hand-traps are cards that can be activated from your hand during your opponent's turn." />
               </div>
             </div>
           )}

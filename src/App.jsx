@@ -2621,6 +2621,9 @@ useEffect(() => {
             testHandFromDecklist={testHandFromDecklist}
             setTestHandFromDecklist={setTestHandFromDecklist}
             ydkCards={ydkCards}
+            ydkCardCounts={ydkCardCounts}
+            deckSize={deckSize}
+            handSize={handSize}
             combos={combos}
           />
         </div>
