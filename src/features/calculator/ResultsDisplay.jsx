@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import CardImage from '../../components/CardImage';
 import Icon from '../../components/Icon';
 import ProbabilityService from '../../services/ProbabilityService';
+import FormulaDisplay from '../../components/FormulaDisplay';
 
 const Tooltip = ({ text, children }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -142,6 +143,26 @@ const TypewriterText = ({ text, onComplete }) => {
   return <span>{displayedText}</span>;
 };
 
+const FormulaButton = ({ onClick, expanded }) => {
+  return (
+    <div className="tooltip" data-tooltip={expanded ? 'Hide formula' : 'Show formula'}>
+      <button
+        onClick={onClick}
+        className={`formula-button ${expanded ? 'expanded' : ''}`}
+      >
+        <Icon 
+          name="sigma" 
+          className="button-icon"
+        />
+      </button>
+    </div>
+  );
+};
+
+
+
+
+
 const ResultsDisplay = ({ 
   results,
   dashboardValues,
@@ -162,6 +183,32 @@ const ResultsDisplay = ({
   combos
 }) => {
   console.log('📊 ResultsDisplay rendered with openingHand:', openingHand);
+  
+  // State for managing formula visibility (AC#5, AC#6, AC#7)
+  const [expandedFormulas, setExpandedFormulas] = useState(new Set());
+  const [combinedFormulaExpanded, setCombinedFormulaExpanded] = useState(false);
+  
+  // Auto-collapse formulas when new calculations are performed (AC#9)
+  useEffect(() => {
+    setExpandedFormulas(new Set());
+    setCombinedFormulaExpanded(false);
+  }, [results]);
+  
+  const toggleIndividualFormula = (resultId) => {
+    setExpandedFormulas(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(resultId)) {
+        newSet.delete(resultId);
+      } else {
+        newSet.add(resultId);
+      }
+      return newSet;
+    });
+  };
+  
+  const toggleCombinedFormula = () => {
+    setCombinedFormulaExpanded(prev => !prev);
+  };
   
   // AC#6: Check if toggle should be disabled due to non-decklist cards
   const hasNonDecklistCards = ydkCards && ydkCards.length > 0 && combos.some(combo => 
@@ -332,12 +379,14 @@ const ResultsDisplay = ({
         <div className="mt-6 space-y-2">
           {/* Combined probability result - only show if multiple combos */}
           {results.combined !== null && (
-            <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-action)', border: `1px solid var(--border-main)` }}>
-              <div className="flex items-center">
-                <p className="font-semibold" style={{...typography.body, color: 'var(--text-action)'}}>
-                  Chances of opening any of the desired combos: {results.combined.toFixed(2)}%
-                </p>
-                <Tooltip text="Chance of opening ANY of your defined combos. Shows overall deck consistency (hitting at least one combo from ones you defined)" />
+            <div className="" style={{ marginBottom: '8px' }}>
+              <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-action)', border: `1px solid var(--border-main)` }}>
+                <div className="flex items-center">
+                  <p className="font-semibold" style={{...typography.body, color: 'var(--text-action)'}}>
+                    Chances of opening any of the desired combos: {results.combined.toFixed(2)}%
+                  </p>
+                  <Tooltip text="Chance of opening ANY of your defined combos. Shows overall deck consistency (hitting at least one combo from ones you defined)" />
+                </div>
               </div>
             </div>
           )}
@@ -357,10 +406,24 @@ const ResultsDisplay = ({
           
           {/* Individual combo results */}
           {results.individual.map((result, index) => (
-            <div key={result.id} className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-secondary)', border: `1px solid var(--border-main)` }}>
-              <p className="font-semibold" style={typography.body}>
-                {generateResultText(result)}
-              </p>
+            <div key={result.id} className="" style={{ marginBottom: '8px' }}>
+              <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-secondary)', border: `1px solid var(--border-main)` }}>
+                <div className="flex items-center">
+                  <p className="font-semibold flex-1" style={typography.body}>
+                    {generateResultText(result)}
+                  </p>
+                  {/* AC#1: Formula button with Phosphor sigma icon */}
+                  <FormulaButton 
+                    onClick={() => toggleIndividualFormula(result.id)}
+                    expanded={expandedFormulas.has(result.id)}
+                  />
+                </div>
+              </div>
+              {/* AC#3: Formula display with expand/collapse */}
+              <FormulaDisplay 
+                formulaData={ProbabilityService.generateFormulaData(result, dashboardValues.deckSize, dashboardValues.handSize)}
+                isExpanded={expandedFormulas.has(result.id)}
+              />
             </div>
           ))}
         </div>
@@ -390,7 +453,7 @@ const ResultsDisplay = ({
                 readOnly
                 className="enhanced-input flex-1"
                 style={{ 
-                  backgroundColor: 'var(--bg-tertiary)',
+                  backgroundColor: 'var(--bg-secondary)',
                   cursor: 'text'
                 }}
               />

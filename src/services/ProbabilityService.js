@@ -319,6 +319,230 @@ class ProbabilityService {
   }
 
   /**
+   * Helper function to calculate binomial coefficient (n choose k)
+   * @param {number} n - Total items
+   * @param {number} k - Items to choose
+   * @returns {number} Binomial coefficient
+   */
+  binomial(n, k) {
+    if (k > n || k < 0) return 0;
+    if (k === 0 || k === n) return 1;
+    
+    let result = 1;
+    for (let i = 0; i < Math.min(k, n - k); i++) {
+      result = result * (n - i) / (i + 1);
+    }
+    return result;
+  }
+
+  /**
+   * Calculate hypergeometric probability
+   * Used for exact probability calculations (not Monte Carlo)
+   * @param {number} N - Population size (deck size)
+   * @param {number} K - Success states in population (copies in deck)
+   * @param {number} n - Sample size (hand size)
+   * @param {number} k - Number of successes in sample (copies in hand)
+   * @returns {number} Probability percentage
+   */
+  calculateHypergeometricProbability(N, K, n, k) {
+    const numerator = this.binomial(K, k) * this.binomial(N - K, n - k);
+    const denominator = this.binomial(N, n);
+    return (numerator / denominator) * 100;
+  }
+
+  /**
+   * Generate formula data for display purposes
+   * @param {Object} result - Calculation result containing cards and probability
+   * @param {number} deckSize - Total deck size
+   * @param {number} handSize - Hand size to draw
+   * @returns {Object} Formula data structure for display
+   */
+  generateFormulaData(result, deckSize, handSize) {
+    if (!result || !result.cards || result.cards.length === 0) {
+      return {
+        type: 'error',
+        scenarios: [],
+        totalPercentage: '0.00%',
+        metadata: { totalCards: deckSize, handSize }
+      };
+    }
+    
+    const card = result.cards[0]; // For single card scenarios
+    
+    if (result.cards.length === 1) {
+      const N = deckSize; // Population size
+      const K = card.startersInDeck; // Success states in population
+      const n = handSize; // Sample size
+      const k_min = card.minCopiesInHand;
+      const k_max = card.maxCopiesInHand;
+      
+      if (k_min === k_max) {
+        // Exact probability - single line
+        const k = k_min;
+        const probability = this.calculateHypergeometricProbability(N, K, n, k);
+        
+        return {
+          type: 'exact',
+          scenarios: [{
+            probability,
+            n: K,
+            k,
+            remaining: N - K,
+            drawn: n - k,
+            percentage: `${probability.toFixed(2)}%`
+          }],
+          totalPercentage: `${probability.toFixed(2)}%`,
+          metadata: { totalCards: N, handSize: n }
+        };
+      } else {
+        // Range probability - multiple lines with sum
+        const scenarios = [];
+        let totalProbability = 0;
+        
+        for (let k = k_min; k <= k_max; k++) {
+          const probability = this.calculateHypergeometricProbability(N, K, n, k);
+          totalProbability += probability;
+          
+          scenarios.push({
+            probability,
+            n: K,
+            k,
+            remaining: N - K,
+            drawn: n - k,
+            percentage: `${probability.toFixed(2)}%`
+          });
+        }
+        
+        return {
+          type: 'range',
+          scenarios,
+          totalPercentage: `${totalProbability.toFixed(2)}%`,
+          metadata: { totalCards: N, handSize: n }
+        };
+      }
+    } else {
+      // Multi-card combo - show individual card probabilities with full range expansion
+      const scenarios = [];
+      
+      result.cards.forEach((card, cardIndex) => {
+        const N = deckSize;
+        const K = card.startersInDeck;
+        const n = handSize;
+        const k_min = card.minCopiesInHand;
+        const k_max = card.maxCopiesInHand;
+        
+        // Add card header for multi-card display
+        if (cardIndex > 0) {
+          scenarios.push({
+            isCardDivider: true,
+            cardName: card.starterCard,
+            logicOperator: card.logicOperator || 'AND'
+          });
+        } else {
+          scenarios.push({
+            isCardHeader: true,
+            cardName: card.starterCard
+          });
+        }
+        
+        if (k_min === k_max) {
+          // Exact probability for this card
+          const k = k_min;
+          const probability = this.calculateHypergeometricProbability(N, K, n, k);
+          
+          scenarios.push({
+            probability,
+            n: K,
+            k,
+            remaining: N - K,
+            drawn: n - k,
+            percentage: `${probability.toFixed(2)}%`,
+            cardName: card.starterCard,
+            isCardContent: true
+          });
+        } else {
+          // Range probability for this card - show ALL individual P(X=k) scenarios
+          for (let k = k_min; k <= k_max; k++) {
+            const probability = this.calculateHypergeometricProbability(N, K, n, k);
+            
+            scenarios.push({
+              probability,
+              n: K,
+              k,
+              remaining: N - K,
+              drawn: n - k,
+              percentage: `${probability.toFixed(2)}%`,
+              cardName: card.starterCard,
+              isCardContent: true
+            });
+          }
+        }
+      });
+      
+      return {
+        type: 'multi-card',
+        scenarios,
+        totalPercentage: `${result.probability.toFixed(2)}% (Monte Carlo)`,
+        metadata: { 
+          totalCards: deckSize, 
+          handSize,
+          cardCount: result.cards.length,
+          logicOperator: result.cards.length > 1 ? (result.cards[1].logicOperator || 'AND') : 'AND'
+        }
+      };
+    }
+  }
+
+  /**
+   * Generate combined formula data for multiple combos
+   * @param {Array} results - Array of individual combo results
+   * @returns {Object} Combined formula data structure for display
+   */
+  generateCombinedFormulaData(results) {
+    if (!results || results.length === 0) {
+      return {
+        type: 'combined',
+        scenarios: [],
+        totalPercentage: '0.00%',
+        metadata: { totalCards: 0, handSize: 0 }
+      };
+    }
+    
+    if (results.length === 1) {
+      return {
+        type: 'combined',
+        scenarios: [{
+          probability: results[0].probability,
+          n: 0,
+          k: 0,
+          remaining: 0,
+          drawn: 0,
+          percentage: 'P(Any Combo) = P(Combo 1)'
+        }],
+        totalPercentage: `${results[0].probability.toFixed(2)}%`,
+        metadata: { totalCards: 0, handSize: 0 }
+      };
+    }
+    
+    // Calculate combined probability using inclusion-exclusion principle
+    const combinedProbability = results.reduce((sum, result) => sum + result.probability, 0);
+    
+    return {
+      type: 'combined',
+      scenarios: [{
+        probability: combinedProbability,
+        n: 0,
+        k: 0,
+        remaining: 0,
+        drawn: 0,
+        percentage: `Using inclusion-exclusion principle for ${results.length} combos`
+      }],
+      totalPercentage: `${combinedProbability.toFixed(2)}%`,
+      metadata: { totalCards: 0, handSize: 0 }
+    };
+  }
+
+  /**
    * Calculate opening hand-trap probability for a deck
    * @param {Array} ydkCards - Array of cards in the deck
    * @param {Object} ydkCardCounts - Card counts in the deck

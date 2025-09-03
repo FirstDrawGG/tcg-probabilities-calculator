@@ -7,7 +7,6 @@
   /* Colors */
   --bg-main: #0f0f0f;
   --bg-secondary: #141414;
-  --bg-tertiary: #1f1f1f;
   --bg-action: #ffffff;
   --border-main: #1f1f1f;
   --border-secondary: #666666;
@@ -19,6 +18,7 @@
   --text-black: #1f1f1f;
   --icon-main: #ffffff;
   --icon-secondary: #a3a3a3;
+  --icon-active: #1f1f1f;
   
   /* Spacing Scale */
   --spacing-xs: 4px;
@@ -180,4 +180,193 @@ input:-ms-input-placeholder {
 .enhanced-input:disabled {
   opacity: 0.5 !important;
   cursor: not-allowed !important;
+}
+
+/* Mathematical Formula Display Styles */
+.formula-container {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 8px;
+  overflow-x: auto;
+  position: relative;
+}
+
+.binomial {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 4px;
+  position: relative;
+  padding: 0 8px;
+}
+
+.binomial::before {
+  content: "(";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%) scaleY(2);
+  font-family: 'Monaco', 'Courier New', monospace;
+  color: var(--text-main);
+}
+
+.binomial::after {
+  content: ")";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%) scaleY(2);
+  font-family: 'Monaco', 'Courier New', monospace;
+  color: var(--text-main);
+}
+
+.binomial .top,
+.binomial .bottom {
+  line-height: 1;
+  padding: 2px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  color: var(--text-main);
+}
+
+.formula-line {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  font-family: 'Monaco', 'Courier New', monospace;
+  color: var(--text-main);
+}
+
+.prob-label {
+  color: var(--text-secondary);
+  margin-right: 12px;
+  min-width: 80px;
+  font-family: 'Monaco', 'Courier New', monospace;
+}
+
+.operator {
+  margin: 0 8px;
+  color: var(--icon-main);
+  font-family: 'Monaco', 'Courier New', monospace;
+}
+
+.equals {
+  margin-left: 16px;
+  font-weight: 600;
+  color: var(--text-main);
+  font-family: 'Monaco', 'Courier New', monospace;
+}
+
+.formula-total {
+  border-top: 2px solid var(--border-main);
+  margin-top: 8px;
+  padding-top: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* Formula expand/collapse animation */
+.formula-container {
+  transition: all 0.3s ease-in-out;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 16px;
+}
+
+.formula-container.expanded {
+  opacity: 1;
+  max-height: 500px;
+  padding: 16px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .formula-line {
+    flex-wrap: wrap;
+  }
+  
+  .equals {
+    width: 100%;
+    text-align: right;
+    margin-top: 8px;
+    margin-left: 0;
+  }
+  
+  .prob-label {
+    min-width: 60px;
+  }
+}
+
+/* Scroll indicator for wide formulas */
+.formula-container[data-scrollable="true"]::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(to right, transparent, var(--bg-secondary));
+  pointer-events: none;
+}
+
+/* Formula button styles */
+.formula-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--bg-secondary);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.formula-button:hover {
+  background: var(--bg-action-secondary);
+}
+
+.formula-button .button-icon {
+  width: 14px !important;
+  height: 14px !important;
+  color: var(--icon-main) !important;
+}
+
+/* Formula button expanded state */
+.formula-button.expanded {
+  background: var(--bg-action-secondary);
+}
+
+/* Tooltip styles */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-secondary);
+  color: var(--text-main);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 1000;
+  margin-bottom: 4px;
+  border: 1px solid var(--border-main);
+}
+
+.tooltip:hover::after {
+  opacity: 1;
 }
