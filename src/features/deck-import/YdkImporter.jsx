@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import YdkParser from '../../services/YdkParser';
 import HandTrapService from '../../services/HandTrapService';
 import Icon from '../../components/Icon';
+import DecklistImage from '../../components/DecklistImage';
 
 const YdkImporter = ({ 
   uploadedYdkFile,
@@ -18,6 +19,8 @@ const YdkImporter = ({
 }) => {
   const [showClipboardField, setShowClipboardField] = useState(false);
   const [clipboardContent, setClipboardContent] = useState('');
+  // AC #2: Loading state for deck preview
+  const [isLoadingDeck, setIsLoadingDeck] = useState(false);
 
   const readFileAsText = (file) => {
     return new Promise((resolve, reject) => {
@@ -33,6 +36,9 @@ const YdkImporter = ({
     if (!file) return;
 
     try {
+      // AC #2: Set loading state
+      setIsLoadingDeck(true);
+      
       // Close clipboard field if it's open
       if (showClipboardField) {
         setShowClipboardField(false);
@@ -76,6 +82,9 @@ const YdkImporter = ({
     } catch (error) {
       console.error('YDK upload error:', error);
       alert(error.message);
+    } finally {
+      // AC #2: Clear loading state
+      setIsLoadingDeck(false);
     }
   };
 
@@ -85,6 +94,9 @@ const YdkImporter = ({
 
   const processClipboardContent = (content) => {
     try {
+      // AC #2: Set loading state
+      setIsLoadingDeck(true);
+      
       const parseResult = YdkParser.parseYdkFile(content, cardDatabase);
       
       const uniqueCards = [];
@@ -124,6 +136,9 @@ const YdkImporter = ({
     } catch (error) {
       console.error('Clipboard YDK processing error:', error);
       alert(error.message);
+    } finally {
+      // AC #2: Clear loading state
+      setIsLoadingDeck(false);
     }
   };
 
@@ -160,12 +175,14 @@ const YdkImporter = ({
           <div className="flex items-center" style={{ gap: '8px' }}>
             <button
               onClick={handleFromClipboard}
-              className="inline-flex items-center px-0 py-2 cursor-pointer hover:opacity-80 transition-opacity"
+              disabled={isLoadingDeck}
+              className={`inline-flex items-center px-0 py-2 transition-opacity ${isLoadingDeck ? 'cursor-not-allowed' : 'cursor-pointer hover:opacity-80'}`}
               style={{
                 backgroundColor: 'transparent',
                 border: 'none',
-                color: 'var(--text-main)',
+                color: isLoadingDeck ? 'var(--text-secondary)' : 'var(--text-main)',
                 borderRadius: '999px',
+                opacity: isLoadingDeck ? 0.5 : 1,
                 ...typography.body
               }}
             >
@@ -183,17 +200,19 @@ const YdkImporter = ({
               type="file"
               accept=".ydk"
               onChange={handleYdkFileUpload}
+              disabled={isLoadingDeck}
               style={{ display: 'none' }}
               id="ydk-file-input"
             />
             <label
               htmlFor="ydk-file-input"
-              className="inline-flex items-center px-0 py-2 cursor-pointer hover:opacity-80 transition-opacity"
+              className={`inline-flex items-center px-0 py-2 transition-opacity ${isLoadingDeck ? 'cursor-not-allowed' : 'cursor-pointer hover:opacity-80'}`}
               style={{
                 backgroundColor: 'transparent',
                 border: 'none',
-                color: 'var(--text-main)',
+                color: isLoadingDeck ? 'var(--text-secondary)' : 'var(--text-main)',
                 borderRadius: '999px',
+                opacity: isLoadingDeck ? 0.5 : 1,
                 ...typography.body
               }}
             >
@@ -218,6 +237,24 @@ const YdkImporter = ({
           </button>
         )}
       </div>
+      
+      {/* AC #1: Placeholder text when no YDK file is uploaded */}
+      {!uploadedYdkFile && !showClipboardField && !isLoadingDeck && (
+        <div className="mb-4">
+          <p style={{...typography.body, color: 'var(--text-secondary)', fontSize: '14px'}}>
+            Upload your decklist to preview it
+          </p>
+        </div>
+      )}
+      
+      {/* AC #2: Loading message while fetching card images */}
+      {isLoadingDeck && (
+        <div className="mb-4">
+          <p style={{...typography.body, color: 'var(--text-secondary)', fontSize: '14px'}}>
+            Loading deck preview...
+          </p>
+        </div>
+      )}
       
       {showClipboardField && (
         <div className="mb-4">
@@ -309,6 +346,16 @@ const YdkImporter = ({
             return null;
           })()}
         </div>
+      )}
+      
+      {/* AC #3, #5: Decklist image section - shown after file is uploaded and not loading */}
+      {!isLoadingDeck && (
+        <DecklistImage 
+          ydkCards={ydkCards}
+          ydkCardCounts={ydkCardCounts}
+          uploadedYdkFile={uploadedYdkFile}
+          typography={typography}
+        />
       )}
     </div>
   );
