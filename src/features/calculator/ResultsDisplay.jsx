@@ -492,13 +492,6 @@ const ResultsDisplay = ({
       
       {/* Dashboard Details */}
       <div className="mt-6 space-y-2">
-        <p style={typography.body}>
-          <span className="font-medium">Deck size:</span> {dashboardValues.deckSize}
-        </p>
-        <p style={typography.body}>
-          <span className="font-medium">Hand size:</span> {dashboardValues.handSize}
-        </p>
-        
         <div className="grid grid-cols-3 gap-4">
           {dashboardValues.combos.map((combo, index) => (
             <div key={combo.id} className="pl-4 border-l-2" style={{ borderColor: 'var(--border-secondary)' }}>
