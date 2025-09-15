@@ -276,7 +276,7 @@ input:-ms-input-placeholder {
 
 .formula-container.expanded {
   opacity: 1;
-  max-height: 500px;
+  max-height: 800px;
   padding: 16px;
 }
 

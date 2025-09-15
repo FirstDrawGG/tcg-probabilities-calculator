@@ -5383,6 +5383,10 @@
     "name": "Reaper of Prophecy",
     "isExtraDeck": false
   },
+  "9567495": {
+    "name": "Dragon Gate",
+    "isExtraDeck": true
+  },
   "9576193": {
     "name": "Monster Slots",
     "isExtraDeck": false
@@ -6852,7 +6856,7 @@
     "isExtraDeck": false
   },
   "12163590": {
-    "name": "Dragonmaid Stern",
+    "name": "Dragonmaid Cehrmba",
     "isExtraDeck": false
   },
   "12171659": {
@@ -8051,6 +8055,10 @@
     "name": "Archfiend Interceptor",
     "isExtraDeck": false
   },
+  "14442329": {
+    "name": "Juke Joint \"Killer Tune\"",
+    "isExtraDeck": false
+  },
   "14457896": {
     "name": "Parasite Paranoid",
     "isExtraDeck": false
@@ -8783,6 +8791,10 @@
     "name": "Trishula, the Dragon of Icy Imprisonment",
     "isExtraDeck": true
   },
+  "15665977": {
+    "name": "Killer Tune Red Seal",
+    "isExtraDeck": true
+  },
   "15667446": {
     "name": "Latinum, Exarch of Dark World",
     "isExtraDeck": false
@@ -9171,6 +9183,10 @@
     "name": "Hyper Blaze",
     "isExtraDeck": false
   },
+  "16327715": {
+    "name": "Junk Warrior Extreme",
+    "isExtraDeck": true
+  },
   "16329071": {
     "name": "World Legacy Trap Globe",
     "isExtraDeck": false
@@ -9189,6 +9205,10 @@
   },
   "16366944": {
     "name": "Moonlit Papillon",
+    "isExtraDeck": false
+  },
+  "16387555": {
+    "name": "Killer Tune Cue",
     "isExtraDeck": false
   },
   "16392422": {
@@ -9219,6 +9239,10 @@
     "name": "Flint Missile",
     "isExtraDeck": false
   },
+  "16449363": {
+    "name": "Scrap Synchron",
+    "isExtraDeck": false
+  },
   "16469012": {
     "name": "Teva",
     "isExtraDeck": false
@@ -9246,6 +9270,10 @@
   "16507828": {
     "name": "Bracchio-raidus",
     "isExtraDeck": true
+  },
+  "16509007": {
+    "name": "Killer Tune Mix",
+    "isExtraDeck": false
   },
   "16509093": {
     "name": "Royal Keeper",
@@ -9627,6 +9655,10 @@
     "name": "Hammer Shark",
     "isExtraDeck": false
   },
+  "17201951": {
+    "name": "Fullspeed Warrior",
+    "isExtraDeck": false
+  },
   "17214465": {
     "name": "Maiden of the Aqua",
     "isExtraDeck": false
@@ -9865,6 +9897,10 @@
   },
   "17616743": {
     "name": "Evil Eye Awakening",
+    "isExtraDeck": false
+  },
+  "17621695": {
+    "name": "Enneapolis, the Sinquisition City",
     "isExtraDeck": false
   },
   "17626381": {
@@ -11468,7 +11504,7 @@
     "isExtraDeck": true
   },
   "20568404": {
-    "name": "Jurrac Stigo",
+    "name": "Jurrac Stego",
     "isExtraDeck": false
   },
   "20579538": {
@@ -12086,6 +12122,10 @@
   "21637210": {
     "name": "Firewall Dragon Singularity",
     "isExtraDeck": true
+  },
+  "21637502": {
+    "name": "Hecahands Breus",
+    "isExtraDeck": false
   },
   "21639276": {
     "name": "Kashtira Preparations",
@@ -15424,7 +15464,7 @@
     "isExtraDeck": false
   },
   "27755794": {
-    "name": "Magnifistorming Megala",
+    "name": "Radiant Typhoon Meghala",
     "isExtraDeck": false
   },
   "27756115": {
@@ -16088,7 +16128,7 @@
     "isExtraDeck": false
   },
   "28877382": {
-    "name": "Doom-Z Five - Amalthe",
+    "name": "DoomZ V Five - Amalthe",
     "isExtraDeck": false
   },
   "28877602": {
@@ -16483,6 +16523,10 @@
     "name": "Daigusto Sphreez",
     "isExtraDeck": true
   },
+  "29570824": {
+    "name": "Enneacraft ϝ' \"tromarIA\"",
+    "isExtraDeck": false
+  },
   "29587993": {
     "name": "Mist Valley Apex Avian",
     "isExtraDeck": false
@@ -16590,6 +16634,10 @@
   "29765339": {
     "name": "Watthydra",
     "isExtraDeck": true
+  },
+  "29792472": {
+    "name": "Yad al Hecahands",
+    "isExtraDeck": false
   },
   "29795530": {
     "name": "Mischief of the Yokai",
@@ -18325,6 +18373,10 @@
   },
   "32756828": {
     "name": "Branded Beast",
+    "isExtraDeck": false
+  },
+  "32759190": {
+    "name": "Hecahands Yadel",
     "isExtraDeck": false
   },
   "32761286": {
@@ -22899,6 +22951,10 @@
     "name": "Einherjar Token",
     "isExtraDeck": false
   },
+  "40847034": {
+    "name": "Killer Tune Playlist",
+    "isExtraDeck": false
+  },
   "40854197": {
     "name": "Elemental HERO Absolute Zero",
     "isExtraDeck": true
@@ -22998,6 +23054,10 @@
   "41061625": {
     "name": "Yashinoki",
     "isExtraDeck": false
+  },
+  "41069676": {
+    "name": "Killer Tune Loudness War",
+    "isExtraDeck": true
   },
   "41077745": {
     "name": "Elemental HERO Ice Edge",
@@ -23959,6 +24019,10 @@
     "name": "Phalanx Pike",
     "isExtraDeck": false
   },
+  "42711820": {
+    "name": "Scrap Warrior",
+    "isExtraDeck": true
+  },
   "42713844": {
     "name": "Subterror Behemoth Umastryx",
     "isExtraDeck": false
@@ -23986,6 +24050,10 @@
   "42776960": {
     "name": "Relay Soul",
     "isExtraDeck": false
+  },
+  "42781164": {
+    "name": "Killer Tune Track Maker",
+    "isExtraDeck": true
   },
   "42790071": {
     "name": "Altergeist Multifaker",
@@ -24567,6 +24635,10 @@
     "name": "Photon Current",
     "isExtraDeck": false
   },
+  "43834302": {
+    "name": "Synchro Fellows",
+    "isExtraDeck": false
+  },
   "43839002": {
     "name": "Cynet Backdoor",
     "isExtraDeck": false
@@ -24601,6 +24673,10 @@
   },
   "43898403": {
     "name": "Twin Twisters",
+    "isExtraDeck": false
+  },
+  "43904702": {
+    "name": "Killer Tune Clip",
     "isExtraDeck": false
   },
   "43905751": {
@@ -25753,6 +25829,10 @@
   },
   "45950291": {
     "name": "Rank-Up-Magic Astral Force",
+    "isExtraDeck": false
+  },
+  "45951104": {
+    "name": "Bot Herder",
     "isExtraDeck": false
   },
   "45955628": {
@@ -30115,6 +30195,10 @@
     "name": "SPYRAL GEAR - Utility Wire",
     "isExtraDeck": false
   },
+  "54020393": {
+    "name": "Enneacraft - Release",
+    "isExtraDeck": false
+  },
   "54031490": {
     "name": "Shien's Smoke Signal",
     "isExtraDeck": false
@@ -30527,6 +30611,10 @@
     "name": "Colonel on C-String",
     "isExtraDeck": false
   },
+  "54656950": {
+    "name": "Anchorbolt Hedgehog",
+    "isExtraDeck": false
+  },
   "54658815": {
     "name": "Remote Rebirth",
     "isExtraDeck": false
@@ -30609,6 +30697,10 @@
   },
   "54828837": {
     "name": "Cerulean Skyfire",
+    "isExtraDeck": false
+  },
+  "54842941": {
+    "name": "Enneacraft - Atoriϝ.MAR",
     "isExtraDeck": false
   },
   "54844990": {
@@ -31251,6 +31343,10 @@
     "name": "Judgment of the Pharaoh",
     "isExtraDeck": false
   },
+  "55965529": {
+    "name": "Enneacraft θ' \"oknirIA\"",
+    "isExtraDeck": false
+  },
   "55969226": {
     "name": "Blue Dragon Summoner",
     "isExtraDeck": false
@@ -31377,6 +31473,10 @@
   },
   "56174248": {
     "name": "Prophecy Destroyer",
+    "isExtraDeck": false
+  },
+  "56187077": {
+    "name": "Enneacraft α' \"orgIA\"",
     "isExtraDeck": false
   },
   "56196385": {
@@ -32269,6 +32369,10 @@
   },
   "57793869": {
     "name": "The Wicked Eraser",
+    "isExtraDeck": false
+  },
+  "57809669": {
+    "name": "Hecahands Tartarus",
     "isExtraDeck": false
   },
   "57815601": {
@@ -37239,6 +37343,10 @@
     "name": "Guardian of the Golden Land",
     "isExtraDeck": false
   },
+  "67021206": {
+    "name": "Hecahands Jawza",
+    "isExtraDeck": true
+  },
   "67030233": {
     "name": "Majestic Red Dragon",
     "isExtraDeck": true
@@ -37881,6 +37989,10 @@
   },
   "68144350": {
     "name": "Battlin' Boxer Switchitter",
+    "isExtraDeck": false
+  },
+  "68144894": {
+    "name": "Hecahands Goddus",
     "isExtraDeck": false
   },
   "68159562": {
@@ -39636,7 +39748,7 @@
     "isExtraDeck": false
   },
   "71398055": {
-    "name": "D/D/D/D Great Dimension King Arc Crisis",
+    "name": "D/D/D/D Dimensional King Arc Crisis",
     "isExtraDeck": true
   },
   "71406430": {
@@ -40037,6 +40149,10 @@
   },
   "72150572": {
     "name": "Anti-Fusion Device",
+    "isExtraDeck": false
+  },
+  "72162751": {
+    "name": "Queen of the Blazing Domain",
     "isExtraDeck": false
   },
   "72167543": {
@@ -40712,7 +40828,7 @@
     "isExtraDeck": true
   },
   "73355772": {
-    "name": "Dogmatika Fleurdelis, the Thunderous",
+    "name": "Dogmatika Fleurdelis, the Thunderbolt",
     "isExtraDeck": false
   },
   "73355951": {
@@ -43207,6 +43323,10 @@
     "name": "Dark Designator",
     "isExtraDeck": false
   },
+  "78058681": {
+    "name": "Killer Tune Synchro",
+    "isExtraDeck": false
+  },
   "78060096": {
     "name": "Terrorking Salmon",
     "isExtraDeck": false
@@ -44163,6 +44283,10 @@
     "name": "Doble Passe",
     "isExtraDeck": false
   },
+  "80015408": {
+    "name": "Enneacraft - Rebirth",
+    "isExtraDeck": false
+  },
   "80019195": {
     "name": "Legendary Knight Timaeus",
     "isExtraDeck": false
@@ -44189,6 +44313,10 @@
   },
   "80045583": {
     "name": "Ancient Gear Cannon",
+    "isExtraDeck": false
+  },
+  "80054655": {
+    "name": "Supersonic Chick",
     "isExtraDeck": false
   },
   "80071763": {
@@ -44352,7 +44480,7 @@
     "isExtraDeck": false
   },
   "80320877": {
-    "name": "Doom-Z Destruction",
+    "name": "DoomZ Destruction",
     "isExtraDeck": false
   },
   "80321197": {
@@ -44440,7 +44568,7 @@
     "isExtraDeck": false
   },
   "80538047": {
-    "name": "Magnifistorming Suen",
+    "name": "Radiant Typhoon Swen",
     "isExtraDeck": false
   },
   "80538728": {
@@ -44869,6 +44997,10 @@
   },
   "81231742": {
     "name": "Sorcerous Spell Wall",
+    "isExtraDeck": false
+  },
+  "81237046": {
+    "name": "Enneacraft - Archaη.TAIL",
     "isExtraDeck": false
   },
   "81254059": {
@@ -48543,6 +48675,10 @@
     "name": "Psychic Blaster Mk-II",
     "isExtraDeck": true
   },
+  "88170262": {
+    "name": "Killer Tune Remix",
+    "isExtraDeck": true
+  },
   "88176533": {
     "name": "Devotee of Nephthys",
     "isExtraDeck": false
@@ -49143,6 +49279,10 @@
     "name": "Ally of Justice Clausolas",
     "isExtraDeck": false
   },
+  "89392810": {
+    "name": "Killer Tune Reco",
+    "isExtraDeck": false
+  },
   "89397517": {
     "name": "Legend of Heart",
     "isExtraDeck": false
@@ -49425,6 +49565,10 @@
   },
   "89928517": {
     "name": "Two-for-One Team",
+    "isExtraDeck": false
+  },
+  "89932017": {
+    "name": "Synchro Oneway",
     "isExtraDeck": false
   },
   "89943723": {
@@ -50615,6 +50759,10 @@
     "name": "Performapal Longphone Bull",
     "isExtraDeck": false
   },
+  "92171126": {
+    "name": "Enneacraft β' \"alazoneIA\"",
+    "isExtraDeck": false
+  },
   "92176681": {
     "name": "Suppression Collider",
     "isExtraDeck": false
@@ -50764,7 +50912,7 @@
     "isExtraDeck": false
   },
   "92472273": {
-    "name": "Doom-Z Zero - Drastia",
+    "name": "DoomZ XII Zero - Drastea",
     "isExtraDeck": false
   },
   "92481084": {
@@ -51233,6 +51381,10 @@
   },
   "93260132": {
     "name": "Spell Shattering Arrow",
+    "isExtraDeck": false
+  },
+  "93294363": {
+    "name": "Ipt al Hecahands",
     "isExtraDeck": false
   },
   "93294869": {
@@ -51867,6 +52019,10 @@
     "name": "Cocatorium the Heavy Metal Avian",
     "isExtraDeck": false
   },
+  "94410955": {
+    "name": "Hecahands Xeno",
+    "isExtraDeck": true
+  },
   "94412545": {
     "name": "Mechaleon",
     "isExtraDeck": false
@@ -52243,6 +52399,10 @@
     "name": "Aqua Chorus",
     "isExtraDeck": false
   },
+  "95132593": {
+    "name": "Hecahands Gygas",
+    "isExtraDeck": false
+  },
   "95134948": {
     "name": "Number 99: Utopia Dragonar",
     "isExtraDeck": true
@@ -52369,6 +52529,10 @@
   },
   "95362816": {
     "name": "Elemental HERO Lady Heat",
+    "isExtraDeck": false
+  },
+  "95365081": {
+    "name": "Hecahands Ibel",
     "isExtraDeck": false
   },
   "95372220": {
@@ -52548,7 +52712,7 @@
     "isExtraDeck": false
   },
   "95626382": {
-    "name": "Doom-Z End - Drastrius",
+    "name": "DoomZ XII End - Drastrius",
     "isExtraDeck": true
   },
   "95637655": {
@@ -54807,156 +54971,72 @@
     "name": "Ojamandala",
     "isExtraDeck": false
   },
-  "100348001": {
-    "name": "Fullspeed Warrior",
-    "isExtraDeck": false
-  },
-  "100348002": {
-    "name": "Anchorbolt Hedgehog",
-    "isExtraDeck": false
-  },
-  "100348003": {
-    "name": "Supersonic Chick",
-    "isExtraDeck": false
-  },
-  "100348004": {
-    "name": "Scrap Synchron",
-    "isExtraDeck": false
-  },
-  "100348005": {
-    "name": "Synchro Fellows",
-    "isExtraDeck": false
-  },
-  "100348032": {
-    "name": "Junk Warrior Extreme",
-    "isExtraDeck": true
-  },
-  "100348033": {
-    "name": "Scrap Warrior",
-    "isExtraDeck": true
-  },
-  "100446001": {
-    "name": "Hecahands Ibel",
-    "isExtraDeck": false
-  },
-  "100446002": {
-    "name": "Hecahands Yadel",
-    "isExtraDeck": false
-  },
-  "100446003": {
-    "name": "Hecahands Goddus",
-    "isExtraDeck": false
-  },
-  "100446004": {
-    "name": "Hecahands Gygas",
-    "isExtraDeck": false
-  },
-  "100446005": {
-    "name": "Hecahands Breus",
-    "isExtraDeck": false
-  },
-  "100446006": {
-    "name": "Hecahands Jawza",
-    "isExtraDeck": true
-  },
-  "100446007": {
-    "name": "Hecahands Xeno",
-    "isExtraDeck": true
-  },
-  "100446009": {
-    "name": "Hecahands Tartarus",
-    "isExtraDeck": false
-  },
-  "100446010": {
-    "name": "Ipt al Hecahands",
-    "isExtraDeck": false
-  },
-  "100446011": {
-    "name": "Yad al Hecahands",
-    "isExtraDeck": false
-  },
-  "100446016": {
-    "name": "Enneacraft α' \"orgIA\"",
-    "isExtraDeck": false
-  },
-  "100446017": {
-    "name": "Enneacraft β' \"alazoneIA\"",
-    "isExtraDeck": false
-  },
-  "100446018": {
-    "name": "Enneacraft ϝ' \"tromarIA\"",
-    "isExtraDeck": false
-  },
-  "100446019": {
-    "name": "Enneacraft θ' \"oknirIA\"",
-    "isExtraDeck": false
-  },
-  "100446022": {
-    "name": "Enneacraft - Atoriϝ.MAR",
-    "isExtraDeck": false
-  },
-  "100446023": {
-    "name": "Enneacraft - Archaη.TAIL",
-    "isExtraDeck": false
-  },
-  "100446024": {
-    "name": "Enneapolis, the Sinquisition City",
-    "isExtraDeck": false
-  },
-  "100446025": {
-    "name": "Enneacraft - Release",
-    "isExtraDeck": false
-  },
-  "100446026": {
-    "name": "Enneacraft - Rebirth",
-    "isExtraDeck": false
-  },
-  "100446031": {
-    "name": "Killer Tune Mix",
-    "isExtraDeck": false
-  },
-  "100446032": {
-    "name": "Killer Tune Clip",
-    "isExtraDeck": false
-  },
-  "100446033": {
-    "name": "Killer Tune Reco",
-    "isExtraDeck": false
-  },
-  "100446034": {
-    "name": "Killer Tune Cue",
-    "isExtraDeck": false
-  },
-  "100446035": {
-    "name": "Killer Tune Track Maker",
-    "isExtraDeck": true
-  },
-  "100446036": {
-    "name": "Killer Tune Remix",
-    "isExtraDeck": true
-  },
-  "100446037": {
-    "name": "Killer Tune Red Seal",
-    "isExtraDeck": true
-  },
-  "100446038": {
-    "name": "Killer Tune Loudness War",
-    "isExtraDeck": true
-  },
-  "100446039": {
-    "name": "Killer Tune Synchro",
-    "isExtraDeck": false
-  },
-  "100446040": {
-    "name": "Juke Joint \"Killer Tune\"",
-    "isExtraDeck": false
-  },
-  "100446041": {
-    "name": "Killer Tune Playlist",
-    "isExtraDeck": false
-  },
   "101206080": {
     "name": "Fireworks Celebration",
+    "isExtraDeck": false
+  },
+  "101302081": {
+    "name": "Disguise, the Copycat Hero",
+    "isExtraDeck": false
+  },
+  "101302082": {
+    "name": "Cursed Copycat Noble Arms",
+    "isExtraDeck": false
+  },
+  "101302083": {
+    "name": "Chanbar, the Flashy Sportsknight",
+    "isExtraDeck": true
+  },
+  "101302084": {
+    "name": "Faisan, Hunting Scout of the Deep Forest",
+    "isExtraDeck": true
+  },
+  "101302085": {
+    "name": "Chevreuil, Hunting Scout of the Deep Forest",
+    "isExtraDeck": true
+  },
+  "101302086": {
+    "name": "Hunting Horn",
+    "isExtraDeck": false
+  },
+  "101302087": {
+    "name": "Lycoris Lilyreaper",
+    "isExtraDeck": true
+  },
+  "101302088": {
+    "name": "Silk Bomb Moth",
+    "isExtraDeck": false
+  },
+  "101302089": {
+    "name": "Fleeting Flower of the Magician",
+    "isExtraDeck": false
+  },
+  "101302090": {
+    "name": "R.B. Lambda Cannon",
+    "isExtraDeck": false
+  },
+  "101302091": {
+    "name": "R.B. Lambda Blade",
+    "isExtraDeck": false
+  },
+  "101302092": {
+    "name": "R.B. Ga10 Pile Bunker",
+    "isExtraDeck": false
+  },
+  "101302093": {
+    "name": "R.B. Shepherd's Crook",
+    "isExtraDeck": true
+  },
+  "101302094": {
+    "name": "R.B. Operation Test",
+    "isExtraDeck": false
+  },
+  "101302095": {
+    "name": "R.B. Last Stand",
+    "isExtraDeck": false
+  },
+  "101302096": {
+    "name": "R.B. Next Phase",
     "isExtraDeck": false
   },
   "111000561": {

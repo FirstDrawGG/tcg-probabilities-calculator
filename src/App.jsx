@@ -191,9 +191,8 @@ const CardDatabaseService = {
     }
     
     const sanitizedName = this.sanitizeCardName(cardName);
-    // Update URL structure to match Vercel Blob storage: cards-small/name.webp instead of cards/name-small.webp
-    const directory = size === 'small' ? 'cards-small' : 'cards';
-    const url = `${this.BLOB_BASE_URL}/${directory}/${sanitizedName}.webp`;
+    // Always use full-size images from cards/ directory - no need for separate small images  
+    const url = `${this.BLOB_BASE_URL}/cards/${sanitizedName}.webp`;
     console.log(`🔗 Generated Vercel Blob URL for "${cardName}":`, url);
     return url;
   },
@@ -1044,11 +1043,12 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
                     {(searchTerm.length === 0 ? ydkCards : filteredCards).map((card, index) => (
                       <div
                         key={`${card.id}-${index}`}
-                        className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity"
+                        className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity flex items-center justify-between"
                         style={typography.body}
-                        onClick={() => handleCardSelect(card)}
                       >
-                        {card.name}
+                        <span onClick={() => handleCardSelect(card)} className="flex-1">
+                          {card.name}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -1088,11 +1088,31 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
                         {ydkMatches.map((card, index) => (
                           <div
                             key={`ydk-${card.id}-${index}`}
-                            className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity"
+                            className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity flex items-center justify-between"
                             style={typography.body}
-                            onClick={() => handleCardSelect(card)}
                           >
-                            {card.name}
+                            <span onClick={() => handleCardSelect(card)} className="flex-1">
+                              {card.name}
+                            </span>
+                            {showAddToComboOverlayForCard && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  showAddToComboOverlayForCard(card);
+                                  setIsOpen(false);
+                                }}
+                                className="ml-2 px-2 py-1 rounded text-xs hover:opacity-80 transition-opacity"
+                                style={{
+                                  backgroundColor: 'var(--bg-action)',
+                                  color: 'var(--text-black)',
+                                  border: 'none',
+                                  cursor: 'pointer'
+                                }}
+                                title="Add to combo"
+                              >
+                                +
+                              </button>
+                            )}
                           </div>
                         ))}
                         {otherMatches.length > 0 && (
@@ -1105,11 +1125,12 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
                     {otherMatches.map((card, index) => (
                       <div
                         key={`db-${card.id}-${index}`}
-                        className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity"
+                        className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity flex items-center justify-between"
                         style={typography.body}
-                        onClick={() => handleCardSelect(card)}
                       >
-                        {card.name}
+                        <span onClick={() => handleCardSelect(card)} className="flex-1">
+                          {card.name}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -1253,7 +1274,7 @@ export default function TCGCalculator() {
   const [isRestoringFromURL, setIsRestoringFromURL] = useState(false);
   const [generatedTitle, setGeneratedTitle] = useState('');
   const [shareableUrl, setShareableUrl] = useState('');
-  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   const [openingHand, setOpeningHand] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const refreshDebounceRef = useRef(null);
@@ -1263,6 +1284,7 @@ export default function TCGCalculator() {
   const [ydkCardCounts, setYdkCardCounts] = useState({});
   const [staticCardDatabase, setStaticCardDatabase] = useState({});
   const [testHandFromDecklist, setTestHandFromDecklist] = useState(true);
+  
 
   // Scroll to Calculation Dashboard function
   const scrollToCalculationDashboard = () => {
@@ -1724,13 +1746,13 @@ export default function TCGCalculator() {
     setTimeout(() => scrollToCalculationDashboard(), 100);
   };
 
-  const clearPreviousCalculationData = () => {
+  const clearPreviousCalculationData = (newDeckSize = null) => {
     // Clear calculation-related state when new YDK is loaded
     setCombos([createCombo(1, 0)]);
     setResults({ individual: [], combined: null });
     setErrors({});
     setDashboardValues({
-      deckSize: deckSize,
+      deckSize: newDeckSize || deckSize,
       handSize: handSize,
       combos: []
     });
@@ -1944,7 +1966,7 @@ export default function TCGCalculator() {
     }));
   };
 
-  // AC #4: Check if adding a card would exceed hand size
+  // Check if adding a card would exceed hand size
   const canAddCard = (combo) => {
     if (!combo || !combo.cards) return false;
     const currentMinSum = combo.cards.reduce((sum, card) => sum + (card.minCopiesInHand || 0), 0);
@@ -1959,6 +1981,7 @@ export default function TCGCalculator() {
     );
     return Math.max(1, ...sums);
   };
+
 
   const startEditingComboName = (combo) => {
     setEditingComboId(combo.id);
@@ -2034,12 +2057,17 @@ export default function TCGCalculator() {
     }
   };
 
+  const showToast = (message) => {
+    setToastMessage(message);
+    setTimeout(() => setToastMessage(''), 2000); // Hide after 2 seconds
+  };
+
   const handleCopyLink = () => {
-  if (!showToast) { // Prevent multiple toasts
-    navigator.clipboard.writeText(shareableUrl);
-    setShowToast(true);
-  }
-};
+    if (!toastMessage) { // Prevent multiple toasts
+      navigator.clipboard.writeText(shareableUrl);
+      showToast('Link copied!');
+    }
+  };
 
 useEffect(() => {
   ProbabilityService.clearCache();
@@ -2209,6 +2237,9 @@ useEffect(() => {
             cardDatabase={staticCardDatabase}
             typography={typography}
             clearPreviousCalculationData={clearPreviousCalculationData}
+            combos={combos}
+            setCombos={setCombos}
+            showToast={showToast}
           />
           
           <div className="mb-4">
@@ -2663,6 +2694,22 @@ useEffect(() => {
             Remember: In Yu-Gi-Oh!, understanding whether your combo is at 43% or 83% is what separates consistent decks from inconsistent ones. Happy deck building!
           </p>
         </div>
+        
+
+        {/* Toast notification */}
+        {toastMessage && (
+          <div 
+            className="fixed bottom-4 right-4 px-4 py-2 rounded-md"
+            style={{
+              backgroundColor: 'var(--bg-action)',
+              color: 'var(--text-action)',
+              zIndex: 1000,
+              ...typography.body
+            }}
+          >
+            {toastMessage}
+          </div>
+        )}
       </div>
     </div>
   );

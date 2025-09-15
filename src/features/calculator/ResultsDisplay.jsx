@@ -473,20 +473,6 @@ const ResultsDisplay = ({
               </button>
             </div>
           </div>
-          
-          {showToast && (
-            <div 
-              className="fixed bottom-4 right-4 px-4 py-2 rounded-md"
-              style={{
-                backgroundColor: 'var(--bg-action)',
-                color: 'var(--text-action)',
-                zIndex: 1000,
-                ...typography.body
-              }}
-            >
-              Link copied!
-            </div>
-          )}
         </div>
       )}
       

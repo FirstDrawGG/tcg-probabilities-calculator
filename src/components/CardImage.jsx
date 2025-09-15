@@ -56,11 +56,10 @@ const CardImage = ({
     }
     
     const sanitizedName = sanitizeCardName(actualCardName);
-    // Update URL structure to match Vercel Blob storage: cards-small/name.webp instead of cards/name-small.webp
-    const directory = size === 'small' ? 'cards-small' : 'cards';
+    // Always use full-size images from cards/ directory - no need for separate small images
     
     return {
-      webp: `${BLOB_BASE_URL}/${directory}/${sanitizedName}.webp`,
+      webp: `${BLOB_BASE_URL}/cards/${sanitizedName}.webp`,
       fallback: fallbackUrl
     };
   };

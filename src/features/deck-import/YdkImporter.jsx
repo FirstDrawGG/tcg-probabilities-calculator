@@ -15,7 +15,10 @@ const YdkImporter = ({
   setDeckSize,
   cardDatabase,
   typography,
-  clearPreviousCalculationData
+  clearPreviousCalculationData,
+  combos,
+  setCombos,
+  showToast
 }) => {
   const [showClipboardField, setShowClipboardField] = useState(false);
   const [clipboardContent, setClipboardContent] = useState('');
@@ -64,10 +67,12 @@ const YdkImporter = ({
       
       const mainDeckCardCount = parseResult.cards.length;
       
-      // Clear previous calculation data before applying new deck
-      clearPreviousCalculationData();
-      
+      // Set deck size first
       setDeckSize(mainDeckCardCount);
+      
+      // Clear previous calculation data after setting deck size
+      clearPreviousCalculationData(mainDeckCardCount);
+      
       setUploadedYdkFile({
         name: file.name,
         content: content
@@ -115,10 +120,12 @@ const YdkImporter = ({
       
       const mainDeckCardCount = parseResult.cards.length;
       
-      // Clear previous calculation data before applying new deck
-      clearPreviousCalculationData();
-      
+      // Set deck size first
       setDeckSize(mainDeckCardCount);
+      
+      // Clear previous calculation data after setting deck size
+      clearPreviousCalculationData(mainDeckCardCount);
+      
       setUploadedYdkFile({
         name: 'Clipboard YDK',
         content: content
@@ -156,11 +163,11 @@ const YdkImporter = ({
     setYdkCards([]);
     setYdkCardCounts({});
     
-    // Clear previous calculation data
-    clearPreviousCalculationData();
-    
     // Reset deck size to default
     setDeckSize(40);
+    
+    // Clear previous calculation data with default deck size
+    clearPreviousCalculationData(40);
   };
 
   return (
@@ -355,6 +362,9 @@ const YdkImporter = ({
           ydkCardCounts={ydkCardCounts}
           uploadedYdkFile={uploadedYdkFile}
           typography={typography}
+          combos={combos}
+          setCombos={setCombos}
+          showToast={showToast}
         />
       )}
     </div>
