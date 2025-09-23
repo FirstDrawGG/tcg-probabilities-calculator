@@ -39,21 +39,23 @@ class YdkParser {
     try {
       const lines = fileContent.split('\n').map(line => line.trim()).filter(line => line);
       const result = {
-        cards: [],
+        cards: [], // Main deck cards for probability calculation
         unmatchedIds: [],
-        extraDeckCards: [], // Track Extra Deck cards separately
-        cardCounts: {} // Track count of each card by name
+        cardCounts: {}, // Track count of each card by name (main deck only)
+        // Deck builder sections
+        deckZones: {
+          main: [],
+          extra: [],
+          side: []
+        }
       };
 
-      let currentSection = null;
-      
+      let currentSection = 'main'; // Default to main deck
+
       for (const line of lines) {
-        // Skip comments
+        // Skip comments that start with #
         if (line.startsWith('#')) continue;
-        
-        // Stop at side deck
-        if (line === '!side') break;
-        
+
         // Track current section
         if (line === '#main') {
           currentSection = 'main';
@@ -63,28 +65,51 @@ class YdkParser {
           currentSection = 'extra';
           continue;
         }
-        
+        if (line === '!side') {
+          currentSection = 'side';
+          continue;
+        }
+
         // Parse card ID
         const cardId = line.trim();
         if (!cardId || isNaN(cardId)) continue;
-        
+
         const cardData = staticCardDatabase[cardId];
         if (cardData) {
-          if (cardData.isExtraDeck) {
-            // Track Extra Deck cards but don't include in main results
-            result.extraDeckCards.push({
-              id: cardId,
-              name: cardData.name,
-              isExtraDeck: true
-            });
-          } else {
-            // Include main deck cards only
+          // Determine correct zone based on card type and isExtraDeck property
+          let correctZone = currentSection;
+          if (cardData.isExtraDeck === true && currentSection === 'main') {
+            // Extra deck card found in main deck section - move to extra deck
+            correctZone = 'extra';
+            console.log(`🔄 Auto-correcting: Moving ${cardData.name} from main to extra deck`);
+          } else if (cardData.isExtraDeck === false && currentSection === 'extra') {
+            // Main deck card found in extra deck section - move to main deck
+            correctZone = 'main';
+            console.log(`🔄 Auto-correcting: Moving ${cardData.name} from extra to main deck`);
+          }
+
+          // Create card object for deck builder
+          const deckCard = {
+            id: `${correctZone}_${cardId}_${Date.now()}_${Math.random()}`,
+            cardId: cardId,
+            name: cardData.name,
+            type: cardData.type || 'Unknown',
+            level: cardData.level || null,
+            attribute: cardData.attribute || null,
+            zone: correctZone
+          };
+
+          // Add to correct deck zone
+          result.deckZones[correctZone].push(deckCard);
+
+          // For main deck cards, also add to cards array and card counts (for probability calculation)
+          if (correctZone === 'main') {
             result.cards.push({
               id: cardId,
               name: cardData.name,
-              isExtraDeck: cardData.isExtraDeck
+              isExtraDeck: false
             });
-            
+
             // Track count of each card by name
             if (!result.cardCounts[cardData.name]) {
               result.cardCounts[cardData.name] = 0;

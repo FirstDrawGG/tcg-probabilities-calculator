@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import CardImage from './CardImage';
 
-const DecklistImage = ({ 
-  ydkCards, 
-  ydkCardCounts, 
-  uploadedYdkFile, 
+const DecklistImage = ({
+  ydkCards,
+  ydkCardCounts,
+  uploadedYdkFile,
+  cardDatabase,
   typography,
   combos = [],
   setCombos,
-  showToast
+  showToast,
+  deckZones
 }) => {
   // State for interactive combo assignment
   const [selectedCard, setSelectedCard] = useState(null);
@@ -51,68 +53,113 @@ const DecklistImage = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [overlayVisible]);
 
-  // Don't show anything if no YDK file is uploaded
-  if (!uploadedYdkFile || !ydkCards || ydkCards.length === 0) {
+  // Don't show anything if no deck data is available
+  const hasLiveDeckData = deckZones && (deckZones.main.length > 0 || deckZones.extra.length > 0 || deckZones.side.length > 0);
+  const hasYdkData = uploadedYdkFile && ydkCards && ydkCards.length > 0;
+
+  if (!hasLiveDeckData && !hasYdkData) {
     return null;
   }
 
-  // AC #6, #7: Create ordered list of cards respecting quantities from YDK file
-  const orderedCards = [];
-  
-  // Parse YDK file content to get main deck cards in exact order they appear
+  // Prioritize live deck data from Deck Builder, fallback to YDK parsing
+  let deckSections = { main: [], extra: [], side: [] };
+
+  if (hasLiveDeckData) {
+    // Use live deck data from Deck Builder (synced state)
+    console.log('🔄 DecklistImage: Using live deck data from Deck Builder');
+    deckSections = {
+      main: deckZones.main.map(card => ({
+        name: card.name,
+        id: card.cardId || card.id,
+        isCustom: card.isCustom || false,
+        section: 'main'
+      })),
+      extra: deckZones.extra.map(card => ({
+        name: card.name,
+        id: card.cardId || card.id,
+        isCustom: card.isCustom || false,
+        section: 'extra'
+      })),
+      side: deckZones.side.map(card => ({
+        name: card.name,
+        id: card.cardId || card.id,
+        isCustom: card.isCustom || false,
+        section: 'side'
+      }))
+    };
+  } else {
+    // Fallback: Parse YDK file content (for initial load)
+    console.log('🔄 DecklistImage: Falling back to YDK file parsing');
+    deckSections = { main: [], extra: [], side: [] };
+
   if (uploadedYdkFile && uploadedYdkFile.content) {
     const lines = uploadedYdkFile.content.split('\n').map(line => line.trim()).filter(line => line);
-    let isMainDeck = false;
-    
-    // First pass: collect card IDs in order from main deck section
-    const mainDeckCardIds = [];
+    let currentSection = 'main';
+
+    // Parse all sections from YDK content
     for (const line of lines) {
       if (line === '#main') {
-        isMainDeck = true;
+        currentSection = 'main';
         continue;
       }
-      if (line === '#extra' || line === '!side') {
-        isMainDeck = false;
+      if (line === '#extra') {
+        currentSection = 'extra';
         continue;
       }
-      
-      if (isMainDeck && /^\d+$/.test(line)) {
-        mainDeckCardIds.push(line);
+      if (line === '!side') {
+        currentSection = 'side';
+        continue;
+      }
+
+      if (/^\d+$/.test(line)) {
+        const cardId = line;
+        // First try to find in cardDatabase using the cardId as key
+        const cardData = cardDatabase && cardDatabase[cardId];
+        if (cardData) {
+          deckSections[currentSection].push({
+            name: cardData.name,
+            id: cardId,
+            isCustom: false,
+            section: currentSection
+          });
+        } else {
+          // Fallback: try to find in ydkCards array (for compatibility)
+          const card = ydkCards && ydkCards.find(c => c.id?.toString() === cardId);
+          if (card) {
+            deckSections[currentSection].push({
+              name: card.name,
+              id: card.id,
+              isCustom: card.isCustom || false,
+              section: currentSection
+            });
+          } else {
+            // If card not found in either source, create a placeholder
+            deckSections[currentSection].push({
+              name: `Unknown Card (${cardId})`,
+              id: cardId,
+              isCustom: true,
+              section: currentSection
+            });
+          }
+        }
       }
     }
-    
-    // Second pass: convert card IDs to card objects, maintaining order
-    for (const cardId of mainDeckCardIds) {
-      const card = ydkCards.find(c => c.id?.toString() === cardId);
-      if (card) {
-        orderedCards.push({
-          name: card.name,
-          id: card.id,
-          isCustom: card.isCustom || false
-        });
-      } else {
-        // If card not found in database, create a placeholder
-        orderedCards.push({
-          name: `Unknown Card (${cardId})`,
-          id: cardId,
-          isCustom: true
-        });
-      }
+
+    // Fallback: if we couldn't parse from content, use ydkCardCounts for main deck only
+    if (deckSections.main.length === 0 && ydkCards && ydkCards.length > 0) {
+      ydkCards.forEach(card => {
+        const count = ydkCardCounts[card.name] || 1;
+        for (let i = 0; i < count; i++) {
+          deckSections.main.push({
+            name: card.name,
+            id: card.id,
+            isCustom: card.isCustom || false,
+            section: 'main'
+          });
+        }
+      });
     }
   }
-
-  // Fallback: if we couldn't parse the order from content, use ydkCardCounts
-  if (orderedCards.length === 0) {
-    ydkCards.forEach(card => {
-      const count = ydkCardCounts[card.name] || 1;
-      for (let i = 0; i < count; i++) {
-        orderedCards.push({
-          name: card.name,
-          id: card.id,
-          isCustom: card.isCustom || false
-        });
-      }
-    });
   }
 
   // Helper functions for combo management
@@ -243,144 +290,173 @@ const DecklistImage = ({
     });
   };
 
-  // AC #8, #9: Group cards into rows of max 10 cards each
-  const cardsPerRow = 10;
-  const rows = [];
-  for (let i = 0; i < orderedCards.length; i += cardsPerRow) {
-    rows.push(orderedCards.slice(i, i + cardsPerRow));
-  }
+  // Helper function to group cards into rows
+  const groupCardsIntoRows = (cards, cardsPerRow = 10) => {
+    const rows = [];
+    for (let i = 0; i < cards.length; i += cardsPerRow) {
+      rows.push(cards.slice(i, i + cardsPerRow));
+    }
+    return rows;
+  };
+
+  // Group each section into rows
+  const mainDeckRows = groupCardsIntoRows(deckSections.main);
+  const extraDeckRows = groupCardsIntoRows(deckSections.extra);
+  const sideDeckRows = groupCardsIntoRows(deckSections.side);
+
+  // Helper function to render a deck section
+  const renderDeckSection = (sectionName, rows, sectionCards) => {
+    if (rows.length === 0) return null;
+
+    return (
+      <div key={sectionName} className="mb-6">
+        {/* Section header */}
+        <div className="mb-3">
+          <h5 style={{...typography.h3, color: 'var(--text-main)', margin: 0, fontSize: '14px', fontWeight: '600'}}>
+            {sectionName} ({sectionCards.length} cards)
+          </h5>
+        </div>
+
+        {/* Section cards */}
+        <div className="space-y-4 w-full">
+          {rows.map((row, rowIndex) => (
+            <div
+              key={`${sectionName}-row-${rowIndex}`}
+              className="flex items-center justify-start w-full"
+              style={{
+                position: 'relative',
+                height: '87px',
+                overflow: 'visible',
+                minWidth: '100%'
+              }}
+            >
+              {row.map((card, cardIndex) => {
+                const totalCards = row.length;
+                const cardWidth = 60;
+                const containerWidth = typeof window !== 'undefined' ? Math.min(window.innerWidth - 100, 800) : 700;
+                const availableWidth = containerWidth - cardWidth;
+                const overlapOffset = totalCards > 1 ? Math.max(8, availableWidth / (totalCards - 1)) : 0;
+                const leftPosition = cardIndex * Math.min(overlapOffset, cardWidth * 0.8);
+
+                const cardCombos = getCardCombos(card.name);
+                const isSelected = selectedCard && selectedCard.name === card.name;
+
+                return (
+                  <div
+                    key={`${sectionName}-${card.id}-${cardIndex}-${rowIndex}`}
+                    style={{
+                      position: 'absolute',
+                      left: `${leftPosition}px`,
+                      zIndex: cardIndex + 1,
+                      transition: 'transform 0.2s ease',
+                    }}
+                    className={`hover:scale-105 hover:z-50 cursor-pointer ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
+                    onClick={(e) => handleCardClick(card, e)}
+                  >
+                    <div style={{ position: 'relative' }}>
+                      <CardImage
+                        cardName={card.name}
+                        cardId={card.id}
+                        cardData={{
+                          name: card.name,
+                          id: card.id,
+                          isCustom: card.isCustom,
+                          cardName: card.name,
+                          cardId: card.id
+                        }}
+                        size="small"
+                      />
+
+                      {/* Combo icons - only show for main deck cards */}
+                      {sectionName === 'Main Deck' && cardCombos.length > 0 && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '4px',
+                          left: '4px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '2px'
+                        }}>
+                          {cardCombos.slice(0, 3).map((combo, iconIndex) => (
+                            <div
+                              key={combo.id}
+                              title={`${combo.name}: Min ${combo.cards.find(c => c.starterCard.toLowerCase() === card.name.toLowerCase())?.minCopiesInHand || 1}, Max ${combo.cards.find(c => c.starterCard.toLowerCase() === card.name.toLowerCase())?.maxCopiesInHand || 1}`}
+                              style={{
+                                width: '16px',
+                                height: '16px',
+                                borderRadius: '50%',
+                                backgroundColor: '#007AFF',
+                                color: 'white',
+                                fontSize: '10px',
+                                fontWeight: 'bold',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontFamily: 'Geist Regular, sans-serif',
+                                border: '1px solid white',
+                                boxShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                              }}
+                            >
+                              {combo.index + 1}
+                            </div>
+                          ))}
+
+                          {cardCombos.length > 3 && (
+                            <div
+                              title={`Additional combos: ${cardCombos.slice(3).map(c => `${c.index + 1}. ${c.name}`).join(', ')}`}
+                              style={{
+                                width: '16px',
+                                height: '16px',
+                                borderRadius: '50%',
+                                backgroundColor: '#666',
+                                color: 'white',
+                                fontSize: '8px',
+                                fontWeight: 'bold',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontFamily: 'Geist Regular, sans-serif',
+                                border: '1px solid white',
+                                boxShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                              }}
+                            >
+                              +{cardCombos.length - 3}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="mb-4">
-      {/* AC #3: Decklist image section header */}
+      {/* Main section header */}
       <div className="mb-3">
         <h4 style={{...typography.h3, color: 'var(--text-main)', margin: 0, fontSize: '16px'}}>
           Decklist image
         </h4>
       </div>
-      
-      {/* AC #5, #8, #9: Display cards with overlapping and row breaking */}
-      <div className="space-y-4 w-full">
-        {rows.map((row, rowIndex) => (
-          <div 
-            key={rowIndex} 
-            className="flex items-center justify-start w-full"
-            style={{
-              position: 'relative',
-              height: '87px', // AC #10: Match small card height from CardImage
-              overflow: 'visible',
-              minWidth: '100%'
-            }}
-          >
-            {row.map((card, cardIndex) => {
-              // AC #8: Overlay cards horizontally left-to-right with better spacing for full width
-              const totalCards = row.length;
-              const cardWidth = 60; // AC #10: Match small card width from CardImage
-              const containerWidth = typeof window !== 'undefined' ? Math.min(window.innerWidth - 100, 800) : 700;
-              const availableWidth = containerWidth - cardWidth;
-              const overlapOffset = totalCards > 1 ? Math.max(8, availableWidth / (totalCards - 1)) : 0;
-              const leftPosition = cardIndex * Math.min(overlapOffset, cardWidth * 0.8);
-              
-              const cardCombos = getCardCombos(card.name);
-              const isSelected = selectedCard && selectedCard.name === card.name;
-              
-              return (
-                <div
-                  key={`${card.id}-${cardIndex}-${rowIndex}`}
-                  style={{
-                    position: 'absolute',
-                    left: `${leftPosition}px`,
-                    zIndex: cardIndex + 1, // Cards later in sequence appear on top
-                    transition: 'transform 0.2s ease',
-                  }}
-                  className={`hover:scale-105 hover:z-50 cursor-pointer ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
-                  onClick={(e) => handleCardClick(card, e)}
-                >
-                  <div style={{ position: 'relative' }}>
-                    {/* AC #10: Same dimensions as opening hand display */}
-                    <CardImage 
-                      cardName={card.name}
-                      cardId={card.id}
-                      cardData={{
-                        name: card.name,
-                        id: card.id,
-                        isCustom: card.isCustom,
-                        cardName: card.name,
-                        cardId: card.id
-                      }}
-                      size="small"
-                    />
-                    
-                    {/* AC #9, #11: Numbered combo icons */}
-                    {cardCombos.length > 0 && (
-                      <div style={{
-                        position: 'absolute',
-                        top: '4px',
-                        left: '4px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '2px'
-                      }}>
-                        {cardCombos.slice(0, 3).map((combo, iconIndex) => (
-                          <div
-                            key={combo.id}
-                            title={`${combo.name}: Min ${combo.cards.find(c => c.starterCard.toLowerCase() === card.name.toLowerCase())?.minCopiesInHand || 1}, Max ${combo.cards.find(c => c.starterCard.toLowerCase() === card.name.toLowerCase())?.maxCopiesInHand || 1}`}
-                            style={{
-                              width: '16px',
-                              height: '16px',
-                              borderRadius: '50%',
-                              backgroundColor: '#007AFF',
-                              color: 'white',
-                              fontSize: '10px',
-                              fontWeight: 'bold',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              fontFamily: 'Geist Regular, sans-serif',
-                              border: '1px solid white',
-                              boxShadow: '0 1px 2px rgba(0,0,0,0.3)'
-                            }}
-                          >
-                            {combo.index + 1}
-                          </div>
-                        ))}
-                        
-                        {/* AC #13: "+X more" indicator for cards with more than 3 combos */}
-                        {cardCombos.length > 3 && (
-                          <div
-                            title={`Additional combos: ${cardCombos.slice(3).map(c => `${c.index + 1}. ${c.name}`).join(', ')}`}
-                            style={{
-                              width: '16px',
-                              height: '16px',
-                              borderRadius: '50%',
-                              backgroundColor: '#666',
-                              color: 'white',
-                              fontSize: '8px',
-                              fontWeight: 'bold',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              fontFamily: 'Geist Regular, sans-serif',
-                              border: '1px solid white',
-                              boxShadow: '0 1px 2px rgba(0,0,0,0.3)'
-                            }}
-                          >
-                            +{cardCombos.length - 3}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ))}
+
+      {/* Render all deck sections */}
+      <div className="space-y-6">
+        {renderDeckSection('Main Deck', mainDeckRows, deckSections.main)}
+        {renderDeckSection('Extra Deck', extraDeckRows, deckSections.extra)}
+        {renderDeckSection('Side Deck', sideDeckRows, deckSections.side)}
       </div>
-      
-      <div className="mt-2">
+
+      {/* Total cards summary */}
+      <div className="mt-4">
         <p style={{...typography.body, color: 'var(--text-secondary)', fontSize: '12px'}}>
-          {orderedCards.length} cards displayed in deck order
+          {deckSections.main.length + deckSections.extra.length + deckSections.side.length} cards total
+          ({deckSections.main.length} main, {deckSections.extra.length} extra, {deckSections.side.length} side)
         </p>
       </div>
 

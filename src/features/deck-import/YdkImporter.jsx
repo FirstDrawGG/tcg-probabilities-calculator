@@ -3,8 +3,9 @@ import YdkParser from '../../services/YdkParser';
 import HandTrapService from '../../services/HandTrapService';
 import Icon from '../../components/Icon';
 import DecklistImage from '../../components/DecklistImage';
+import CardSearchModal from '../../components/CardSearchModal.jsx';
 
-const YdkImporter = ({ 
+const YdkImporter = ({
   uploadedYdkFile,
   setUploadedYdkFile,
   ydkCards,
@@ -18,12 +19,16 @@ const YdkImporter = ({
   clearPreviousCalculationData,
   combos,
   setCombos,
-  showToast
+  showToast,
+  setInitialDeckZones,
+  deckZones
 }) => {
   const [showClipboardField, setShowClipboardField] = useState(false);
   const [clipboardContent, setClipboardContent] = useState('');
   // AC #2: Loading state for deck preview
   const [isLoadingDeck, setIsLoadingDeck] = useState(false);
+  // Card search modal state
+  const [showCardSearch, setShowCardSearch] = useState(false);
 
   const readFileAsText = (file) => {
     return new Promise((resolve, reject) => {
@@ -79,7 +84,13 @@ const YdkImporter = ({
       });
       setYdkCards(uniqueCards);
       setYdkCardCounts(parseResult.cardCounts);
-      
+
+      // Populate the deck builder with parsed deck zones
+      if (parseResult.deckZones && setInitialDeckZones) {
+        setInitialDeckZones(parseResult.deckZones);
+        console.log('🎯 YdkImporter: Populating deck builder with:', parseResult.deckZones);
+      }
+
       if (parseResult.unmatchedIds.length > 0) {
         alert("Some cards from your YDK file weren't matched");
       }
@@ -95,6 +106,12 @@ const YdkImporter = ({
 
   const handleFromClipboard = () => {
     setShowClipboardField(true);
+  };
+
+  const handleCardSelect = (card) => {
+    // For now, just show a toast that the card was selected
+    // This can be expanded later to actually add the card to a deck
+    showToast(`Selected: ${card.name}`);
   };
 
   const processClipboardContent = (content) => {
@@ -132,10 +149,16 @@ const YdkImporter = ({
       });
       setYdkCards(uniqueCards);
       setYdkCardCounts(parseResult.cardCounts);
-      
+
+      // Populate the deck builder with parsed deck zones
+      if (parseResult.deckZones && setInitialDeckZones) {
+        setInitialDeckZones(parseResult.deckZones);
+        console.log('🎯 YdkImporter (clipboard): Populating deck builder with:', parseResult.deckZones);
+      }
+
       setShowClipboardField(false);
       setClipboardContent('');
-      
+
       if (parseResult.unmatchedIds.length > 0) {
         alert("Some cards from your YDK file weren't matched");
       }
@@ -155,6 +178,9 @@ const YdkImporter = ({
     setYdkCardCounts({});
     setShowClipboardField(false);
     setClipboardContent('');
+    if (setInitialDeckZones) {
+      setInitialDeckZones(null);
+    }
   };
 
   const handleRemoveDecklist = () => {
@@ -162,12 +188,17 @@ const YdkImporter = ({
     setUploadedYdkFile(null);
     setYdkCards([]);
     setYdkCardCounts({});
-    
+
     // Reset deck size to default
     setDeckSize(40);
-    
+
     // Clear previous calculation data with default deck size
     clearPreviousCalculationData(40);
+
+    // Clear deck builder
+    if (setInitialDeckZones) {
+      setInitialDeckZones(null);
+    }
   };
 
   return (
@@ -225,6 +256,31 @@ const YdkImporter = ({
             >
               Upload
             </label>
+            <div
+              style={{
+                width: '1px',
+                height: '16px',
+                backgroundColor: 'var(--text-secondary)',
+                opacity: 0.3
+              }}
+            />
+            <div className="tooltip" data-tooltip="Coming soon">
+              <button
+                onClick={() => setShowCardSearch(true)}
+                disabled={true}
+                className="inline-flex items-center px-0 py-2 cursor-not-allowed transition-opacity"
+                style={{
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  color: 'var(--text-secondary)',
+                  borderRadius: '999px',
+                  opacity: 0.5,
+                  ...typography.body
+                }}
+              >
+                Search Cards
+              </button>
+            </div>
           </div>
         )}
         
@@ -357,16 +413,25 @@ const YdkImporter = ({
       
       {/* AC #3, #5: Decklist image section - shown after file is uploaded and not loading */}
       {!isLoadingDeck && (
-        <DecklistImage 
+        <DecklistImage
           ydkCards={ydkCards}
           ydkCardCounts={ydkCardCounts}
           uploadedYdkFile={uploadedYdkFile}
+          cardDatabase={cardDatabase}
           typography={typography}
           combos={combos}
           setCombos={setCombos}
           showToast={showToast}
+          deckZones={deckZones}
         />
       )}
+
+      {/* Card Search Modal */}
+      <CardSearchModal
+        isOpen={showCardSearch}
+        onClose={() => setShowCardSearch(false)}
+        onCardSelect={handleCardSelect}
+      />
     </div>
   );
 };

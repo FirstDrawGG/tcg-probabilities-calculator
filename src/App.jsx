@@ -6,6 +6,7 @@ import ResultsDisplay from './features/calculator/ResultsDisplay';
 import DeckInputs from './features/calculator/DeckInputs';
 import YdkImporter from './features/deck-import/YdkImporter';
 import Icon from './components/Icon';
+import CardSearchModal from './components/CardSearchModal';
 
 // URL encoding/decoding utilities
 const URLService = {
@@ -946,7 +947,7 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
       fontFamily: 'Geist Regular, sans-serif'
     }
   };
-  
+
   return (
     <div ref={dropdownRef} style={{ position: 'relative' }}>
       {isEditing ? (
@@ -1257,6 +1258,910 @@ const createCombo = (id, index) => ({
   }]
 });
 
+// Deck Builder Section Component
+const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, showToast, initialDeckZones, deckZones, setDeckZones }) => {
+  const [showCardSearch, setShowCardSearch] = useState(false);
+  const [draggedCard, setDraggedCard] = useState(null);
+  const [dragOverZone, setDragOverZone] = useState(null);
+  const [selectedFormat, setSelectedFormat] = useState('TCG');
+  const [autoSort, setAutoSort] = useState(true);
+  const [deckStatistics, setDeckStatistics] = useState({
+    totalCards: 0,
+    cardTypes: { monsters: 0, spells: 0, traps: 0 },
+    monsterLevels: {},
+    attributes: {},
+    deckStatus: 'invalid'
+  });
+
+  // Update deck zones when initial deck zones are provided (from YDK upload)
+  useEffect(() => {
+    if (initialDeckZones) {
+      console.log('🎯 DeckImageSection: Updating deck zones with:', initialDeckZones);
+      setDeckZones(initialDeckZones);
+    } else if (initialDeckZones === null) {
+      // Clear deck zones when YDK is removed
+      console.log('🎯 DeckImageSection: Clearing deck zones');
+      setDeckZones({
+        main: [],
+        extra: [],
+        side: []
+      });
+    }
+  }, [initialDeckZones]);
+
+  // Update statistics when deck zones change (Main deck only)
+  useEffect(() => {
+    const mainDeckCards = deckZones.main;
+    const totalCards = mainDeckCards.length;
+
+    console.log('📊 Calculating Main Deck Stats:', {
+      mainDeckLength: totalCards,
+      cards: mainDeckCards.map(card => ({
+        name: card.name,
+        type: card.type,
+        level: card.level,
+        attribute: card.attribute
+      }))
+    });
+
+    const cardTypes = mainDeckCards.reduce((acc, card) => {
+      if (card.type?.toLowerCase().includes('monster')) acc.monsters++;
+      else if (card.type?.toLowerCase().includes('spell')) acc.spells++;
+      else if (card.type?.toLowerCase().includes('trap')) acc.traps++;
+      return acc;
+    }, { monsters: 0, spells: 0, traps: 0 });
+
+    const monsterLevels = mainDeckCards.reduce((acc, card) => {
+      if (card.level && card.type?.toLowerCase().includes('monster')) {
+        acc[card.level] = (acc[card.level] || 0) + 1;
+      }
+      return acc;
+    }, {});
+
+    const attributes = mainDeckCards.reduce((acc, card) => {
+      if (card.attribute) {
+        acc[card.attribute] = (acc[card.attribute] || 0) + 1;
+      }
+      return acc;
+    }, {});
+
+    const isMainDeckValid = deckZones.main.length >= 40 && deckZones.main.length <= 60;
+    const isExtraDeckValid = deckZones.extra.length <= 15;
+    const isSideDeckValid = deckZones.side.length <= 15;
+    const deckStatus = isMainDeckValid && isExtraDeckValid && isSideDeckValid ? 'legal' : 'invalid';
+
+    setDeckStatistics({
+      totalCards,
+      cardTypes,
+      monsterLevels,
+      attributes,
+      deckStatus
+    });
+  }, [deckZones]);
+
+
+  // Banlist enforcement data
+  const banlistData = {
+    TCG: {
+      forbidden: ['Pot of Greed', 'Graceful Charity', 'Delinquent Duo', 'The Forceful Sentry', 'Confiscation', 'Last Will', 'Painful Choice'],
+      limited: ['Raigeki', 'Dark Hole', 'Monster Reborn', 'Change of Heart', 'Imperial Order', 'Mystical Space Typhoon'],
+      semiLimited: ['Mystical Space Typhoon', 'Mirror Force']
+    },
+    OCG: {
+      forbidden: ['Pot of Greed', 'Graceful Charity', 'Delinquent Duo'],
+      limited: ['Raigeki', 'Dark Hole', 'Monster Reborn'],
+      semiLimited: ['Mirror Force']
+    },
+    'Master Duel': {
+      forbidden: ['Pot of Greed', 'Graceful Charity'],
+      limited: ['Raigeki', 'Dark Hole'],
+      semiLimited: ['Mirror Force']
+    },
+    'No Banlist': {
+      forbidden: [],
+      limited: [],
+      semiLimited: []
+    }
+  };
+
+  const getCardBanlistStatus = (cardName) => {
+    const format = banlistData[selectedFormat];
+    if (format.forbidden.includes(cardName)) return 'forbidden';
+    if (format.limited.includes(cardName)) return 'limited';
+    if (format.semiLimited.includes(cardName)) return 'semi-limited';
+    return 'unlimited';
+  };
+
+  const getMaxCopiesAllowed = (cardName) => {
+    const status = getCardBanlistStatus(cardName);
+    switch (status) {
+      case 'forbidden': return 0;
+      case 'limited': return 1;
+      case 'semi-limited': return 2;
+      default: return 3;
+    }
+  };
+
+  const handleCardSelect = (card) => {
+    // Check banlist restrictions
+    const banlistStatus = getCardBanlistStatus(card.name);
+    const maxAllowed = getMaxCopiesAllowed(card.name);
+
+    if (banlistStatus === 'forbidden') {
+      showToast(`${card.name} is forbidden in ${selectedFormat}`);
+      return;
+    }
+
+    // Add card to main deck by default
+    const newCard = {
+      id: `${Date.now()}_${Math.random()}`,
+      name: card.name,
+      cardId: card.id,
+      type: card.type,
+      attribute: card.attribute,
+      level: card.level,
+      atk: card.atk,
+      def: card.def,
+      desc: card.desc,
+      zone: 'main',
+      banlistStatus
+    };
+
+    // Check card limits based on banlist
+    const existingCount = deckZones.main.filter(c => c.name === card.name).length;
+    if (existingCount >= maxAllowed) {
+      const statusText = banlistStatus === 'limited' ? 'Limited - Only 1 copy allowed' :
+                        banlistStatus === 'semi-limited' ? 'Semi-Limited - Only 2 copies allowed' :
+                        'Maximum 3 copies allowed';
+      showToast(statusText);
+      return;
+    }
+
+    // Check deck size limits
+    if (deckZones.main.length >= 60) {
+      showToast('Main Deck cannot exceed 60 cards');
+      return;
+    }
+
+    setDeckZones(prev => ({
+      ...prev,
+      main: [...prev.main, newCard]
+    }));
+
+    showToast(`Added ${card.name} to Main Deck`);
+  };
+
+  const handleDragStart = (e, card) => {
+    setDraggedCard(card);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  // Touch event handlers for mobile support
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchItem, setTouchItem] = useState(null);
+
+  const handleTouchStart = (e, card) => {
+    const touch = e.touches[0];
+    setTouchStart({ x: touch.clientX, y: touch.clientY });
+    setTouchItem(card);
+
+    // Add haptic feedback if available
+    if (navigator.vibrate) {
+      navigator.vibrate(50);
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (!touchStart || !touchItem) return;
+
+    e.preventDefault();
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - touchStart.x;
+    const deltaY = touch.clientY - touchStart.y;
+
+    // Check if this is a drag gesture (moved more than 10px)
+    if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) {
+      // Find element under touch point
+      const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+      const dropZone = elementBelow?.closest('[data-drop-zone]');
+
+      if (dropZone) {
+        const zone = dropZone.dataset.dropZone;
+        setDragOverZone(zone);
+      } else {
+        setDragOverZone(null);
+      }
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!touchStart || !touchItem) return;
+
+    const touch = e.changedTouches[0];
+    const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+    const dropZone = elementBelow?.closest('[data-drop-zone]');
+
+    if (dropZone) {
+      const targetZone = dropZone.dataset.dropZone;
+      // Simulate drop event
+      const fakeEvent = {
+        preventDefault: () => {},
+      };
+      setDraggedCard(touchItem);
+      handleDrop(fakeEvent, targetZone);
+    }
+
+    setTouchStart(null);
+    setTouchItem(null);
+    setDragOverZone(null);
+  };
+
+  const handleDragOver = (e, zone) => {
+    e.preventDefault();
+    setDragOverZone(zone);
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDragLeave = () => {
+    setDragOverZone(null);
+  };
+
+  const handleDrop = (e, targetZone) => {
+    e.preventDefault();
+    setDragOverZone(null);
+
+    if (!draggedCard) return;
+
+    // Validate drop based on card type and zone
+    const isExtraDeckMonster = draggedCard.type?.toLowerCase().includes('fusion') ||
+                              draggedCard.type?.toLowerCase().includes('synchro') ||
+                              draggedCard.type?.toLowerCase().includes('xyz') ||
+                              draggedCard.type?.toLowerCase().includes('link');
+
+    if (isExtraDeckMonster && targetZone === 'main') {
+      showToast('Extra Deck monsters cannot go in Main Deck');
+      return;
+    }
+
+    if (!isExtraDeckMonster && targetZone === 'extra') {
+      showToast('Only Extra Deck monsters can go in Extra Deck');
+      return;
+    }
+
+    // Check zone limits
+    if (targetZone === 'main' && deckZones.main.length >= 60) {
+      showToast('Main Deck cannot exceed 60 cards');
+      return;
+    }
+
+    if ((targetZone === 'extra' || targetZone === 'side') && deckZones[targetZone].length >= 15) {
+      showToast(`${targetZone === 'extra' ? 'Extra' : 'Side'} Deck cannot exceed 15 cards`);
+      return;
+    }
+
+    // Move card between zones
+    const sourceZone = draggedCard.zone;
+    if (sourceZone === targetZone) return;
+
+    setDeckZones(prev => ({
+      ...prev,
+      [sourceZone]: prev[sourceZone].filter(c => c.id !== draggedCard.id),
+      [targetZone]: [...prev[targetZone], { ...draggedCard, zone: targetZone }]
+    }));
+
+    setDraggedCard(null);
+  };
+
+  const removeCard = (cardId, zone) => {
+    setDeckZones(prev => ({
+      ...prev,
+      [zone]: prev[zone].filter(c => c.id !== cardId)
+    }));
+  };
+
+  const clearZone = (zone) => {
+    setDeckZones(prev => ({
+      ...prev,
+      [zone]: []
+    }));
+  };
+
+  const sortDeck = () => {
+    if (!autoSort) return;
+
+    setDeckZones(prev => ({
+      ...prev,
+      main: [...prev.main].sort((a, b) => {
+        // Sort by type first (monsters, spells, traps)
+        const typeOrder = { monster: 0, spell: 1, trap: 2 };
+        const aType = a.type?.toLowerCase().includes('monster') ? 'monster' :
+                     a.type?.toLowerCase().includes('spell') ? 'spell' : 'trap';
+        const bType = b.type?.toLowerCase().includes('monster') ? 'monster' :
+                     b.type?.toLowerCase().includes('spell') ? 'spell' : 'trap';
+
+        if (typeOrder[aType] !== typeOrder[bType]) {
+          return typeOrder[aType] - typeOrder[bType];
+        }
+
+        // Within same type, sort by name
+        return a.name.localeCompare(b.name);
+      }),
+      extra: [...prev.extra].sort((a, b) => a.name.localeCompare(b.name)),
+      side: [...prev.side].sort((a, b) => a.name.localeCompare(b.name))
+    }));
+  };
+
+  const exportDeck = () => {
+    const mainDeckText = deckZones.main.map(card => card.name).join('\n');
+    const extraDeckText = deckZones.extra.map(card => card.name).join('\n');
+    const sideDeckText = deckZones.side.map(card => card.name).join('\n');
+
+    const deckText = [
+      '# Main Deck',
+      mainDeckText,
+      '',
+      '# Extra Deck',
+      extraDeckText,
+      '',
+      '# Side Deck',
+      sideDeckText
+    ].join('\n');
+
+    // Create and download file
+    const blob = new Blob([deckText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'deck.ydk';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast('Deck exported successfully');
+  };
+
+  const importDeckFromText = (text) => {
+    const lines = text.split('\n').map(line => line.trim()).filter(line => line && !line.startsWith('#'));
+
+    // Simple import - add all to main deck for now
+    const importedCards = lines.map((line, index) => ({
+      id: `imported_${index}`,
+      name: line,
+      zone: 'main',
+      type: 'Unknown' // Will be updated when card data is fetched
+    }));
+
+    setDeckZones(prev => ({
+      main: importedCards,
+      extra: [],
+      side: []
+    }));
+
+    showToast(`Imported ${importedCards.length} cards`);
+  };
+
+  return (
+    <div>
+      <div className="mb-4">
+        <h2 className="font-semibold" style={typography.h2}>Deck Builder</h2>
+        <p style={{...typography.body, color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px'}}>
+          Build your deck visually by searching and adding cards to different zones
+        </p>
+      </div>
+
+      {/* Visual deck builder mode */}
+      <div>
+          <div className="mb-4 flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-4 items-start sm:items-center">
+            <button
+              onClick={() => setShowCardSearch(true)}
+              className="px-4 py-2 rounded-lg hover:opacity-80 transition-opacity"
+              style={{
+                backgroundColor: 'var(--bg-action)',
+                color: 'var(--text-action)',
+                fontSize: '14px',
+                fontWeight: '600'
+              }}
+            >
+              Add Cards
+            </button>
+
+            {/* Format Selector */}
+            <div className="flex items-center gap-2">
+              <label style={{...typography.body, color: 'var(--text-main)', fontSize: '14px'}}>
+                Format:
+              </label>
+              <select
+                value={selectedFormat}
+                onChange={(e) => setSelectedFormat(e.target.value)}
+                className="px-3 py-2 rounded-lg border"
+                style={{
+                  backgroundColor: 'var(--bg-secondary)',
+                  borderColor: 'var(--border-main)',
+                  color: 'var(--text-main)',
+                  fontSize: '14px'
+                }}
+              >
+                <option value="TCG">TCG</option>
+                <option value="OCG">OCG</option>
+                <option value="Master Duel">Master Duel</option>
+                <option value="No Banlist">No Banlist</option>
+              </select>
+            </div>
+
+            {/* Auto-sort Toggle */}
+            <div className="flex items-center gap-2">
+              <label style={{...typography.body, color: 'var(--text-main)', fontSize: '14px'}}>
+                Auto-sort:
+              </label>
+              <input
+                type="checkbox"
+                checked={autoSort}
+                onChange={(e) => setAutoSort(e.target.checked)}
+                style={{accentColor: 'var(--bg-action)'}}
+              />
+            </div>
+          </div>
+
+          {/* Deck Zones - Mobile Optimized */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+            {/* Main Deck */}
+            <div className="lg:col-span-2">
+              <DeckZone
+                title="Main Deck"
+                subtitle={`(${deckZones.main.length}/40-60)`}
+                cards={deckZones.main}
+                zone="main"
+                onDragOver={(e) => handleDragOver(e, 'main')}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, 'main')}
+                onRemoveCard={removeCard}
+                onClearZone={clearZone}
+                dragOverZone={dragOverZone}
+                handleDragStart={handleDragStart}
+                handleTouchStart={handleTouchStart}
+                handleTouchMove={handleTouchMove}
+                handleTouchEnd={handleTouchEnd}
+                typography={typography}
+                maxCards={10}
+              />
+            </div>
+
+            {/* Extra Deck */}
+            <div>
+              <DeckZone
+                title="Extra Deck"
+                subtitle={`(${deckZones.extra.length}/15)`}
+                cards={deckZones.extra}
+                zone="extra"
+                onDragOver={(e) => handleDragOver(e, 'extra')}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, 'extra')}
+                onRemoveCard={removeCard}
+                onClearZone={clearZone}
+                dragOverZone={dragOverZone}
+                handleDragStart={handleDragStart}
+                handleTouchStart={handleTouchStart}
+                handleTouchMove={handleTouchMove}
+                handleTouchEnd={handleTouchEnd}
+                typography={typography}
+                borderColor="var(--bg-action-secondary)"
+                maxCards={5}
+              />
+            </div>
+
+            {/* Side Deck */}
+            <div>
+              <DeckZone
+                title="Side Deck"
+                subtitle={`(${deckZones.side.length}/15)`}
+                cards={deckZones.side}
+                zone="side"
+                onDragOver={(e) => handleDragOver(e, 'side')}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, 'side')}
+                onRemoveCard={removeCard}
+                onClearZone={clearZone}
+                dragOverZone={dragOverZone}
+                handleDragStart={handleDragStart}
+                handleTouchStart={handleTouchStart}
+                handleTouchMove={handleTouchMove}
+                handleTouchEnd={handleTouchEnd}
+                typography={typography}
+                borderColor="var(--text-secondary)"
+                maxCards={5}
+              />
+            </div>
+          </div>
+
+          {/* Statistics Panel */}
+          <DeckStatistics statistics={deckStatistics} typography={typography} />
+
+          {/* Deck Actions */}
+          <div className="flex flex-col sm:flex-row flex-wrap gap-2 mt-6">
+            <input
+              type="file"
+              accept=".ydk,.txt"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = (event) => {
+                    importDeckFromText(event.target.result);
+                  };
+                  reader.readAsText(file);
+                }
+              }}
+              style={{ display: 'none' }}
+              id="deck-import"
+            />
+            <label
+              htmlFor="deck-import"
+              className="px-3 py-2 text-sm rounded-lg hover:opacity-80 transition-opacity cursor-pointer"
+              style={{
+                backgroundColor: 'var(--bg-action)',
+                color: 'var(--text-action)'
+              }}
+            >
+              Import (Ctrl+I)
+            </label>
+            <button
+              onClick={exportDeck}
+              className="px-3 py-2 text-sm rounded-lg hover:opacity-80 transition-opacity"
+              style={{
+                backgroundColor: 'var(--bg-secondary)',
+                color: 'var(--text-main)',
+                border: `1px solid var(--border-main)`
+              }}
+            >
+              Export (Ctrl+E)
+            </button>
+            <button
+              onClick={() => {
+                if (confirm('Are you sure you want to clear all cards from your deck?')) {
+                  clearZone('main');
+                  clearZone('extra');
+                  clearZone('side');
+                  showToast('All cards cleared');
+                }
+              }}
+              className="px-3 py-2 text-sm rounded-lg hover:opacity-80 transition-opacity"
+              style={{
+                backgroundColor: 'var(--bg-secondary)',
+                color: 'var(--text-main)',
+                border: `1px solid var(--border-main)`
+              }}
+            >
+              Clear All (Ctrl+Shift+C)
+            </button>
+            <button
+              onClick={sortDeck}
+              className="px-3 py-2 text-sm rounded-lg hover:opacity-80 transition-opacity"
+              style={{
+                backgroundColor: 'var(--bg-secondary)',
+                color: 'var(--text-main)',
+                border: `1px solid var(--border-main)`
+              }}
+            >
+              Sort (Ctrl+S)
+            </button>
+            <button
+              onClick={() => {
+                // Convert deck to text format for existing deck image functionality
+                const mainDeckText = deckZones.main.map(card => card.name).join('\n');
+                const extraDeckText = deckZones.extra.map(card => card.name).join('\n');
+                const sideDeckText = deckZones.side.map(card => card.name).join('\n');
+
+                const fullDeckText = [
+                  '# Main Deck',
+                  mainDeckText,
+                  '',
+                  '# Extra Deck',
+                  extraDeckText,
+                  '',
+                  '# Side Deck',
+                  sideDeckText
+                ].join('\n');
+
+                // Note: Text mode removed - visual deck builder only
+                showToast('Deck converted to text format for image generation');
+              }}
+              className="px-3 py-2 text-sm rounded-lg hover:opacity-80 transition-opacity"
+              style={{
+                backgroundColor: 'var(--bg-action)',
+                color: 'var(--text-action)'
+              }}
+            >
+              Generate Deck Image
+            </button>
+            <button
+              onClick={() => {
+                // Convert deck to probability calculator format
+                const totalCards = deckZones.main.length + deckZones.extra.length + deckZones.side.length;
+                if (totalCards === 0) {
+                  showToast('Please add cards to your deck first');
+                  return;
+                }
+
+                // Create URL with deck data for probability calculation
+                const searchParams = new URLSearchParams();
+                searchParams.set('deckSize', deckZones.main.length.toString());
+                searchParams.set('handSize', '5');
+
+                // Store deck data for probability calculation
+                const deckData = {
+                  main: deckZones.main.map(card => card.name),
+                  extra: deckZones.extra.map(card => card.name),
+                  side: deckZones.side.map(card => card.name)
+                };
+                localStorage.setItem('deckBuilderData', JSON.stringify(deckData));
+
+                showToast('Ready for probability calculation! Scroll up to the calculator.');
+
+                // Scroll to the top of the page where the calculator is
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="px-3 py-2 text-sm rounded-lg hover:opacity-80 transition-opacity"
+              style={{
+                backgroundColor: 'var(--bg-action-secondary)',
+                color: 'var(--text-main)',
+                border: `1px solid var(--border-main)`
+              }}
+            >
+              Calculate Probabilities
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Card Search Modal */}
+      <CardSearchModal
+        isOpen={showCardSearch}
+        onClose={() => setShowCardSearch(false)}
+        onCardSelect={handleCardSelect}
+      />
+    </div>
+  );
+};
+
+// Deck Zone Component
+const DeckZone = ({
+  title,
+  subtitle,
+  cards,
+  zone,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+  onRemoveCard,
+  onClearZone,
+  dragOverZone,
+  handleDragStart,
+  handleTouchStart,
+  handleTouchMove,
+  handleTouchEnd,
+  typography,
+  borderColor = 'var(--border-main)',
+  maxCards = 10
+}) => {
+  const isDragOver = dragOverZone === zone;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <h3 style={{...typography.h3, color: 'var(--text-main)'}}>
+          {title} {subtitle}
+        </h3>
+        {cards.length > 0 && (
+          <button
+            onClick={() => onClearZone(zone)}
+            className="text-xs hover:opacity-80 transition-opacity"
+            style={{color: 'var(--text-secondary)'}}
+          >
+            Clear
+          </button>
+        )}
+      </div>
+
+      <div
+        className="min-h-32 p-4 rounded-lg border-2 border-dashed transition-colors"
+        style={{
+          backgroundColor: 'var(--bg-secondary)',
+          borderColor: isDragOver ? 'var(--bg-action)' : borderColor,
+          opacity: isDragOver ? 0.8 : 1
+        }}
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
+        onDrop={onDrop}
+        data-drop-zone={zone}
+      >
+        {cards.length === 0 ? (
+          <div className="flex items-center justify-center h-24">
+            <p style={{...typography.body, color: 'var(--text-secondary)'}}>
+              Drop cards here or click "Add Cards"
+            </p>
+          </div>
+        ) : (
+          <div
+            className="grid gap-2"
+            style={{
+              gridTemplateColumns: `repeat(${maxCards}, minmax(0, 1fr))`
+            }}
+          >
+            {cards.map((card) => (
+              <DeckCard
+                key={card.id}
+                card={card}
+                onDragStart={handleDragStart}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onRemove={() => onRemoveCard(card.id, zone)}
+                typography={typography}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Individual Card Component
+const DeckCard = ({ card, onDragStart, onTouchStart, onTouchMove, onTouchEnd, onRemove, typography }) => {
+  const [imageError, setImageError] = useState(false);
+  const imageProps = CardDatabaseService.getImageProps(card.name, card.cardId, 'small');
+
+  const getBanlistIcon = (status) => {
+    switch (status) {
+      case 'forbidden': return '🚫';
+      case 'limited': return '①';
+      case 'semi-limited': return '②';
+      default: return null;
+    }
+  };
+
+  const getBanlistColor = (status) => {
+    switch (status) {
+      case 'forbidden': return '#ff4444';
+      case 'limited': return '#ffaa00';
+      case 'semi-limited': return '#ff8800';
+      default: return 'transparent';
+    }
+  };
+
+  return (
+    <div
+      draggable
+      onDragStart={(e) => onDragStart(e, card)}
+      onTouchStart={(e) => onTouchStart(e, card)}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      className="relative group cursor-move hover:opacity-80 transition-opacity touch-none"
+      style={{
+        width: '60px',
+        height: '87px',
+        touchAction: 'none'
+      }}
+    >
+      <img
+        {...imageProps}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          borderRadius: '4px',
+          display: imageError ? 'none' : 'block'
+        }}
+        onError={() => setImageError(true)}
+      />
+      {imageError && (
+        <div
+          className="flex items-center justify-center text-xs text-center"
+          style={{
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'var(--bg-action-secondary)',
+            color: 'var(--text-secondary)',
+            borderRadius: '4px'
+          }}
+        >
+          {card.name.slice(0, 10)}...
+        </div>
+      )}
+
+      {/* Banlist Status Indicator */}
+      {card.banlistStatus && card.banlistStatus !== 'unlimited' && (
+        <div
+          className="absolute top-1 left-1 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold"
+          style={{
+            backgroundColor: getBanlistColor(card.banlistStatus),
+            color: 'white'
+          }}
+          title={`${card.banlistStatus} card`}
+        >
+          {getBanlistIcon(card.banlistStatus)}
+        </div>
+      )}
+
+      <button
+        onClick={onRemove}
+        className="absolute -top-1 -right-1 w-5 h-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+        style={{
+          backgroundColor: 'var(--bg-error)',
+          color: 'white',
+          fontSize: '12px'
+        }}
+      >
+        ×
+      </button>
+    </div>
+  );
+};
+
+// Statistics Panel Component
+const DeckStatistics = ({ statistics, typography }) => {
+  const { totalCards, cardTypes, deckStatus } = statistics;
+
+  return (
+    <div className="mt-6 p-4 rounded-lg" style={{backgroundColor: 'var(--bg-secondary)'}}>
+      <h3 className="mb-3" style={{...typography.h3, color: 'var(--text-main)'}}>
+        Main Deck Stats
+      </h3>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+        <div>
+          <div className="text-2xl font-bold" style={{color: 'var(--text-main)'}}>
+            {totalCards}
+          </div>
+          <div className="text-sm" style={{color: 'var(--text-secondary)'}}>
+            Main Deck Cards
+          </div>
+        </div>
+
+        <div>
+          <div className="text-2xl font-bold" style={{color: 'var(--text-main)'}}>
+            {cardTypes.monsters}
+          </div>
+          <div className="text-sm" style={{color: 'var(--text-secondary)'}}>
+            Monsters
+          </div>
+        </div>
+
+        <div>
+          <div className="text-2xl font-bold" style={{color: 'var(--text-main)'}}>
+            {cardTypes.spells}
+          </div>
+          <div className="text-sm" style={{color: 'var(--text-secondary)'}}>
+            Spells
+          </div>
+        </div>
+
+        <div>
+          <div className="text-2xl font-bold" style={{color: 'var(--text-main)'}}>
+            {cardTypes.traps}
+          </div>
+          <div className="text-sm" style={{color: 'var(--text-secondary)'}}>
+            Traps
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 flex items-center justify-center">
+        <span
+          className="px-3 py-1 rounded-full text-sm font-medium"
+          style={{
+            backgroundColor: deckStatus === 'legal' ? 'var(--bg-success)' : 'var(--bg-error)',
+            color: 'white'
+          }}
+        >
+          {deckStatus === 'legal' ? 'Legal Deck' : 'Invalid Deck'}
+        </span>
+      </div>
+    </div>
+  );
+};
+
 export default function TCGCalculator() {
   const [deckSize, setDeckSize] = useState(40);
   const [handSize, setHandSize] = useState(5);
@@ -1284,7 +2189,28 @@ export default function TCGCalculator() {
   const [ydkCardCounts, setYdkCardCounts] = useState({});
   const [staticCardDatabase, setStaticCardDatabase] = useState({});
   const [testHandFromDecklist, setTestHandFromDecklist] = useState(true);
-  
+  const [initialDeckZones, setInitialDeckZones] = useState(null);
+  const [deckZones, setDeckZones] = useState({
+    main: [],
+    extra: [],
+    side: []
+  });
+
+  // Sync deckZones when initialDeckZones changes (from YDK upload)
+  useEffect(() => {
+    if (initialDeckZones) {
+      console.log('🔄 App: Syncing deckZones with initialDeckZones:', initialDeckZones);
+      setDeckZones(initialDeckZones);
+    } else if (initialDeckZones === null) {
+      // Clear deck zones when YDK is removed
+      console.log('🔄 App: Clearing deckZones');
+      setDeckZones({
+        main: [],
+        extra: [],
+        side: []
+      });
+    }
+  }, [initialDeckZones]);
 
   // Scroll to Calculation Dashboard function
   const scrollToCalculationDashboard = () => {
@@ -1508,7 +2434,13 @@ export default function TCGCalculator() {
       });
       setYdkCards(uniqueCards);
       setYdkCardCounts(parseResult.cardCounts);
-      
+
+      // Populate the deck builder with parsed deck zones
+      if (parseResult.deckZones) {
+        setInitialDeckZones(parseResult.deckZones);
+        console.log('🎯 Populating deck builder with:', parseResult.deckZones);
+      }
+
       // Show error toast only if there are truly unmatched cards (not just Extra Deck cards)
       if (parseResult.unmatchedIds.length > 0) {
         alert("Some cards from your YDK file weren't matched");
@@ -1524,6 +2456,7 @@ export default function TCGCalculator() {
     setUploadedYdkFile(null);
     setYdkCards([]);
     setYdkCardCounts({});
+    setInitialDeckZones(null);
   };
 
   const handleFromClipboard = () => {
@@ -2225,7 +3158,7 @@ useEffect(() => {
         <div className="p-0" style={{ margin: 0, paddingBottom: '16px' }}>
           <h2 className="mb-4" style={{...typography.h2, color: 'var(--text-main)'}}>Define a Combo</h2>
           
-          <YdkImporter 
+          <YdkImporter
             uploadedYdkFile={uploadedYdkFile}
             setUploadedYdkFile={setUploadedYdkFile}
             ydkCards={ydkCards}
@@ -2240,8 +3173,24 @@ useEffect(() => {
             combos={combos}
             setCombos={setCombos}
             showToast={showToast}
+            setInitialDeckZones={setInitialDeckZones}
+            deckZones={deckZones}
           />
-          
+
+          {/* Deck Builder Section */}
+          <div className="p-0" style={{ marginTop: 'var(--spacing-lg)', marginBottom: 'var(--spacing-lg)' }}>
+            <DeckImageSection
+              typography={typography}
+              cardDatabase={cardDatabase}
+              ydkCards={ydkCards}
+              ydkCardCounts={ydkCardCounts}
+              showToast={showToast}
+              initialDeckZones={initialDeckZones}
+              deckZones={deckZones}
+              setDeckZones={setDeckZones}
+            />
+          </div>
+
           <div className="mb-4">
             <DeckInputs 
               deckSize={deckSize}
@@ -2658,6 +3607,7 @@ useEffect(() => {
             combos={combos}
           />
         </div>
+
 
         <div className="p-0" style={{ marginTop: 'var(--spacing-lg)' }}>
           <h2 className="font-semibold mb-3" style={typography.h2}>Understanding Your Probability Results</h2>

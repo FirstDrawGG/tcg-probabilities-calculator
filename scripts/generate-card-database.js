@@ -33,6 +33,9 @@ async function generateCardDatabase() {
       
       cardDatabase[card.id] = {
         name: card.name,
+        type: card.type || 'Unknown',
+        level: card.level || null,
+        attribute: card.attribute || null,
         isExtraDeck: isExtraDeck
       };
     });
