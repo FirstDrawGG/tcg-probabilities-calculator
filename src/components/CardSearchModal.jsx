@@ -205,7 +205,12 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
         return;
       }
 
-      const response = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?fname=${encodeURIComponent(query)}&num=50&offset=0`, {
+      // Build API URL - if no query but filters are active, get all cards; otherwise search by name
+      const apiUrl = query.trim()
+        ? `https://db.ygoprodeck.com/api/v7/cardinfo.php?fname=${encodeURIComponent(query)}&num=50&offset=0`
+        : `https://db.ygoprodeck.com/api/v7/cardinfo.php?num=50&offset=0`;
+
+      const response = await fetch(apiUrl, {
         signal
       });
 
@@ -449,7 +454,7 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
             style={{backgroundColor: 'var(--bg-secondary)'}}
             aria-label="Close search"
           >
-            <Icon name="x" size={16} />
+            <Icon name="x-square" size={16} style={{color: 'white'}} />
           </button>
         </div>
 
@@ -562,9 +567,9 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
                   <h4 className="mb-3" style={{...typography.body, color: 'var(--text-main)', fontWeight: '600'}}>
                     Card Type
                   </h4>
-                  <div className="space-y-2">
+                  <div className="flex flex-wrap gap-4">
                     {['Monster', 'Spell', 'Trap'].map(type => (
-                      <label key={type} className="flex items-center cursor-pointer hover:opacity-80">
+                      <label key={type} className="flex items-center cursor-pointer hover:opacity-80" style={{width: '80px'}}>
                         <input
                           type="checkbox"
                           checked={filters.cardType.includes(type)}
@@ -583,9 +588,9 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
                       <h5 className="mb-2" style={{...typography.caption, color: 'var(--text-secondary)', fontWeight: '600'}}>
                         Monster Sub-types
                       </h5>
-                      <div className="space-y-1">
+                      <div className="flex flex-wrap gap-4">
                         {['Normal', 'Effect', 'Fusion', 'Ritual', 'Synchro', 'Xyz', 'Pendulum', 'Link', 'Token', 'Tuner', 'Flip', 'Toon', 'Spirit', 'Union', 'Gemini'].map(subType => (
-                          <label key={subType} className="flex items-center cursor-pointer hover:opacity-80">
+                          <label key={subType} className="flex items-center cursor-pointer hover:opacity-80" style={{width: '80px'}}>
                             <input
                               type="checkbox"
                               checked={filters.monsterSubType.includes(subType)}
@@ -606,9 +611,9 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
                   <h4 className="mb-3" style={{...typography.body, color: 'var(--text-main)', fontWeight: '600'}}>
                     Attribute
                   </h4>
-                  <div className="space-y-2">
+                  <div className="flex flex-wrap gap-4">
                     {['DARK', 'LIGHT', 'EARTH', 'WIND', 'WATER', 'FIRE', 'DIVINE'].map(attr => (
-                      <label key={attr} className="flex items-center cursor-pointer hover:opacity-80">
+                      <label key={attr} className="flex items-center cursor-pointer hover:opacity-80" style={{width: '80px'}}>
                         <input
                           type="checkbox"
                           checked={filters.attribute.includes(attr)}
@@ -627,9 +632,9 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
                   <h4 className="mb-3" style={{...typography.body, color: 'var(--text-main)', fontWeight: '600'}}>
                     Level/Rank
                   </h4>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="flex flex-wrap gap-4">
                     {Array.from({length: 12}, (_, i) => i + 1).map(level => (
-                      <label key={level} className="flex items-center cursor-pointer hover:opacity-80">
+                      <label key={level} className="flex items-center cursor-pointer hover:opacity-80" style={{width: '40px'}}>
                         <input
                           type="checkbox"
                           checked={filters.level.includes(level)}

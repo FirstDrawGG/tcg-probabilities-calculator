@@ -1644,7 +1644,6 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
   return (
     <div>
       <div className="mb-4">
-        <h2 className="font-semibold" style={typography.h2}>Deck Builder</h2>
         <p style={{...typography.body, color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px'}}>
           Build your deck visually by searching and adding cards to different zones
         </p>
@@ -1653,18 +1652,6 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
       {/* Visual deck builder mode */}
       <div>
           <div className="mb-4 flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-4 items-start sm:items-center">
-            <button
-              onClick={() => setShowCardSearch(true)}
-              className="px-4 py-2 rounded-lg hover:opacity-80 transition-opacity"
-              style={{
-                backgroundColor: 'var(--bg-action)',
-                color: 'var(--text-action)',
-                fontSize: '14px',
-                fontWeight: '600'
-              }}
-            >
-              Add Cards
-            </button>
 
             {/* Format Selector */}
             <div className="flex items-center gap-2">
@@ -1703,10 +1690,10 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
             </div>
           </div>
 
-          {/* Deck Zones - Mobile Optimized */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+          {/* Deck Zones - Vertical Layout */}
+          <div className="space-y-4">
             {/* Main Deck */}
-            <div className="lg:col-span-2">
+            <div>
               <DeckZone
                 title="Main Deck"
                 subtitle={`(${deckZones.main.length}/40-60)`}
@@ -1746,7 +1733,7 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                 handleTouchEnd={handleTouchEnd}
                 typography={typography}
                 borderColor="var(--bg-action-secondary)"
-                maxCards={5}
+                maxCards={10}
               />
             </div>
 
@@ -1769,7 +1756,7 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                 handleTouchEnd={handleTouchEnd}
                 typography={typography}
                 borderColor="var(--text-secondary)"
-                maxCards={5}
+                maxCards={10}
               />
             </div>
           </div>
@@ -1777,140 +1764,6 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
           {/* Statistics Panel */}
           <DeckStatistics statistics={deckStatistics} typography={typography} />
 
-          {/* Deck Actions */}
-          <div className="flex flex-col sm:flex-row flex-wrap gap-2 mt-6">
-            <input
-              type="file"
-              accept=".ydk,.txt"
-              onChange={(e) => {
-                const file = e.target.files[0];
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onload = (event) => {
-                    importDeckFromText(event.target.result);
-                  };
-                  reader.readAsText(file);
-                }
-              }}
-              style={{ display: 'none' }}
-              id="deck-import"
-            />
-            <label
-              htmlFor="deck-import"
-              className="px-3 py-2 text-sm rounded-lg hover:opacity-80 transition-opacity cursor-pointer"
-              style={{
-                backgroundColor: 'var(--bg-action)',
-                color: 'var(--text-action)'
-              }}
-            >
-              Import (Ctrl+I)
-            </label>
-            <button
-              onClick={exportDeck}
-              className="px-3 py-2 text-sm rounded-lg hover:opacity-80 transition-opacity"
-              style={{
-                backgroundColor: 'var(--bg-secondary)',
-                color: 'var(--text-main)',
-                border: `1px solid var(--border-main)`
-              }}
-            >
-              Export (Ctrl+E)
-            </button>
-            <button
-              onClick={() => {
-                if (confirm('Are you sure you want to clear all cards from your deck?')) {
-                  clearZone('main');
-                  clearZone('extra');
-                  clearZone('side');
-                  showToast('All cards cleared');
-                }
-              }}
-              className="px-3 py-2 text-sm rounded-lg hover:opacity-80 transition-opacity"
-              style={{
-                backgroundColor: 'var(--bg-secondary)',
-                color: 'var(--text-main)',
-                border: `1px solid var(--border-main)`
-              }}
-            >
-              Clear All (Ctrl+Shift+C)
-            </button>
-            <button
-              onClick={sortDeck}
-              className="px-3 py-2 text-sm rounded-lg hover:opacity-80 transition-opacity"
-              style={{
-                backgroundColor: 'var(--bg-secondary)',
-                color: 'var(--text-main)',
-                border: `1px solid var(--border-main)`
-              }}
-            >
-              Sort (Ctrl+S)
-            </button>
-            <button
-              onClick={() => {
-                // Convert deck to text format for existing deck image functionality
-                const mainDeckText = deckZones.main.map(card => card.name).join('\n');
-                const extraDeckText = deckZones.extra.map(card => card.name).join('\n');
-                const sideDeckText = deckZones.side.map(card => card.name).join('\n');
-
-                const fullDeckText = [
-                  '# Main Deck',
-                  mainDeckText,
-                  '',
-                  '# Extra Deck',
-                  extraDeckText,
-                  '',
-                  '# Side Deck',
-                  sideDeckText
-                ].join('\n');
-
-                // Note: Text mode removed - visual deck builder only
-                showToast('Deck converted to text format for image generation');
-              }}
-              className="px-3 py-2 text-sm rounded-lg hover:opacity-80 transition-opacity"
-              style={{
-                backgroundColor: 'var(--bg-action)',
-                color: 'var(--text-action)'
-              }}
-            >
-              Generate Deck Image
-            </button>
-            <button
-              onClick={() => {
-                // Convert deck to probability calculator format
-                const totalCards = deckZones.main.length + deckZones.extra.length + deckZones.side.length;
-                if (totalCards === 0) {
-                  showToast('Please add cards to your deck first');
-                  return;
-                }
-
-                // Create URL with deck data for probability calculation
-                const searchParams = new URLSearchParams();
-                searchParams.set('deckSize', deckZones.main.length.toString());
-                searchParams.set('handSize', '5');
-
-                // Store deck data for probability calculation
-                const deckData = {
-                  main: deckZones.main.map(card => card.name),
-                  extra: deckZones.extra.map(card => card.name),
-                  side: deckZones.side.map(card => card.name)
-                };
-                localStorage.setItem('deckBuilderData', JSON.stringify(deckData));
-
-                showToast('Ready for probability calculation! Scroll up to the calculator.');
-
-                // Scroll to the top of the page where the calculator is
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="px-3 py-2 text-sm rounded-lg hover:opacity-80 transition-opacity"
-              style={{
-                backgroundColor: 'var(--bg-action-secondary)',
-                color: 'var(--text-main)',
-                border: `1px solid var(--border-main)`
-              }}
-            >
-              Calculate Probabilities
-            </button>
-          </div>
         </div>
       )}
 
@@ -2086,7 +1939,7 @@ const DeckCard = ({ card, onDragStart, onTouchStart, onTouchMove, onTouchEnd, on
 
       <button
         onClick={onRemove}
-        className="absolute -top-1 -right-1 w-5 h-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute -top-1 -left-1 w-5 h-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
         style={{
           backgroundColor: 'var(--bg-error)',
           color: 'white',

@@ -36,6 +36,18 @@
   
   /* Text Action Color for Calculate button text */
   --text-action: #000000;
+
+  /* Action colors for deck builder */
+  --bg-action-primary: #ffffff;
+  --text-error: #ef4444;
+  --bg-error: #1f1414;
+  --border-error: #450a0a;
+
+  /* Additional typography sizes */
+  --font-h1-size: 32px;
+  --font-h1-line-height: 40px;
+  --font-caption-size: 12px;
+  --font-caption-line-height: 16px;
 }
 
 /* Placeholder text styling */
@@ -131,11 +143,11 @@ input:-ms-input-placeholder {
 
 /* Button text - use body typography */
 .enhanced-button .button-text {
-  font-size: var(--font-body-size) !important;
-  line-height: var(--font-body-line-height) !important;
-  font-family: 'Geist Regular, sans-serif' !important;
-  font-weight: normal !important;
-  color: #141414 !important;
+  font-size: var(--font-body-size);
+  line-height: var(--font-body-line-height);
+  font-family: 'Geist Regular, sans-serif';
+  font-weight: normal;
+  color: #141414;
 }
 
 /* Button icon - 14px x 14px */
@@ -369,4 +381,56 @@ input:-ms-input-placeholder {
 
 .tooltip:hover::after {
   opacity: 1;
+}
+
+/* Deck Builder Card Grid Responsive Layout */
+.card-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr; /* Mobile: 1 card per row */
+}
+
+@media (min-width: 768px) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr); /* Tablet: 2 cards per row */
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-grid {
+    grid-template-columns: repeat(4, 1fr); /* Desktop: 4 cards per row */
+  }
+}
+
+/* Card hover animation */
+.card-item {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Line clamp utility for card names */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.2;
+  height: 2.4em;
+}
+
+/* Screen reader only utility class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

@@ -264,23 +264,19 @@ const YdkImporter = ({
                 opacity: 0.3
               }}
             />
-            <div className="tooltip" data-tooltip="Coming soon">
-              <button
-                onClick={() => setShowCardSearch(true)}
-                disabled={true}
-                className="inline-flex items-center px-0 py-2 cursor-not-allowed transition-opacity"
-                style={{
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  color: 'var(--text-secondary)',
-                  borderRadius: '999px',
-                  opacity: 0.5,
-                  ...typography.body
-                }}
-              >
-                Search Cards
-              </button>
-            </div>
+            <button
+              onClick={() => setShowCardSearch(true)}
+              className="inline-flex items-center px-0 py-2 hover:opacity-80 transition-opacity"
+              style={{
+                backgroundColor: 'transparent',
+                border: 'none',
+                color: 'var(--text-main)',
+                borderRadius: '999px',
+                ...typography.body
+              }}
+            >
+              Search Cards
+            </button>
           </div>
         )}
         
