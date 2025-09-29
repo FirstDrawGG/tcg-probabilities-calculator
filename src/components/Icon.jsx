@@ -1,12 +1,12 @@
 import React from 'react';
-import { 
-  Info, 
+import {
+  Info,
   PlusCircle,
-  Plus, 
+  Plus,
   MinusCircle,
-  Minus, 
-  StarFour, 
-  QuestionMark, 
+  Minus,
+  StarFour,
+  QuestionMark,
   TrayArrowUp,
   Hand,
   Bomb,
@@ -15,7 +15,14 @@ import {
   StackPlus,
   RowsPlusBottom,
   ArrowCounterClockwise,
-  Sigma
+  Sigma,
+  X,
+  XSquare,
+  ArrowLeft,
+  ArrowRight,
+  MagnifyingGlass,
+  Funnel,
+  Image
 } from '@phosphor-icons/react';
 
 const Icon = ({ name, variant = 'main', ariaLabel, className = '', style = {}, ...props }) => {
@@ -35,7 +42,14 @@ const Icon = ({ name, variant = 'main', ariaLabel, className = '', style = {}, .
     'stack-plus': StackPlus,
     'rows-plus-bottom': RowsPlusBottom,
     'arrow-counter-clockwise': ArrowCounterClockwise,
-    'sigma': Sigma
+    'sigma': Sigma,
+    'x': X,
+    'x-square': XSquare,
+    'arrow-left': ArrowLeft,
+    'arrow-right': ArrowRight,
+    'magnifying-glass': MagnifyingGlass,
+    'funnel': Funnel,
+    'image': Image
   };
 
   const IconComponent = iconMap[name];

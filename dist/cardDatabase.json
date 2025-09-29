@@ -12851,6 +12851,13 @@
     "attribute": "FIRE",
     "isExtraDeck": false
   },
+  "13023431": {
+    "name": "Chevreuil, Hunting Scout of the Deep Forest",
+    "type": "Fusion Monster",
+    "level": 7,
+    "attribute": "EARTH",
+    "isExtraDeck": true
+  },
   "13026402": {
     "name": "A-Team: Trap Disposal Unit",
     "type": "Effect Monster",
@@ -15805,6 +15812,13 @@
     "attribute": "DARK",
     "isExtraDeck": true
   },
+  "16066654": {
+    "name": "R.B. Operation Test",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "16067089": {
     "name": "Rise of the Snake Deity",
     "type": "Trap Card",
@@ -16887,6 +16901,13 @@
     "name": "Inferno Hammer",
     "type": "Effect Monster",
     "level": 6,
+    "attribute": "DARK",
+    "isExtraDeck": false
+  },
+  "17188206": {
+    "name": "R.B. Lambda Blade",
+    "type": "Effect Monster",
+    "level": 7,
     "attribute": "DARK",
     "isExtraDeck": false
   },
@@ -17987,6 +18008,13 @@
     "type": "Effect Monster",
     "level": 8,
     "attribute": "DARK",
+    "isExtraDeck": false
+  },
+  "18300894": {
+    "name": "Silk Bomb Moth",
+    "type": "Effect Monster",
+    "level": 6,
+    "attribute": "WIND",
     "isExtraDeck": false
   },
   "18302224": {
@@ -22810,6 +22838,13 @@
     "type": "Effect Monster",
     "level": 6,
     "attribute": "FIRE",
+    "isExtraDeck": false
+  },
+  "23249029": {
+    "name": "Cursed Copycat Noble Arms",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
     "isExtraDeck": false
   },
   "23265313": {
@@ -42776,6 +42811,13 @@
     "attribute": "EARTH",
     "isExtraDeck": false
   },
+  "43450363": {
+    "name": "R.B. Last Stand",
+    "type": "Trap Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "43452193": {
     "name": "Mirror Gate",
     "type": "Trap Card",
@@ -43866,6 +43908,13 @@
     "type": "Trap Card",
     "level": null,
     "attribute": null,
+    "isExtraDeck": false
+  },
+  "44573911": {
+    "name": "R.B. Ga10 Pile Bunker",
+    "type": "Effect Monster",
+    "level": 8,
+    "attribute": "EARTH",
     "isExtraDeck": false
   },
   "44584775": {
@@ -49615,6 +49664,13 @@
     "attribute": "EARTH",
     "isExtraDeck": false
   },
+  "50643638": {
+    "name": "Chanbar, the Flashy Sportsknight",
+    "type": "Synchro Monster",
+    "level": 8,
+    "attribute": "LIGHT",
+    "isExtraDeck": true
+  },
   "50669347": {
     "name": "Nephthys, the Sacred Preserver",
     "type": "Link Monster",
@@ -53269,6 +53325,13 @@
     "attribute": "EARTH",
     "isExtraDeck": false
   },
+  "54399598": {
+    "name": "Fleeting Flower of the Magician",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "54401832": {
     "name": "Metalfoes Crimsonite",
     "type": "Fusion Monster",
@@ -54377,6 +54440,13 @@
   },
   "55416843": {
     "name": "Feast of the Wild LV5",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
+  "55421040": {
+    "name": "Hunting Horn",
     "type": "Spell Card",
     "level": null,
     "attribute": null,
@@ -77440,6 +77510,13 @@
     "attribute": "LIGHT",
     "isExtraDeck": false
   },
+  "79859067": {
+    "name": "R.B. Next Phase",
+    "type": "Trap Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "79861914": {
     "name": "Yosen Whirlwind",
     "type": "Spell Card",
@@ -77642,6 +77719,13 @@
     "level": 1,
     "attribute": "EARTH",
     "isExtraDeck": false
+  },
+  "80071619": {
+    "name": "R.B. Shepherd's Crook",
+    "type": "Link Monster",
+    "level": null,
+    "attribute": "DARK",
+    "isExtraDeck": true
   },
   "80071763": {
     "name": "Dark Balter the Terrible",
@@ -79379,6 +79463,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "81794107": {
+    "name": "R.B. Lambda Cannon",
+    "type": "Effect Monster",
+    "level": 6,
+    "attribute": "DARK",
+    "isExtraDeck": false
+  },
   "81810441": {
     "name": "Stellarknight Alpha",
     "type": "Spell Card",
@@ -79504,6 +79595,13 @@
     "level": 8,
     "attribute": "DARK",
     "isExtraDeck": false
+  },
+  "81916745": {
+    "name": "Lycoris Lilyreaper",
+    "type": "Synchro Monster",
+    "level": 5,
+    "attribute": "DARK",
+    "isExtraDeck": true
   },
   "81919143": {
     "name": "Brain Crusher",
@@ -83425,6 +83523,13 @@
     "attribute": "EARTH",
     "isExtraDeck": false
   },
+  "86038337": {
+    "name": "Faisan, Hunting Scout of the Deep Forest",
+    "type": "Fusion Monster",
+    "level": 5,
+    "attribute": "EARTH",
+    "isExtraDeck": true
+  },
   "86039057": {
     "name": "Tasuke Knight",
     "type": "Effect Monster",
@@ -84894,6 +84999,13 @@
     "level": 8,
     "attribute": "DARK",
     "isExtraDeck": true
+  },
+  "87750925": {
+    "name": "Disguise, the Copycat Hero",
+    "type": "Tuner Monster",
+    "level": 4,
+    "attribute": "LIGHT",
+    "isExtraDeck": false
   },
   "87751584": {
     "name": "Gatling Dragon",
@@ -96305,118 +96417,6 @@
     "attribute": null,
     "isExtraDeck": false
   },
-  "101302081": {
-    "name": "Disguise, the Copycat Hero",
-    "type": "Tuner Monster",
-    "level": 4,
-    "attribute": "LIGHT",
-    "isExtraDeck": false
-  },
-  "101302082": {
-    "name": "Cursed Copycat Noble Arms",
-    "type": "Spell Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
-  "101302083": {
-    "name": "Chanbar, the Flashy Sportsknight",
-    "type": "Synchro Monster",
-    "level": 8,
-    "attribute": "LIGHT",
-    "isExtraDeck": true
-  },
-  "101302084": {
-    "name": "Faisan, Hunting Scout of the Deep Forest",
-    "type": "Fusion Monster",
-    "level": 5,
-    "attribute": "EARTH",
-    "isExtraDeck": true
-  },
-  "101302085": {
-    "name": "Chevreuil, Hunting Scout of the Deep Forest",
-    "type": "Fusion Monster",
-    "level": 7,
-    "attribute": "EARTH",
-    "isExtraDeck": true
-  },
-  "101302086": {
-    "name": "Hunting Horn",
-    "type": "Spell Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
-  "101302087": {
-    "name": "Lycoris Lilyreaper",
-    "type": "Synchro Monster",
-    "level": 5,
-    "attribute": "DARK",
-    "isExtraDeck": true
-  },
-  "101302088": {
-    "name": "Silk Bomb Moth",
-    "type": "Effect Monster",
-    "level": 6,
-    "attribute": "WIND",
-    "isExtraDeck": false
-  },
-  "101302089": {
-    "name": "Fleeting Flower of the Magician",
-    "type": "Spell Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
-  "101302090": {
-    "name": "R.B. Lambda Cannon",
-    "type": "Effect Monster",
-    "level": 6,
-    "attribute": "DARK",
-    "isExtraDeck": false
-  },
-  "101302091": {
-    "name": "R.B. Lambda Blade",
-    "type": "Effect Monster",
-    "level": 7,
-    "attribute": "DARK",
-    "isExtraDeck": false
-  },
-  "101302092": {
-    "name": "R.B. Ga10 Pile Bunker",
-    "type": "Effect Monster",
-    "level": 8,
-    "attribute": "EARTH",
-    "isExtraDeck": false
-  },
-  "101302093": {
-    "name": "R.B. Shepherd's Crook",
-    "type": "Link Monster",
-    "level": null,
-    "attribute": "DARK",
-    "isExtraDeck": true
-  },
-  "101302094": {
-    "name": "R.B. Operation Test",
-    "type": "Spell Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
-  "101302095": {
-    "name": "R.B. Last Stand",
-    "type": "Trap Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
-  "101302096": {
-    "name": "R.B. Next Phase",
-    "type": "Trap Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
   "101303001": {
     "name": "Rokket Loader",
     "type": "Effect Monster",
@@ -96478,6 +96478,13 @@
     "type": "Effect Monster",
     "level": 4,
     "attribute": "DARK",
+    "isExtraDeck": false
+  },
+  "101303028": {
+    "name": "Threat Armed Dragon",
+    "type": "Effect Monster",
+    "level": 5,
+    "attribute": "WIND",
     "isExtraDeck": false
   },
   "101303031": {

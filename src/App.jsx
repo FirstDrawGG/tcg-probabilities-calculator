@@ -6,7 +6,6 @@ import ResultsDisplay from './features/calculator/ResultsDisplay';
 import DeckInputs from './features/calculator/DeckInputs';
 import YdkImporter from './features/deck-import/YdkImporter';
 import Icon from './components/Icon';
-import CardSearchModal from './components/CardSearchModal';
 
 // URL encoding/decoding utilities
 const URLService = {
@@ -1259,8 +1258,7 @@ const createCombo = (id, index) => ({
 });
 
 // Deck Builder Section Component
-const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, showToast, initialDeckZones, deckZones, setDeckZones }) => {
-  const [showCardSearch, setShowCardSearch] = useState(false);
+const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, showToast, initialDeckZones, deckZones, setDeckZones, combos, setCombos }) => {
   const [draggedCard, setDraggedCard] = useState(null);
   const [dragOverZone, setDragOverZone] = useState(null);
   const [selectedFormat, setSelectedFormat] = useState('TCG');
@@ -1272,6 +1270,10 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
     attributes: {},
     deckStatus: 'invalid'
   });
+
+  // AC #2-3: State for the "Add to combo" overlay
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [showComboOverlay, setShowComboOverlay] = useState(false);
 
   // Update deck zones when initial deck zones are provided (from YDK upload)
   useEffect(() => {
@@ -1499,7 +1501,8 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
   const handleDragOver = (e, zone) => {
     e.preventDefault();
     setDragOverZone(zone);
-    e.dataTransfer.dropEffect = 'move';
+    // Support both move (existing cards) and copy (new cards from search)
+    e.dataTransfer.dropEffect = e.dataTransfer.effectAllowed === 'copy' ? 'copy' : 'move';
   };
 
   const handleDragLeave = () => {
@@ -1510,13 +1513,30 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
     e.preventDefault();
     setDragOverZone(null);
 
-    if (!draggedCard) return;
+    // AC #10: Check if this is a new card from search drawer
+    let cardToHandle = draggedCard;
+
+    if (!cardToHandle) {
+      // Try to get card data from dataTransfer (for search drawer drops)
+      try {
+        const cardData = e.dataTransfer.getData('application/json');
+        if (cardData) {
+          cardToHandle = JSON.parse(cardData);
+          // This is a new card from search, not an existing deck card
+          cardToHandle.isNewCard = true;
+        }
+      } catch (error) {
+        console.error('Error parsing dropped card data:', error);
+      }
+    }
+
+    if (!cardToHandle) return;
 
     // Validate drop based on card type and zone
-    const isExtraDeckMonster = draggedCard.type?.toLowerCase().includes('fusion') ||
-                              draggedCard.type?.toLowerCase().includes('synchro') ||
-                              draggedCard.type?.toLowerCase().includes('xyz') ||
-                              draggedCard.type?.toLowerCase().includes('link');
+    const isExtraDeckMonster = cardToHandle.type?.toLowerCase().includes('fusion') ||
+                              cardToHandle.type?.toLowerCase().includes('synchro') ||
+                              cardToHandle.type?.toLowerCase().includes('xyz') ||
+                              cardToHandle.type?.toLowerCase().includes('link');
 
     if (isExtraDeckMonster && targetZone === 'main') {
       showToast('Extra Deck monsters cannot go in Main Deck');
@@ -1539,15 +1559,36 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
       return;
     }
 
-    // Move card between zones
-    const sourceZone = draggedCard.zone;
-    if (sourceZone === targetZone) return;
+    // AC #10: Handle both new cards and moving between zones
+    if (cardToHandle.isNewCard) {
+      // This is a new card from search drawer
+      const newCard = {
+        id: `${targetZone}_${cardToHandle.id}_${Date.now()}_${Math.random()}`,
+        cardId: cardToHandle.id,
+        name: cardToHandle.name,
+        type: cardToHandle.type || 'Unknown',
+        level: cardToHandle.level || null,
+        attribute: cardToHandle.attribute || null,
+        zone: targetZone
+      };
 
-    setDeckZones(prev => ({
-      ...prev,
-      [sourceZone]: prev[sourceZone].filter(c => c.id !== draggedCard.id),
-      [targetZone]: [...prev[targetZone], { ...draggedCard, zone: targetZone }]
-    }));
+      setDeckZones(prev => ({
+        ...prev,
+        [targetZone]: [...prev[targetZone], newCard]
+      }));
+
+      showToast(`Added ${cardToHandle.name} to ${targetZone === 'main' ? 'Main' : targetZone === 'extra' ? 'Extra' : 'Side'} Deck`);
+    } else {
+      // Move card between existing zones
+      const sourceZone = cardToHandle.zone;
+      if (sourceZone === targetZone) return;
+
+      setDeckZones(prev => ({
+        ...prev,
+        [sourceZone]: prev[sourceZone].filter(c => c.id !== cardToHandle.id),
+        [targetZone]: [...prev[targetZone], { ...cardToHandle, zone: targetZone }]
+      }));
+    }
 
     setDraggedCard(null);
   };
@@ -1641,6 +1682,141 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
     showToast(`Imported ${importedCards.length} cards`);
   };
 
+  // AC #2-3: Handle card click to open combo assignment overlay
+  const handleCardClick = (card, event) => {
+    setSelectedCard(card);
+    setShowComboOverlay(true);
+  };
+
+  // AC #4: Add card to existing combo
+  const addCardToCombo = (comboId, card) => {
+    setCombos(prevCombos => {
+      return prevCombos.map(combo => {
+        if (combo.id === comboId) {
+          // Check if card already exists in this combo
+          const cardExists = combo.cards.some(c =>
+            c.starterCard.toLowerCase() === card.name.toLowerCase()
+          );
+
+          if (cardExists) {
+            showToast(`${card.name} is already in this combo`);
+            return combo;
+          }
+
+          // Add card to combo
+          const newCard = {
+            starterCard: card.name,
+            cardId: card.cardId || null,
+            isCustom: card.isCustom || false,
+            startersInDeck: 3, // Default value
+            minCopiesInHand: 1, // Default value
+            maxCopiesInHand: 1, // Default value
+            logicOperator: 'AND' // Default value
+          };
+
+          return {
+            ...combo,
+            cards: [...combo.cards, newCard]
+          };
+        }
+        return combo;
+      });
+    });
+  };
+
+  // AC #6: Create new combo with card (or populate first empty card slot)
+  const createNewComboWithCard = (card) => {
+    setCombos(prevCombos => {
+      // First, try to find an existing combo with empty card slots
+      for (let i = 0; i < prevCombos.length; i++) {
+        const combo = prevCombos[i];
+        const emptyCardIndex = combo.cards.findIndex(c =>
+          !c.starterCard || c.starterCard.trim() === ''
+        );
+
+        if (emptyCardIndex !== -1) {
+          // Found an empty slot, populate it
+          const updatedCombos = [...prevCombos];
+          updatedCombos[i] = {
+            ...combo,
+            cards: combo.cards.map((c, index) => {
+              if (index === emptyCardIndex) {
+                return {
+                  starterCard: card.name,
+                  cardId: card.cardId || null,
+                  isCustom: card.isCustom || false,
+                  startersInDeck: 3,
+                  minCopiesInHand: 1,
+                  maxCopiesInHand: 1,
+                  logicOperator: 'AND'
+                };
+              }
+              return c;
+            })
+          };
+          return updatedCombos;
+        }
+      }
+
+      // No empty slots found, create a new combo
+      const newComboId = Math.max(...prevCombos.map(c => c.id)) + 1;
+      const newCombo = {
+        id: newComboId,
+        name: `Combo ${prevCombos.length + 1}`,
+        cards: [{
+          starterCard: card.name,
+          cardId: card.cardId || null,
+          isCustom: card.isCustom || false,
+          startersInDeck: 3,
+          minCopiesInHand: 1,
+          maxCopiesInHand: 1,
+          logicOperator: 'AND'
+        }]
+      };
+
+      return [...prevCombos, newCombo];
+    });
+  };
+
+  // AC #7: Remove card from combo
+  const removeCardFromCombo = (comboId, card) => {
+    setCombos(prevCombos => {
+      return prevCombos.map(combo => {
+        if (combo.id === comboId) {
+          const updatedCards = combo.cards.filter(c =>
+            c.starterCard.toLowerCase() !== card.name.toLowerCase()
+          );
+          return {
+            ...combo,
+            cards: updatedCards
+          };
+        }
+        return combo;
+      });
+    });
+  };
+
+  // Update logic operator for a card when adding to combo via modal
+  const updateCardLogicInCombo = (comboId, cardName, logicOperator) => {
+    setCombos(prevCombos => {
+      return prevCombos.map(combo => {
+        if (combo.id === comboId) {
+          const updatedCards = combo.cards.map(c => {
+            if (c.starterCard.toLowerCase() === cardName.toLowerCase()) {
+              return { ...c, logicOperator };
+            }
+            return c;
+          });
+          return {
+            ...combo,
+            cards: updatedCards
+          };
+        }
+        return combo;
+      });
+    });
+  };
+
   return (
     <div>
       <div className="mb-4">
@@ -1711,6 +1887,9 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                 handleTouchEnd={handleTouchEnd}
                 typography={typography}
                 maxCards={10}
+                onCardClick={handleCardClick}
+                combos={combos}
+                ydkCardCounts={ydkCardCounts}
               />
             </div>
 
@@ -1734,6 +1913,9 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                 typography={typography}
                 borderColor="var(--bg-action-secondary)"
                 maxCards={10}
+                onCardClick={handleCardClick}
+                combos={combos}
+                ydkCardCounts={ydkCardCounts}
               />
             </div>
 
@@ -1757,6 +1939,9 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                 typography={typography}
                 borderColor="var(--text-secondary)"
                 maxCards={10}
+                onCardClick={handleCardClick}
+                combos={combos}
+                ydkCardCounts={ydkCardCounts}
               />
             </div>
           </div>
@@ -1767,12 +1952,246 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
         </div>
       )}
 
-      {/* Card Search Modal */}
-      <CardSearchModal
-        isOpen={showCardSearch}
-        onClose={() => setShowCardSearch(false)}
-        onCardSelect={handleCardSelect}
-      />
+      {/* Card Search functionality moved to YdkImporter */}
+
+      {/* AC #2-3: Add to combo overlay */}
+      {showComboOverlay && selectedCard && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowComboOverlay(false);
+              setSelectedCard(null);
+            }
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: 'var(--bg-main)',
+              borderRadius: '16px',
+              padding: '24px',
+              maxWidth: '500px',
+              width: '90%',
+              maxHeight: '80vh',
+              overflow: 'auto',
+              border: '1px solid var(--border-main)'
+            }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <h3 style={{...typography.h3, color: 'var(--text-main)', margin: 0}}>
+                Add "{selectedCard.name}" to Combo
+              </h3>
+              <button
+                onClick={() => {
+                  setShowComboOverlay(false);
+                  setSelectedCard(null);
+                }}
+                style={{
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  color: 'var(--text-secondary)',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  lineHeight: 1
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Combo List */}
+            <div style={{ marginBottom: '16px' }}>
+              <p style={{...typography.body, color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '12px'}}>
+                Select which combo to add this card to:
+              </p>
+
+              {combos.map((combo, index) => {
+                const cardExists = combo.cards.some(c =>
+                  c.starterCard.toLowerCase() === selectedCard.name.toLowerCase()
+                );
+
+                // Check if this would be the 3rd+ card (requiring AND/OR logic)
+                const wouldBeThirdPlusCard = !cardExists && combo.cards.length >= 2;
+
+                // Get current logic operator for this card if it exists
+                const existingCard = combo.cards.find(c =>
+                  c.starterCard.toLowerCase() === selectedCard.name.toLowerCase()
+                );
+                const currentLogic = existingCard?.logicOperator || 'AND';
+
+                return (
+                  <div
+                    key={combo.id}
+                    style={{
+                      marginBottom: '12px',
+                      padding: '12px',
+                      backgroundColor: 'var(--bg-secondary)',
+                      border: '1px solid var(--border-main)',
+                      borderRadius: '8px'
+                    }}
+                  >
+                    {/* Main combo button */}
+                    <button
+                      onClick={() => {
+                        if (cardExists) {
+                          // AC #7: Remove card from combo
+                          removeCardFromCombo(combo.id, selectedCard);
+                          showToast(`Removed ${selectedCard.name} from Combo ${index + 1}`);
+                          setShowComboOverlay(false);
+                          setSelectedCard(null);
+                        } else {
+                          // AC #4: Add card to selected combo
+                          addCardToCombo(combo.id, selectedCard);
+                          showToast(`Added ${selectedCard.name} to Combo ${index + 1}`);
+                          setShowComboOverlay(false);
+                          setSelectedCard(null);
+                        }
+                      }}
+                      style={{
+                        width: '100%',
+                        textAlign: 'left',
+                        padding: '12px',
+                        backgroundColor: cardExists ? 'var(--bg-action)' : 'transparent',
+                        border: `1px solid ${cardExists ? 'var(--border-action)' : 'var(--border-main)'}`,
+                        borderRadius: '8px',
+                        color: cardExists ? 'var(--text-action)' : 'var(--text-main)',
+                        cursor: 'pointer',
+                        ...typography.body
+                      }}
+                      className="hover:bg-opacity-80 transition-all"
+                    >
+                      <div style={{ fontWeight: 'medium', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {cardExists ? '✓' : '+'} Combo {index + 1}
+                        {cardExists && (
+                          <span style={{ fontSize: '10px', opacity: 0.8 }}>
+                            (Click to remove)
+                          </span>
+                        )}
+                      </div>
+                      <div style={{ fontSize: '12px', color: cardExists ? 'var(--text-action)' : 'var(--text-secondary)', marginTop: '4px', opacity: 0.8 }}>
+                        {combo.cards && combo.cards.length > 0
+                          ? `${combo.cards.length} cards: ${combo.cards.slice(0, 2).map(c => c.starterCard).join(', ')}${combo.cards.length > 2 ? '...' : ''}`
+                          : 'No cards added yet'
+                        }
+                      </div>
+                    </button>
+
+                    {/* AND/OR logic selector for existing cards or when adding 3rd+ card */}
+                    {(cardExists || wouldBeThirdPlusCard) && (
+                      <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid var(--border-main)' }}>
+                        <label style={{
+                          ...typography.body,
+                          fontSize: '12px',
+                          color: 'var(--text-secondary)',
+                          marginBottom: '4px',
+                          display: 'block'
+                        }}>
+                          Logic for this card:
+                        </label>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (cardExists) {
+                                updateCardLogicInCombo(combo.id, selectedCard.name, 'AND');
+                              }
+                            }}
+                            disabled={!cardExists}
+                            style={{
+                              padding: '4px 12px',
+                              borderRadius: '4px',
+                              border: '1px solid var(--border-main)',
+                              backgroundColor: currentLogic === 'AND' ? 'var(--bg-action)' : 'var(--bg-secondary)',
+                              color: currentLogic === 'AND' ? 'var(--text-action)' : 'var(--text-main)',
+                              fontSize: '11px',
+                              cursor: cardExists ? 'pointer' : 'not-allowed',
+                              opacity: cardExists ? 1 : 0.5,
+                              ...typography.body
+                            }}
+                          >
+                            AND
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (cardExists) {
+                                updateCardLogicInCombo(combo.id, selectedCard.name, 'OR');
+                              }
+                            }}
+                            disabled={!cardExists}
+                            style={{
+                              padding: '4px 12px',
+                              borderRadius: '4px',
+                              border: '1px solid var(--border-main)',
+                              backgroundColor: currentLogic === 'OR' ? 'var(--bg-action)' : 'var(--bg-secondary)',
+                              color: currentLogic === 'OR' ? 'var(--text-action)' : 'var(--text-main)',
+                              fontSize: '11px',
+                              cursor: cardExists ? 'pointer' : 'not-allowed',
+                              opacity: cardExists ? 1 : 0.5,
+                              ...typography.body
+                            }}
+                          >
+                            OR
+                          </button>
+                        </div>
+                        {wouldBeThirdPlusCard && !cardExists && (
+                          <p style={{
+                            ...typography.body,
+                            fontSize: '10px',
+                            color: 'var(--text-secondary)',
+                            marginTop: '4px',
+                            fontStyle: 'italic'
+                          }}>
+                            This will be the 3rd+ card. Logic can be changed after adding.
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Create New Combo Button */}
+            <button
+              onClick={() => {
+                // AC #6: Create new combo with this card (or populate first empty slot)
+                createNewComboWithCard(selectedCard);
+                showToast(`Added ${selectedCard.name} to combo`);
+                setShowComboOverlay(false);
+                setSelectedCard(null);
+              }}
+              style={{
+                width: '100%',
+                padding: '12px',
+                backgroundColor: 'var(--bg-action)',
+                border: '1px solid var(--border-action)',
+                borderRadius: '8px',
+                color: 'var(--text-action)',
+                cursor: 'pointer',
+                ...typography.body,
+                fontWeight: 'medium'
+              }}
+              className="hover:bg-opacity-80 transition-all"
+            >
+              + Add to New Combo
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -1788,6 +2207,9 @@ const DeckZone = ({
   onDrop,
   onRemoveCard,
   onClearZone,
+  onCardClick,
+  combos,
+  ydkCardCounts,
   dragOverZone,
   handleDragStart,
   handleTouchStart,
@@ -1850,6 +2272,9 @@ const DeckZone = ({
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
                 onRemove={() => onRemoveCard(card.id, zone)}
+                onCardClick={onCardClick}
+                combos={combos}
+                ydkCardCounts={ydkCardCounts}
                 typography={typography}
               />
             ))}
@@ -1861,7 +2286,7 @@ const DeckZone = ({
 };
 
 // Individual Card Component
-const DeckCard = ({ card, onDragStart, onTouchStart, onTouchMove, onTouchEnd, onRemove, typography }) => {
+const DeckCard = ({ card, onDragStart, onTouchStart, onTouchMove, onTouchEnd, onRemove, onCardClick, combos, ydkCardCounts, typography }) => {
   const [imageError, setImageError] = useState(false);
   const imageProps = CardDatabaseService.getImageProps(card.name, card.cardId, 'small');
 
@@ -1883,6 +2308,23 @@ const DeckCard = ({ card, onDragStart, onTouchStart, onTouchMove, onTouchEnd, on
     }
   };
 
+  // AC #9, #11: Get combos assigned to this card
+  const getCardCombos = (cardName) => {
+    if (!combos || !Array.isArray(combos) || !cardName) {
+      return [];
+    }
+    return combos
+      .map((combo, index) => ({ ...combo, index }))
+      .filter(combo =>
+        combo && combo.cards && Array.isArray(combo.cards) &&
+        combo.cards.some(card =>
+          card && card.starterCard && card.starterCard.toLowerCase() === cardName.toLowerCase()
+        )
+      );
+  };
+
+  const cardCombos = getCardCombos(card.name);
+
   return (
     <div
       draggable
@@ -1890,7 +2332,13 @@ const DeckCard = ({ card, onDragStart, onTouchStart, onTouchMove, onTouchEnd, on
       onTouchStart={(e) => onTouchStart(e, card)}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
-      className="relative group cursor-move hover:opacity-80 transition-opacity touch-none"
+      onClick={(e) => {
+        // AC #1, #2: Handle card click for combo assignment
+        if (onCardClick) {
+          onCardClick(card, e);
+        }
+      }}
+      className="relative group cursor-pointer hover:opacity-80 transition-opacity touch-none"
       style={{
         width: '60px',
         height: '87px',
@@ -1937,8 +2385,74 @@ const DeckCard = ({ card, onDragStart, onTouchStart, onTouchMove, onTouchEnd, on
         </div>
       )}
 
+      {/* AC #9, #11, #13: Combo icons on cards */}
+      {cardCombos.length > 0 && (
+        <div style={{
+          position: 'absolute',
+          top: '4px',
+          left: '4px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '2px'
+        }}>
+          {cardCombos.slice(0, 3).map((combo, iconIndex) => {
+            const comboCard = combo.cards.find(c => c.starterCard.toLowerCase() === card.name.toLowerCase());
+            return (
+              <div
+                key={combo.id}
+                title={`${combo.name}: Min ${comboCard?.minCopiesInHand || 1}, Max ${comboCard?.maxCopiesInHand || 1}`}
+                style={{
+                  width: '16px',
+                  height: '16px',
+                  borderRadius: '50%',
+                  backgroundColor: '#007AFF',
+                  color: 'white',
+                  fontSize: '10px',
+                  fontWeight: 'bold',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontFamily: 'Geist Regular, sans-serif',
+                  border: '1px solid white',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                }}
+              >
+                {combo.index + 1}
+              </div>
+            );
+          })}
+
+          {/* AC #13: +X more indicator for cards with >3 combos */}
+          {cardCombos.length > 3 && (
+            <div
+              title={`Additional combos: ${cardCombos.slice(3).map(c => `${c.index + 1}. ${c.name}`).join(', ')}`}
+              style={{
+                width: '16px',
+                height: '16px',
+                borderRadius: '50%',
+                backgroundColor: '#666',
+                color: 'white',
+                fontSize: '8px',
+                fontWeight: 'bold',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: 'Geist Regular, sans-serif',
+                border: '1px solid white',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.3)'
+              }}
+            >
+              +{cardCombos.length - 3}
+            </div>
+          )}
+        </div>
+      )}
+
       <button
-        onClick={onRemove}
+        onClick={(e) => {
+          e.stopPropagation(); // Prevent the card click from triggering
+          onRemove();
+        }}
         className="absolute -top-1 -left-1 w-5 h-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
         style={{
           backgroundColor: 'var(--bg-error)',
@@ -3028,6 +3542,7 @@ useEffect(() => {
             showToast={showToast}
             setInitialDeckZones={setInitialDeckZones}
             deckZones={deckZones}
+            setDeckZones={setDeckZones}
           />
 
           {/* Deck Builder Section */}
@@ -3041,6 +3556,8 @@ useEffect(() => {
               initialDeckZones={initialDeckZones}
               deckZones={deckZones}
               setDeckZones={setDeckZones}
+              combos={combos}
+              setCombos={setCombos}
             />
           </div>
 

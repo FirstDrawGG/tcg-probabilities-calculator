@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import YdkParser from '../../services/YdkParser';
 import HandTrapService from '../../services/HandTrapService';
 import Icon from '../../components/Icon';
-import DecklistImage from '../../components/DecklistImage';
-import CardSearchModal from '../../components/CardSearchModal.jsx';
+import CardSearchDrawer from '../../components/CardSearchDrawer.jsx';
 
 const YdkImporter = ({
   uploadedYdkFile,
@@ -21,7 +20,8 @@ const YdkImporter = ({
   setCombos,
   showToast,
   setInitialDeckZones,
-  deckZones
+  deckZones,
+  setDeckZones
 }) => {
   const [showClipboardField, setShowClipboardField] = useState(false);
   const [clipboardContent, setClipboardContent] = useState('');
@@ -112,6 +112,39 @@ const YdkImporter = ({
     // For now, just show a toast that the card was selected
     // This can be expanded later to actually add the card to a deck
     showToast(`Selected: ${card.name}`);
+  };
+
+  // AC #10: Function to add card to deck zone via drag-and-drop
+  const addCardToDeckZone = (card, targetZone) => {
+    if (!setDeckZones || !card) return;
+
+    // Create a new card object for the deck
+    const newCard = {
+      id: `${targetZone}_${card.id}_${Date.now()}_${Math.random()}`,
+      cardId: card.id,
+      name: card.name,
+      type: card.type || 'Unknown',
+      level: card.level || null,
+      attribute: card.attribute || null,
+      zone: targetZone
+    };
+
+    // Check zone limits
+    const currentZoneCount = deckZones[targetZone]?.length || 0;
+    const maxCards = targetZone === 'main' ? 60 : 15;
+
+    if (currentZoneCount >= maxCards) {
+      showToast(`${targetZone === 'main' ? 'Main' : targetZone === 'extra' ? 'Extra' : 'Side'} Deck cannot exceed ${maxCards} cards`);
+      return;
+    }
+
+    // Add card to the target zone
+    setDeckZones(prev => ({
+      ...prev,
+      [targetZone]: [...(prev[targetZone] || []), newCard]
+    }));
+
+    showToast(`Added ${card.name} to ${targetZone === 'main' ? 'Main' : targetZone === 'extra' ? 'Extra' : 'Side'} Deck`);
   };
 
   const processClipboardContent = (content) => {
@@ -265,12 +298,12 @@ const YdkImporter = ({
               }}
             />
             <button
-              onClick={() => setShowCardSearch(true)}
+              onClick={() => setShowCardSearch(!showCardSearch)}
               className="inline-flex items-center px-0 py-2 hover:opacity-80 transition-opacity"
               style={{
                 backgroundColor: 'transparent',
                 border: 'none',
-                color: 'var(--text-main)',
+                color: 'var(--text-secondary)',
                 borderRadius: '999px',
                 ...typography.body
               }}
@@ -407,27 +440,21 @@ const YdkImporter = ({
         </div>
       )}
       
-      {/* AC #3, #5: Decklist image section - shown after file is uploaded and not loading */}
-      {!isLoadingDeck && (
-        <DecklistImage
-          ydkCards={ydkCards}
-          ydkCardCounts={ydkCardCounts}
-          uploadedYdkFile={uploadedYdkFile}
-          cardDatabase={cardDatabase}
-          typography={typography}
-          combos={combos}
-          setCombos={setCombos}
-          showToast={showToast}
-          deckZones={deckZones}
-        />
-      )}
+      {/* AC #2: Removed old decklist image display - now unified with deck builder */}
 
-      {/* Card Search Modal */}
-      <CardSearchModal
-        isOpen={showCardSearch}
-        onClose={() => setShowCardSearch(false)}
-        onCardSelect={handleCardSelect}
-      />
+      {/* AC #2-3: Card Search Drawer - shown below upload text */}
+      {showCardSearch && (
+        <div className="mb-4">
+          <CardSearchDrawer
+            isOpen={showCardSearch}
+            onClose={() => setShowCardSearch(false)}
+            onCardSelect={handleCardSelect}
+            addCardToDeckZone={addCardToDeckZone}
+            deckZones={deckZones}
+            typography={typography}
+          />
+        </div>
+      )}
     </div>
   );
 };
