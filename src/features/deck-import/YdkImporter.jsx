@@ -252,93 +252,78 @@ const YdkImporter = ({
           <Icon name="tray-arrow-up" ariaLabel="Upload YDK file" size={16} />
           <h3 style={{...typography.h3, color: 'var(--text-main)', margin: 0}}>YDK file</h3>
         </div>
-        
-        {!uploadedYdkFile && (
-          <div className="flex items-center" style={{ gap: '8px' }}>
-            <button
-              onClick={handleFromClipboard}
-              disabled={isLoadingDeck}
-              className={`inline-flex items-center px-0 py-2 transition-opacity ${isLoadingDeck ? 'cursor-not-allowed' : 'cursor-pointer hover:opacity-80'}`}
-              style={{
-                backgroundColor: 'transparent',
-                border: 'none',
-                color: isLoadingDeck ? 'var(--text-secondary)' : 'var(--text-main)',
-                borderRadius: '999px',
-                opacity: isLoadingDeck ? 0.5 : 1,
-                ...typography.body
-              }}
-            >
-              From clipboard
-            </button>
-            <div
-              style={{
-                width: '1px',
-                height: '16px',
-                backgroundColor: 'var(--text-secondary)',
-                opacity: 0.3
-              }}
-            />
-            <input
-              type="file"
-              accept=".ydk"
-              onChange={handleYdkFileUpload}
-              disabled={isLoadingDeck}
-              style={{ display: 'none' }}
-              id="ydk-file-input"
-            />
-            <label
-              htmlFor="ydk-file-input"
-              className={`inline-flex items-center px-0 py-2 transition-opacity ${isLoadingDeck ? 'cursor-not-allowed' : 'cursor-pointer hover:opacity-80'}`}
-              style={{
-                backgroundColor: 'transparent',
-                border: 'none',
-                color: isLoadingDeck ? 'var(--text-secondary)' : 'var(--text-main)',
-                borderRadius: '999px',
-                opacity: isLoadingDeck ? 0.5 : 1,
-                ...typography.body
-              }}
-            >
-              Upload
-            </label>
-            <div
-              style={{
-                width: '1px',
-                height: '16px',
-                backgroundColor: 'var(--text-secondary)',
-                opacity: 0.3
-              }}
-            />
-            <button
-              onClick={() => setShowCardSearch(!showCardSearch)}
-              className="inline-flex items-center px-0 py-2 hover:opacity-80 transition-opacity"
-              style={{
-                backgroundColor: 'transparent',
-                border: 'none',
-                color: 'var(--text-secondary)',
-                borderRadius: '999px',
-                ...typography.body
-              }}
-            >
-              Search Cards
-            </button>
-          </div>
-        )}
-        
-        {uploadedYdkFile && uploadedYdkFile.name === "Clipboard YDK" && (
+
+        <div className="flex items-center" style={{ gap: '8px' }}>
           <button
-            onClick={handleClearClipboard}
-            className="inline-flex items-center px-0 py-2 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={handleFromClipboard}
+            disabled={isLoadingDeck}
+            className={`inline-flex items-center px-0 py-2 transition-opacity ${isLoadingDeck ? 'cursor-not-allowed' : 'cursor-pointer hover:opacity-80'}`}
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              color: isLoadingDeck ? 'var(--text-secondary)' : 'var(--text-main)',
+              borderRadius: '999px',
+              opacity: isLoadingDeck ? 0.5 : 1,
+              userSelect: 'none',
+              ...typography.body
+            }}
+          >
+            From clipboard
+          </button>
+          <div
+            style={{
+              width: '1px',
+              height: '16px',
+              backgroundColor: 'var(--text-secondary)',
+              opacity: 0.3
+            }}
+          />
+          <input
+            type="file"
+            accept=".ydk"
+            onChange={handleYdkFileUpload}
+            disabled={isLoadingDeck}
+            style={{ display: 'none' }}
+            id="ydk-file-input"
+          />
+          <label
+            htmlFor="ydk-file-input"
+            className={`inline-flex items-center px-0 py-2 transition-opacity ${isLoadingDeck ? 'cursor-not-allowed' : 'cursor-pointer hover:opacity-80'}`}
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              color: isLoadingDeck ? 'var(--text-secondary)' : 'var(--text-main)',
+              borderRadius: '999px',
+              opacity: isLoadingDeck ? 0.5 : 1,
+              userSelect: 'none',
+              ...typography.body
+            }}
+          >
+            Upload
+          </label>
+          <div
+            style={{
+              width: '1px',
+              height: '16px',
+              backgroundColor: 'var(--text-secondary)',
+              opacity: 0.3
+            }}
+          />
+          <button
+            onClick={() => setShowCardSearch(!showCardSearch)}
+            className="inline-flex items-center px-0 py-2 hover:opacity-80 transition-opacity"
             style={{
               backgroundColor: 'transparent',
               border: 'none',
               color: 'var(--text-secondary)',
               borderRadius: '999px',
+              userSelect: 'none',
               ...typography.body
             }}
           >
-            Clear YDK
+            Search Cards
           </button>
-        )}
+        </div>
       </div>
       
       {/* AC #1: Placeholder text when no YDK file is uploaded */}
