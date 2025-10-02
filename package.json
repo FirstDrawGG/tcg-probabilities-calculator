@@ -14,7 +14,8 @@
     "migrate:images:optimized": "node scripts/migrate-card-images-optimized.js",
     "migrate:images:final": "node scripts/migrate-card-images-final.js",
     "validate:migration": "node scripts/validate-migration.js",
-    "validate:migration:final": "node scripts/validate-migration-final.js"
+    "validate:migration:final": "node scripts/validate-migration-final.js",
+    "upload:card-database": "node scripts/upload-card-database.js"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",

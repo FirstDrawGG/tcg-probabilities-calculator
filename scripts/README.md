@@ -1,10 +1,19 @@
-# Yu-Gi-Oh Card Image Migration - Final Implementation
+# Yu-Gi-Oh Card Data & Image Migration
 
-This directory contains scripts for migrating Yu-Gi-Oh card images from the YGOPro API to Vercel Blob Storage.
+This directory contains scripts for managing Yu-Gi-Oh card data and images in Vercel Blob Storage.
 
 ## Overview
 
-The migration system downloads all ~13,000 card images from the YGOPro API and stores them in Vercel Blob Storage with:
+This directory manages two types of data:
+
+### 1. Card Metadata (New!)
+- Full card database with 13,931 cards and complete metadata (~26 MB)
+- Uploaded to Vercel Blob for fast, reliable access
+- Used as primary data source with YGOPro API fallback
+- See [CARD_DATABASE_ARCHITECTURE.md](../CARD_DATABASE_ARCHITECTURE.md) for details
+
+### 2. Card Images
+The image migration system downloads all ~13,000 card images from the YGOPro API and stores them in Vercel Blob Storage with:
 
 - **WebP format only**: 85% quality for optimal size/quality balance
 - **Multiple sizes**: Full size (~420x614px) and small thumbnails (168x245px)
@@ -37,9 +46,31 @@ The required packages should already be installed, but if needed:
 npm install @vercel/blob sharp node-fetch
 ```
 
-## Usage
+## Available Scripts
 
-### Primary Migration Script (Recommended)
+### Card Database Management
+
+#### Upload Card Database (New!)
+Upload the full card metadata database to Vercel Blob:
+
+```bash
+npm run upload:card-database
+```
+
+This uploads 13,931 cards with complete metadata (ATK, DEF, type, description, etc.) to Vercel Blob Storage. The app will then use this as the primary data source instead of the YGOPro API.
+
+#### Generate Local Card Database
+Generate a minimal static database for YDK parsing:
+
+```bash
+npm run build:db
+```
+
+This creates `/public/cardDatabase.json` with minimal card data for offline YDK file parsing.
+
+### Image Migration Scripts
+
+#### Primary Image Migration (Recommended)
 
 To migrate all card images using the final implementation:
 

@@ -2,3 +2,6 @@ node_modules/
 .env.local
 
 .vercel
+
+# Large database files (stored in Vercel Blob, not in git)
+public/cardDatabase-full.json

@@ -21,17 +21,18 @@ This is a single-page React application for calculating probabilities in Trading
 ### Key Services (all in App.jsx)
 
 - **URLService**: Handles encoding/decoding calculation data to/from URL hash for shareable links
-- **CardDatabaseService**: Manages Yu-Gi-Oh! card database API calls and local caching (7-day cache duration)
+- **CardDatabaseService**: Manages card metadata from Vercel Blob (primary) with YGOPro API fallback and 7-day localStorage cache
 - **ProbabilityService**: Monte Carlo simulation engine (100,000 simulations per calculation) with result caching
 - **TitleGeneratorService**: Generates fun, contextual titles for calculation results
 
 ### Data Flow
 
 1. User defines combos with card names, deck quantities, and hand requirements
-2. Card search uses the Yu-Gi-Oh! database API (db.ygoprodeck.com) with local caching
-3. Probability calculations use Monte Carlo simulation (not exact math) for real-world accuracy
-4. Results are cached to avoid recalculation of identical scenarios
-5. Shareable URLs encode the entire calculation state in the hash
+2. Card metadata loads from Vercel Blob Storage (26 MB full database) with YGOPro API fallback and 7-day cache
+3. Card images load from Vercel Blob Storage (WebP format) with YGOPro API fallback
+4. Probability calculations use Monte Carlo simulation (not exact math) for real-world accuracy
+5. Results are cached to avoid recalculation of identical scenarios
+6. Shareable URLs encode the entire calculation state in the hash
 
 ### Styling Approach
 
@@ -51,13 +52,26 @@ All state is managed locally in the main App component using React hooks:
 
 ### External Dependencies
 
-- **Yu-Gi-Oh! API**: https://db.ygoprodeck.com/api/v7/cardinfo.php (no auth required)
+- **Vercel Blob Storage**: Primary source for card metadata (26 MB) and images (WebP format, 2.5-3 GB)
+- **Yu-Gi-Oh! API**: https://db.ygoprodeck.com/api/v7/cardinfo.php (fallback for metadata, used for card search)
 - **Vercel Analytics**: Integrated for usage tracking
 - **Local Storage**: Used for 7-day card database caching
+- **Static Card Database**: `/public/cardDatabase.json` (2.1 MB) for offline YDK parsing
 
 ### Performance Considerations
 
 - Card search is debounced (300ms) and limited to 50 results
 - Monte Carlo simulations use 100,000 iterations for accuracy vs speed balance
 - Results are cached to avoid redundant calculations
-- Card database is cached locally for 7 days to reduce API calls
+- Card metadata is cached locally for 7 days (reduces Blob/API calls to zero after initial load)
+- Full card database (~26 MB) loads from Vercel CDN in ~500ms with global edge caching
+- Card images use WebP format with lazy loading for optimal performance
+
+### Data Architecture
+
+See [CARD_DATABASE_ARCHITECTURE.md](CARD_DATABASE_ARCHITECTURE.md) for detailed information about:
+- Card metadata storage (Vercel Blob vs YGOPro API vs local static)
+- Image storage (Vercel Blob with YGOPro fallback)
+- Caching strategy (7-day localStorage)
+- Update procedures (`npm run upload:card-database`)
+- Fallback mechanisms and reliability

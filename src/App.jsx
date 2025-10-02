@@ -113,23 +113,41 @@ const CardDatabaseService = {
   
   async fetchCards() {
     try {
-      console.log('Fetching cards from API...');
-      const response = await fetch('https://db.ygoprodeck.com/api/v7/cardinfo.php');
-      console.log('API response status:', response.status);
-      
-      if (!response.ok) {
-        throw new Error(`API returned ${response.status}`);
+      // Try Vercel Blob first for faster, more reliable access
+      console.log('Fetching cards from Vercel Blob...');
+      const blobUrl = `${this.BLOB_BASE_URL}/cardDatabase-full.json`;
+      const response = await fetch(blobUrl);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Loaded from Vercel Blob:', data.data ? data.data.length : 0, 'cards');
+        return data.data || [];
       }
-      
-      const data = await response.json();
-      console.log('API response:', data);
-      console.log('Number of cards:', data.data ? data.data.length : 0);
-      console.log('First card example:', data.data ? data.data[0] : 'No cards');
-      
-      return data.data || [];
+
+      // Fallback to YGOPro API if Blob fails
+      console.warn('⚠️  Vercel Blob fetch failed, falling back to YGOPro API...');
+      throw new Error('Blob fetch failed, trying fallback');
+
     } catch (error) {
-      console.error('Failed to fetch cards:', error);
-      return [];
+      // Fallback to YGOPro API
+      try {
+        console.log('📡 Fetching cards from YGOPro API (fallback)...');
+        const response = await fetch('https://db.ygoprodeck.com/api/v7/cardinfo.php');
+        console.log('API response status:', response.status);
+
+        if (!response.ok) {
+          throw new Error(`API returned ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('✅ Loaded from YGOPro API:', data.data ? data.data.length : 0, 'cards');
+        console.log('First card example:', data.data ? data.data[0] : 'No cards');
+
+        return data.data || [];
+      } catch (fallbackError) {
+        console.error('❌ Both Blob and API fetch failed:', fallbackError);
+        return [];
+      }
     }
   },
   
