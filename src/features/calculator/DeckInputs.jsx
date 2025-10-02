@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { Button } from '../../components/ui';
 
 const Tooltip = ({ text, children }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -153,52 +154,49 @@ const DeckInputs = ({
           <Tooltip text="Cards you draw to start the game. 5 going first, 6 going second" />
         </label>
         <div className="flex space-x-2">
-          <button
+          <Button
             onClick={() => setHandSize(5)}
             disabled={5 < minHandSize}
-            className="flex-1 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            variant={handSize === 5 ? 'primary' : 'secondary'}
             style={{
-              backgroundColor: handSize === 5 ? 'var(--bg-action)' : 'var(--bg-secondary)',
-              color: handSize === 5 ? 'var(--text-black)' : 'var(--text-main)',
-              border: `1px solid var(--border-main)`,
+              flex: 1,
               borderRadius: '8px',
-              height: '28px',
-              ...typography.body
+              height: '32px',
+              padding: '0 12px',
+              fontSize: '14px'
             }}
           >
             5
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setHandSize(6)}
             disabled={6 < minHandSize}
-            className="flex-1 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            variant={handSize === 6 ? 'primary' : 'secondary'}
             style={{
-              backgroundColor: handSize === 6 ? 'var(--bg-action)' : 'var(--bg-secondary)',
-              color: handSize === 6 ? 'var(--text-black)' : 'var(--text-main)',
-              border: `1px solid var(--border-main)`,
+              flex: 1,
               borderRadius: '8px',
-              height: '28px',
-              ...typography.body
+              height: '32px',
+              padding: '0 12px',
+              fontSize: '14px'
             }}
           >
             6
-          </button>
+          </Button>
           {/* AC #7: Show current minimum if it's higher than 6 */}
           {minHandSize > 6 && (
-            <button
+            <Button
               onClick={() => setHandSize(minHandSize)}
-              className="flex-1 font-medium transition-colors"
+              variant={handSize === minHandSize ? 'primary' : 'secondary'}
               style={{
-                backgroundColor: handSize === minHandSize ? 'var(--bg-action)' : 'var(--bg-secondary)',
-                color: handSize === minHandSize ? 'var(--text-black)' : 'var(--text-main)',
-                border: `1px solid var(--border-main)`,
+                flex: 1,
                 borderRadius: '8px',
-                height: '28px',
-                ...typography.body
+                height: '32px',
+                padding: '0 12px',
+                fontSize: '14px'
               }}
             >
               {minHandSize}
-            </button>
+            </Button>
           )}
         </div>
         {minHandSize > handSize && (

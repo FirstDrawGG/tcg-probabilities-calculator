@@ -3,6 +3,7 @@ import CardImage from '../../components/CardImage';
 import Icon from '../../components/Icon';
 import ProbabilityService from '../../services/ProbabilityService';
 import FormulaDisplay from '../../components/FormulaDisplay';
+import { Button } from '../../components/ui';
 
 const Tooltip = ({ text, children }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -457,20 +458,13 @@ const ResultsDisplay = ({
                   cursor: 'text'
                 }}
               />
-              <button
+              <Button
                 onClick={handleCopyLink}
-                className="px-4 py-2 font-medium transition-colors"
-                style={{ 
-                  backgroundColor: 'var(--bg-action)', 
-                  border: 'none',
-                  borderRadius: '999px',
-                  height: '40px',
-                  ...typography.body,
-                  color: 'var(--text-black)'
-                }}
+                variant="primary"
+                size="medium"
               >
                 Copy
-              </button>
+              </Button>
             </div>
           </div>
         </div>

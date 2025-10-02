@@ -16,6 +16,7 @@ import YdkImporter from './features/deck-import/YdkImporter';
 import Icon from './components/Icon';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
+import { Button } from './components/ui';
 
 // Constants imports
 import { DEFAULT_DECK_SIZE, DEFAULT_HAND_SIZE, TYPOGRAPHY } from './constants/config';
@@ -742,28 +743,32 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
         >
           <span>{value}</span>
           <div className="flex items-center space-x-2">
-            <button
+            <Button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 handleEdit();
                }}
+              variant="secondary"
+              size="small"
               className="hover:opacity-80 transition-opacity"
-               style={{ fontSize: '12px' }}
+               style={{ fontSize: '12px', backgroundColor: 'transparent', border: 'none', padding: '0' }}
             >
               Edit
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               onClick={(e) => {
-                e.stopPropagation(); 
+                e.stopPropagation();
                 handleClear();
               }}
+              variant="secondary"
+              size="small"
               className="hover:opacity-80 transition-opacity"
-              style={{ fontSize: '16px' }}
+              style={{ fontSize: '16px', backgroundColor: 'transparent', border: 'none', padding: '0' }}
             >
               ×
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -841,23 +846,24 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
                               {card.name}
                             </span>
                             {showAddToComboOverlayForCard && (
-                              <button
+                              <Button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   showAddToComboOverlayForCard(card);
                                   setIsOpen(false);
                                 }}
-                                className="ml-2 px-2 py-1 rounded text-xs hover:opacity-80 transition-opacity"
+                                variant="primary"
+                                size="small"
+                                className="ml-2 rounded text-xs hover:opacity-80 transition-opacity"
                                 style={{
-                                  backgroundColor: 'var(--bg-action)',
-                                  color: 'var(--text-black)',
-                                  border: 'none',
-                                  cursor: 'pointer'
+                                  padding: '4px 8px',
+                                  height: 'auto',
+                                  borderRadius: '4px'
                                 }}
                                 title="Add to combo"
                               >
                                 +
-                              </button>
+                              </Button>
                             )}
                           </div>
                         ))}
@@ -892,17 +898,17 @@ const SearchableCardInput = ({ value, onChange, placeholder, errors, comboId, ca
           ) : (
             <div className="p-3" style={typography.body}>
               <div>No matching results. Use custom name?</div>
-              <button
+              <Button
                 onClick={handleCustomName}
-                className="mt-2 px-4 py-2 hover:opacity-80 rounded transition-opacity"
+                variant="secondary"
+                className="mt-2 hover:opacity-80 rounded transition-opacity"
                 style={{
                   ...typography.body,
-                  backgroundColor: 'var(--bg-action-secondary)',
-                  color: 'var(--text-main)'
+                  backgroundColor: 'var(--bg-action-secondary)'
                 }}
               >
                 Use custom name
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -970,20 +976,25 @@ const Toast = ({ message, onClose }) => {
         }}>
           {message}
         </span>
-        <button
+        <Button
           className="absolute top-2 right-2 hover:opacity-80 transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             handleClose();
           }}
+          variant="secondary"
+          size="small"
           style={{
             fontSize: '16px',
             lineHeight: '16px',
-            padding: '4px'
+            padding: '4px',
+            backgroundColor: 'transparent',
+            border: 'none',
+            height: 'auto'
           }}
         >
           ×
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -1695,23 +1706,25 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
               <h3 style={{...typography.h3, color: 'var(--text-main)', margin: 0}}>
                 Add "{selectedCard.name}" to Combo
               </h3>
-              <button
+              <Button
                 onClick={() => {
                   setShowComboOverlay(false);
                   setSelectedCard(null);
                 }}
+                variant="secondary"
+                size="small"
                 style={{
                   backgroundColor: 'transparent',
                   border: 'none',
                   color: 'var(--text-secondary)',
                   fontSize: '24px',
-                  cursor: 'pointer',
                   padding: '4px',
-                  lineHeight: 1
+                  lineHeight: 1,
+                  height: 'auto'
                 }}
               >
                 ×
-              </button>
+              </Button>
             </div>
 
             {/* Combo List */}
@@ -1746,7 +1759,7 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                     }}
                   >
                     {/* Main combo button */}
-                    <button
+                    <Button
                       onClick={() => {
                         if (cardExists) {
                           // AC #7: Remove card from combo
@@ -1762,15 +1775,12 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                           setSelectedCard(null);
                         }
                       }}
+                      variant={cardExists ? "primary" : "secondary"}
                       style={{
                         width: '100%',
                         textAlign: 'left',
                         padding: '12px',
-                        backgroundColor: cardExists ? 'var(--bg-action)' : 'transparent',
-                        border: `1px solid ${cardExists ? 'var(--border-action)' : 'var(--border-main)'}`,
                         borderRadius: '8px',
-                        color: cardExists ? 'var(--text-action)' : 'var(--text-main)',
-                        cursor: 'pointer',
                         ...typography.body
                       }}
                       className="hover:bg-opacity-80 transition-all"
@@ -1789,7 +1799,7 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                           : 'No cards added yet'
                         }
                       </div>
-                    </button>
+                    </Button>
 
                     {/* AND/OR logic selector for existing cards or when adding 3rd+ card */}
                     {(cardExists || wouldBeThirdPlusCard) && (
@@ -1804,7 +1814,7 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                           Logic for this card:
                         </label>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                          <button
+                          <Button
                             onClick={(e) => {
                               e.stopPropagation();
                               if (cardExists) {
@@ -1812,21 +1822,19 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                               }
                             }}
                             disabled={!cardExists}
+                            variant={currentLogic === 'AND' ? 'primary' : 'secondary'}
+                            size="small"
                             style={{
                               padding: '4px 12px',
                               borderRadius: '4px',
-                              border: '1px solid var(--border-main)',
-                              backgroundColor: currentLogic === 'AND' ? 'var(--bg-action)' : 'var(--bg-secondary)',
-                              color: currentLogic === 'AND' ? 'var(--text-action)' : 'var(--text-main)',
                               fontSize: '11px',
-                              cursor: cardExists ? 'pointer' : 'not-allowed',
-                              opacity: cardExists ? 1 : 0.5,
+                              height: 'auto',
                               ...typography.body
                             }}
                           >
                             AND
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             onClick={(e) => {
                               e.stopPropagation();
                               if (cardExists) {
@@ -1834,20 +1842,18 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                               }
                             }}
                             disabled={!cardExists}
+                            variant={currentLogic === 'OR' ? 'primary' : 'secondary'}
+                            size="small"
                             style={{
                               padding: '4px 12px',
                               borderRadius: '4px',
-                              border: '1px solid var(--border-main)',
-                              backgroundColor: currentLogic === 'OR' ? 'var(--bg-action)' : 'var(--bg-secondary)',
-                              color: currentLogic === 'OR' ? 'var(--text-action)' : 'var(--text-main)',
                               fontSize: '11px',
-                              cursor: cardExists ? 'pointer' : 'not-allowed',
-                              opacity: cardExists ? 1 : 0.5,
+                              height: 'auto',
                               ...typography.body
                             }}
                           >
                             OR
-                          </button>
+                          </Button>
                         </div>
                         {wouldBeThirdPlusCard && !cardExists && (
                           <p style={{
@@ -1868,7 +1874,7 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
             </div>
 
             {/* Create New Combo Button */}
-            <button
+            <Button
               onClick={() => {
                 // AC #6: Create new combo with this card (or populate first empty slot)
                 createNewComboWithCard(selectedCard);
@@ -1876,21 +1882,18 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                 setShowComboOverlay(false);
                 setSelectedCard(null);
               }}
+              variant="primary"
               style={{
                 width: '100%',
                 padding: '12px',
-                backgroundColor: 'var(--bg-action)',
-                border: '1px solid var(--border-action)',
                 borderRadius: '8px',
-                color: 'var(--text-action)',
-                cursor: 'pointer',
                 ...typography.body,
                 fontWeight: 'medium'
               }}
               className="hover:bg-opacity-80 transition-all"
             >
               + Add to New Combo
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -1930,13 +1933,21 @@ const DeckZone = ({
           {title} {subtitle}
         </h3>
         {cards.length > 0 && (
-          <button
+          <Button
             onClick={() => onClearZone(zone)}
+            variant="secondary"
+            size="small"
             className="text-xs hover:opacity-80 transition-opacity"
-            style={{color: 'var(--text-secondary)'}}
+            style={{
+              color: 'var(--text-secondary)',
+              backgroundColor: 'transparent',
+              border: 'none',
+              padding: '0',
+              height: 'auto'
+            }}
           >
             Clear
-          </button>
+          </Button>
         )}
       </div>
 
@@ -2150,20 +2161,24 @@ const DeckCard = ({ card, onDragStart, onTouchStart, onTouchMove, onTouchEnd, on
         </div>
       )}
 
-      <button
+      <Button
         onClick={(e) => {
           e.stopPropagation(); // Prevent the card click from triggering
           onRemove();
         }}
+        variant="danger"
+        size="small"
         className="absolute -top-1 -left-1 w-5 h-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
         style={{
-          backgroundColor: 'var(--bg-error)',
-          color: 'white',
-          fontSize: '12px'
+          fontSize: '12px',
+          width: '20px',
+          height: '20px',
+          padding: '0',
+          minWidth: '20px'
         }}
       >
         ×
-      </button>
+      </Button>
     </div>
   );
 };
@@ -3239,16 +3254,21 @@ useEffect(() => {
                     </div>
                   )}
                   {index > 0 && (
-                    <button
+                    <Button
                       onClick={() => removeCombo(combo.id)}
+                      variant="secondary"
+                      size="small"
                       className="font-medium hover:opacity-80 transition-opacity"
                       style={{
                         ...typography.body,
-                        color: 'var(--text-main)'
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        padding: '0',
+                        height: 'auto'
                       }}
                     >
                       Remove
-                    </button>
+                    </Button>
                   )}
                 </div>
                 
@@ -3266,21 +3286,23 @@ useEffect(() => {
                         </label>
                         {/* AC #6: [X] remove option for each card except the first */}
                         {cardIndex > 0 && (
-                          <button
+                          <Button
                             onClick={() => removeCard(combo.id, cardIndex)}
+                            variant="secondary"
+                            size="small"
                             className="font-medium hover:opacity-80 transition-opacity w-8 h-8 flex items-center justify-center"
                             style={{
-                              backgroundColor: 'var(--bg-secondary)',
-                              border: '1px solid var(--border-main)',
                               borderRadius: '50%',
-                              color: 'var(--text-main)',
                               fontSize: '18px',
-                              fontWeight: 'bold'
+                              fontWeight: 'bold',
+                              width: '32px',
+                              height: '32px',
+                              padding: '0'
                             }}
                             title="Remove this card"
                           >
                             ×
-                          </button>
+                          </Button>
                         )}
                       </div>
                       <SearchableCardInput
@@ -3308,13 +3330,12 @@ useEffect(() => {
                           <Tooltip text="AND = need all cards, OR = need any of these cards" />
                         </label>
                         <div className="flex items-center space-x-2">
-                          <button
+                          <Button
                             onClick={() => updateCombo(combo.id, cardIndex, 'logicOperator', 'AND')}
-                            className="px-4 py-2 rounded font-medium transition-colors"
+                            variant={(card.logicOperator || 'AND') === 'AND' ? 'primary' : 'secondary'}
+                            size="small"
+                            className="rounded font-medium transition-colors"
                             style={{
-                              backgroundColor: (card.logicOperator || 'AND') === 'AND' ? 'var(--bg-action)' : 'var(--bg-secondary)',
-                              color: (card.logicOperator || 'AND') === 'AND' ? 'var(--text-black)' : 'var(--text-main)',
-                              border: '1px solid var(--border-main)',
                               borderRadius: '8px',
                               height: '28px',
                               minWidth: '60px',
@@ -3322,14 +3343,13 @@ useEffect(() => {
                             }}
                           >
                             AND
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             onClick={() => updateCombo(combo.id, cardIndex, 'logicOperator', 'OR')}
-                            className="px-4 py-2 rounded font-medium transition-colors"
+                            variant={(card.logicOperator || 'AND') === 'OR' ? 'primary' : 'secondary'}
+                            size="small"
+                            className="rounded font-medium transition-colors"
                             style={{
-                              backgroundColor: (card.logicOperator || 'AND') === 'OR' ? 'var(--bg-action)' : 'var(--bg-secondary)',
-                              color: (card.logicOperator || 'AND') === 'OR' ? 'var(--text-black)' : 'var(--text-main)',
-                              border: '1px solid var(--border-main)',
                               borderRadius: '8px',
                               height: '28px',
                               minWidth: '60px',
@@ -3337,7 +3357,7 @@ useEffect(() => {
                             }}
                           >
                             OR
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     )}
@@ -3349,21 +3369,19 @@ useEffect(() => {
                           <Tooltip text="Total copies of this card in your deck. Max 3 for most, but remember banlist restrictions" />
                         </label>
                         <div className="flex items-center space-x-3">
-                          <button
+                          <Button
                             onClick={() => updateCombo(combo.id, cardIndex, 'startersInDeck', Math.max(0, card.startersInDeck - 1))}
+                            variant="secondary"
                             className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
-                            style={{ 
-                              backgroundColor: 'var(--bg-secondary)', 
-                              color: 'var(--text-secondary)',
+                            style={{
                               width: '40px',
                               height: '40px',
-                              borderRadius: '999px',
-                              border: 'none',
-                              boxSizing: 'border-box'
+                              padding: '0',
+                              minWidth: '40px'
                             }}
                           >
                             <Icon name="minus" ariaLabel="Decrease count" size={16} variant="secondary" />
-                          </button>
+                          </Button>
                           <input
                             type="number"
                             value={card.startersInDeck}
@@ -3375,21 +3393,19 @@ useEffect(() => {
                               width: '64px'
                             }}
                           />
-                          <button
+                          <Button
                             onClick={() => updateCombo(combo.id, cardIndex, 'startersInDeck', card.startersInDeck + 1)}
+                            variant="secondary"
                             className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
-                            style={{ 
-                              backgroundColor: 'var(--bg-secondary)', 
-                              color: 'var(--text-secondary)',
+                            style={{
                               width: '40px',
                               height: '40px',
-                              borderRadius: '999px',
-                              border: 'none',
-                              boxSizing: 'border-box'
+                              padding: '0',
+                              minWidth: '40px'
                             }}
                           >
                             <Icon name="plus" ariaLabel="Increase count" size={16} variant="secondary" />
-                          </button>
+                          </Button>
                         </div>
                         {errors[`combo-${combo.id}-card-${cardIndex}-startersInDeck`] && (
                           <p className="text-red-500 mt-1" style={typography.body}>{errors[`combo-${combo.id}-card-${cardIndex}-startersInDeck`]}</p>
@@ -3403,21 +3419,19 @@ useEffect(() => {
                             <Tooltip text="Minimum copies needed in your opening hand for your combo to work" />
                           </label>
                           <div className="flex items-center space-x-3">
-                            <button
+                            <Button
                               onClick={() => validateAndUpdateCombo(combo.id, cardIndex, 'minCopiesInHand', Math.max(0, card.minCopiesInHand - 1))}
+                              variant="secondary"
                               className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
-                              style={{ 
-                                backgroundColor: 'var(--bg-secondary)', 
-                                color: 'var(--text-secondary)',
+                              style={{
                                 width: '40px',
                                 height: '40px',
-                                borderRadius: '999px',
-                                border: '1px solid var(--border-main)',
-                                boxSizing: 'border-box'
+                                padding: '0',
+                                minWidth: '40px'
                               }}
                             >
                               <Icon name="minus" ariaLabel="Decrease count" size={16} variant="secondary" />
-                            </button>
+                            </Button>
                             <input
                               type="number"
                               value={card.minCopiesInHand}
@@ -3429,21 +3443,19 @@ useEffect(() => {
                                 width: '64px'
                               }}
                             />
-                            <button
+                            <Button
                               onClick={() => validateAndUpdateCombo(combo.id, cardIndex, 'minCopiesInHand', card.minCopiesInHand + 1)}
+                              variant="secondary"
                               className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
-                              style={{ 
-                                backgroundColor: 'var(--bg-secondary)', 
-                                color: 'var(--text-secondary)',
+                              style={{
                                 width: '40px',
                                 height: '40px',
-                                borderRadius: '999px',
-                                border: '1px solid var(--border-main)',
-                                boxSizing: 'border-box'
+                                padding: '0',
+                                minWidth: '40px'
                               }}
                             >
                               <Icon name="plus" ariaLabel="Increase count" size={16} variant="secondary" />
-                            </button>
+                            </Button>
                           </div>
                           {errors[`combo-${combo.id}-card-${cardIndex}-minCopiesInHand`] && (
                             <p className="text-red-500 mt-1" style={{...typography.body, fontSize: '10px'}}>{errors[`combo-${combo.id}-card-${cardIndex}-minCopiesInHand`]}</p>
@@ -3456,21 +3468,19 @@ useEffect(() => {
                             <Tooltip text="Upper limit of copies you want to see. Helps avoid dead multiples" />
                           </label>
                           <div className="flex items-center space-x-3">
-                            <button
+                            <Button
                               onClick={() => validateAndUpdateCombo(combo.id, cardIndex, 'maxCopiesInHand', Math.max(0, card.maxCopiesInHand - 1))}
+                              variant="secondary"
                               className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
-                              style={{ 
-                                backgroundColor: 'var(--bg-secondary)', 
-                                color: 'var(--text-secondary)',
+                              style={{
                                 width: '40px',
                                 height: '40px',
-                                borderRadius: '999px',
-                                border: '1px solid var(--border-main)',
-                                boxSizing: 'border-box'
+                                padding: '0',
+                                minWidth: '40px'
                               }}
                             >
                               <Icon name="minus" ariaLabel="Decrease count" size={16} variant="secondary" />
-                            </button>
+                            </Button>
                             <input
                               type="number"
                               value={card.maxCopiesInHand}
@@ -3482,21 +3492,19 @@ useEffect(() => {
                                 width: '64px'
                               }}
                             />
-                            <button
+                            <Button
                               onClick={() => validateAndUpdateCombo(combo.id, cardIndex, 'maxCopiesInHand', card.maxCopiesInHand + 1)}
+                              variant="secondary"
                               className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
-                              style={{ 
-                                backgroundColor: 'var(--bg-secondary)', 
-                                color: 'var(--text-secondary)',
+                              style={{
                                 width: '40px',
                                 height: '40px',
-                                borderRadius: '999px',
-                                border: '1px solid var(--border-main)',
-                                boxSizing: 'border-box'
+                                padding: '0',
+                                minWidth: '40px'
                               }}
                             >
                               <Icon name="plus" ariaLabel="Increase count" size={16} variant="secondary" />
-                            </button>
+                            </Button>
                           </div>
                           {errors[`combo-${combo.id}-card-${cardIndex}-maxCopiesInHand`] && (
                             <p className="text-red-500 mt-1" style={{...typography.body, fontSize: '10px'}}>{errors[`combo-${combo.id}-card-${cardIndex}-maxCopiesInHand`]}</p>
@@ -3509,16 +3517,16 @@ useEffect(() => {
                 
                 {/* AC #1, #2, #3, #4: Dynamic Add Card button */}
                 <div className="flex items-center mt-4">
-                  <button
+                  <Button
                     onClick={() => addCard(combo.id)}
                     disabled={!canAddCard(combo)}
                     className="enhanced-button enhanced-button-add"
                   >
                     <Icon name="stack-plus" ariaLabel="Add card" size={14} className="button-icon" style={{ color: '#141414' }} />
                     <span className="button-text">Add card</span>
-                  </button>
-                  <Tooltip text={canAddCard(combo) 
-                    ? "Add another card to create more complex combos" 
+                  </Button>
+                  <Tooltip text={canAddCard(combo)
+                    ? "Add another card to create more complex combos"
                     : "Your combo would exceed the defined Hand size"
                   } />
                 </div>
@@ -3529,34 +3537,34 @@ useEffect(() => {
             <div>
               <hr className="my-4" style={{ borderColor: 'var(--border-secondary)', borderTop: '1px solid var(--border-secondary)' }} />
               <div className="flex items-center">
-                <button
+                <Button
                   onClick={addCombo}
                   className="enhanced-button enhanced-button-add"
                 >
                   <Icon name="rows-plus-bottom" ariaLabel="Add combo" size={14} className="button-icon" style={{ color: '#141414' }} />
                   <span className="button-text">Add combo</span>
-                </button>
+                </Button>
                 <Tooltip text="Test multiple combo lines to see your deck's overall consistency options" />
               </div>
             </div>
           )}
 
           <div className="flex space-x-4 mt-6">
-            <button
+            <Button
               onClick={runCalculation}
               disabled={!allFieldsFilled || hasValidationErrors}
               className="enhanced-button"
             >
               <Icon name="calculator" ariaLabel="Calculate" size={14} className="button-icon" style={{ color: '#141414' }} />
               <span className="button-text">Calculate</span>
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleReset}
               className="enhanced-button enhanced-button-reset"
             >
               <Icon name="arrow-counter-clockwise" ariaLabel="Reset" size={14} className="button-icon" style={{ color: '#141414' }} />
               <span className="button-text">Reset</span>
-            </button>
+            </Button>
           </div>
         </div>
 

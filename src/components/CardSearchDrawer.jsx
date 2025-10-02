@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Icon from './Icon';
+import { Button } from './ui';
 
 const CardSearchDrawer = ({ isOpen, onClose, onCardSelect, addCardToDeckZone, deckZones, typography }) => {
   // State for search functionality
@@ -496,7 +497,8 @@ const CardSearchDrawer = ({ isOpen, onClose, onCardSelect, addCardToDeckZone, de
               backgroundColor: 'transparent',
               border: 'none',
               color: 'var(--text-secondary)',
-              ...typography.body
+              ...typography.body,
+              cursor: 'pointer'
             }}
             aria-expanded={showFilters}
             type="button"
@@ -531,13 +533,14 @@ const CardSearchDrawer = ({ isOpen, onClose, onCardSelect, addCardToDeckZone, de
             <div className="flex justify-between items-center mb-4">
               <h3 style={{...typography.h3, color: 'var(--text-main)'}}>Filters</h3>
               {getActiveFilterCount() > 0 && (
-                <button
+                <Button
                   onClick={clearAllFilters}
-                  className="text-sm hover:opacity-80 transition-opacity"
-                  style={{color: 'var(--text-secondary)'}}
+                  variant="secondary"
+                  size="small"
+                  style={{fontSize: '14px'}}
                 >
                   Clear All Filters ({getActiveFilterCount()})
-                </button>
+                </Button>
               )}
             </div>
 
@@ -646,17 +649,13 @@ const CardSearchDrawer = ({ isOpen, onClose, onCardSelect, addCardToDeckZone, de
                 <p style={{...typography.body, color: 'var(--text-secondary)'}}>
                   Taking longer than usual...
                 </p>
-                <button
+                <Button
                   onClick={cancelSearch}
-                  className="px-4 py-2 rounded-lg hover:opacity-80 transition-opacity"
-                  style={{
-                    backgroundColor: 'var(--bg-secondary)',
-                    border: '1px solid var(--border-main)',
-                    color: 'var(--text-main)'
-                  }}
+                  variant="secondary"
+                  size="medium"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -670,16 +669,14 @@ const CardSearchDrawer = ({ isOpen, onClose, onCardSelect, addCardToDeckZone, de
             border: '1px solid var(--border-error)'
           }}>
             <p style={typography.body}>{error}</p>
-            <button
+            <Button
               onClick={() => performSearch(searchQuery, filters)}
-              className="mt-2 px-3 py-1 rounded hover:opacity-80 transition-opacity"
-              style={{
-                backgroundColor: 'var(--bg-action-primary)',
-                color: 'white'
-              }}
+              variant="primary"
+              size="small"
+              style={{marginTop: '8px'}}
             >
               Retry
-            </button>
+            </Button>
           </div>
         )}
 
@@ -707,16 +704,14 @@ const CardSearchDrawer = ({ isOpen, onClose, onCardSelect, addCardToDeckZone, de
               <p style={typography.body}>Search for partial card names</p>
             </div>
             {getActiveFilterCount() > 0 && (
-              <button
+              <Button
                 onClick={clearAllFilters}
-                className="mt-4 px-4 py-2 rounded-lg hover:opacity-80 transition-opacity"
-                style={{
-                  backgroundColor: 'var(--bg-action-primary)',
-                  color: 'white'
-                }}
+                variant="primary"
+                size="medium"
+                style={{marginTop: '16px'}}
               >
                 Clear Filters
-              </button>
+              </Button>
             )}
           </div>
         )}

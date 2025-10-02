@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Icon from './Icon';
+import { Button } from './ui';
 
 const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
   // State for search functionality
@@ -448,14 +449,15 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
           <h2 style={{...typography.h2, color: 'var(--text-main)'}}>
             Search Cards
           </h2>
-          <button
+          <Button
             onClick={handleClose}
-            className="p-2 rounded hover:opacity-80 transition-opacity"
-            style={{backgroundColor: 'var(--bg-secondary)'}}
+            variant="secondary"
+            size="small"
+            style={{padding: '8px'}}
             aria-label="Close search"
           >
             <Icon name="x-square" size={16} style={{color: 'white'}} />
-          </button>
+          </Button>
         </div>
 
         {/* Search Interface */}
@@ -506,20 +508,16 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
             )}
 
             {/* Filter toggle */}
-            <button
+            <Button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center px-4 py-2 rounded-lg hover:opacity-80 transition-opacity"
-              style={{
-                backgroundColor: 'var(--bg-secondary)',
-                borderColor: 'var(--border-main)',
-                border: '1px solid',
-                color: 'var(--text-main)'
-              }}
+              variant="secondary"
+              size="medium"
               aria-expanded={showFilters}
               type="button"
+              style={{display: 'flex', alignItems: 'center', gap: '8px'}}
             >
               <Icon name="funnel" size={16} />
-              <span className="ml-2" style={typography.body}>
+              <span>
                 {showFilters ? 'Hide Filters' : 'Show Filters'}
               </span>
               {getActiveFilterCount() > 0 && (
@@ -534,7 +532,7 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
                   {getActiveFilterCount()}
                 </span>
               )}
-            </button>
+            </Button>
           </div>
 
           {/* Filter Panel */}
@@ -551,13 +549,14 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
               <div className="flex justify-between items-center mb-4">
                 <h3 style={{...typography.h3, color: 'var(--text-main)'}}>Filters</h3>
                 {getActiveFilterCount() > 0 && (
-                  <button
+                  <Button
                     onClick={clearAllFilters}
-                    className="text-sm hover:opacity-80 transition-opacity"
-                    style={{color: 'var(--text-secondary)'}}
+                    variant="secondary"
+                    size="small"
+                    style={{fontSize: '14px'}}
                   >
                     Clear All Filters ({getActiveFilterCount()})
-                  </button>
+                  </Button>
                 )}
               </div>
 
@@ -666,17 +665,13 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
                   <p style={{...typography.body, color: 'var(--text-secondary)'}}>
                     Taking longer than usual...
                   </p>
-                  <button
+                  <Button
                     onClick={cancelSearch}
-                    className="px-4 py-2 rounded-lg hover:opacity-80 transition-opacity"
-                    style={{
-                      backgroundColor: 'var(--bg-secondary)',
-                      border: '1px solid var(--border-main)',
-                      color: 'var(--text-main)'
-                    }}
+                    variant="secondary"
+                    size="medium"
                   >
                     Cancel
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
@@ -690,16 +685,14 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
               border: '1px solid var(--border-error)'
             }}>
               <p style={typography.body}>{error}</p>
-              <button
+              <Button
                 onClick={() => performSearch(searchQuery, filters)}
-                className="mt-2 px-3 py-1 rounded hover:opacity-80 transition-opacity"
-                style={{
-                  backgroundColor: 'var(--bg-action-primary)',
-                  color: 'white'
-                }}
+                variant="primary"
+                size="small"
+                style={{marginTop: '8px'}}
               >
                 Retry
-              </button>
+              </Button>
             </div>
           )}
 
@@ -730,16 +723,14 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
                 <p style={typography.body}>Search for partial card names</p>
               </div>
               {getActiveFilterCount() > 0 && (
-                <button
+                <Button
                   onClick={clearAllFilters}
-                  className="mt-4 px-4 py-2 rounded-lg hover:opacity-80 transition-opacity"
-                  style={{
-                    backgroundColor: 'var(--bg-action-primary)',
-                    color: 'white'
-                  }}
+                  variant="primary"
+                  size="medium"
+                  style={{marginTop: '16px'}}
                 >
                   Clear Filters
-                </button>
+                </Button>
               )}
             </div>
           )}
@@ -881,32 +872,35 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
                   {selectedCard.name}
                 </h3>
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
                     onClick={() => navigateCard('prev')}
                     disabled={currentCardIndex === 0}
-                    className="p-2 rounded hover:opacity-80 transition-opacity disabled:opacity-30"
-                    style={{backgroundColor: 'var(--bg-secondary)'}}
+                    variant="secondary"
+                    size="small"
+                    style={{padding: '8px'}}
                   >
                     <Icon name="arrow-left" size={16} />
-                  </button>
+                  </Button>
                   <span style={{...typography.caption, color: 'var(--text-secondary)'}}>
                     {currentCardIndex + 1} of {searchResults.length}
                   </span>
-                  <button
+                  <Button
                     onClick={() => navigateCard('next')}
                     disabled={currentCardIndex === searchResults.length - 1}
-                    className="p-2 rounded hover:opacity-80 transition-opacity disabled:opacity-30"
-                    style={{backgroundColor: 'var(--bg-secondary)'}}
+                    variant="secondary"
+                    size="small"
+                    style={{padding: '8px'}}
                   >
                     <Icon name="arrow-right" size={16} />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={closeCardModal}
-                    className="p-2 rounded hover:opacity-80 transition-opacity"
-                    style={{backgroundColor: 'var(--bg-secondary)'}}
+                    variant="secondary"
+                    size="small"
+                    style={{padding: '8px'}}
                   >
                     <Icon name="x" size={16} />
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -977,22 +971,18 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
                     )}
 
                     <div className="pt-4 border-t" style={{borderColor: 'var(--border-main)'}}>
-                      <button
+                      <Button
                         onClick={() => {
                           onCardSelect(selectedCard);
                           closeCardModal();
                           handleClose();
                         }}
-                        className="w-full px-4 py-2 rounded-lg hover:opacity-80 transition-opacity"
-                        style={{
-                          backgroundColor: 'var(--bg-action-primary)',
-                          color: 'var(--text-action)',
-                          fontSize: '14px',
-                          fontWeight: '600'
-                        }}
+                        variant="primary"
+                        size="medium"
+                        style={{width: '100%'}}
                       >
                         Select Card
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>

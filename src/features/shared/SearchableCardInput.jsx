@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import HandTrapService from '../../services/HandTrapService';
 import Icon from '../../components/Icon';
+import { Button } from '../../components/ui';
 
 const SearchableCardInput = ({ 
   value, 
@@ -440,17 +441,14 @@ const SearchableCardInput = ({
           ) : (
             <div className="p-3" style={typography.body}>
               <div>No matching results. Use custom name?</div>
-              <button
+              <Button
                 onClick={handleCustomName}
-                className="mt-2 px-4 py-2 hover:opacity-80 rounded transition-opacity"
-                style={{
-                  ...typography.body,
-                  backgroundColor: 'var(--bg-action-secondary)',
-                  color: 'var(--text-main)'
-                }}
+                variant="secondary"
+                size="medium"
+                style={{marginTop: '8px'}}
               >
                 Use custom name
-              </button>
+              </Button>
             </div>
           )}
         </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import SearchableCardInput from '../shared/SearchableCardInput';
+import { Button } from '../../components/ui';
 
 // Typography and styling constants (moved from App.jsx)
 const typography = {
@@ -94,16 +95,16 @@ const ComboBuilder = ({
               </h3>
             )}
             {index > 0 && (
-              <button
+              <Button
                 onClick={() => removeCombo(combo.id)}
-                className="font-medium hover:opacity-80 transition-opacity"
+                variant="secondary"
+                size="small"
                 style={{
-                  ...typography.body,
                   color: 'var(--text-main)'
                 }}
               >
                 Remove
-              </button>
+              </Button>
             )}
           </div>
           
@@ -120,16 +121,16 @@ const ComboBuilder = ({
                     <Tooltip text="Search for any Yu-Gi-Oh card or create a custom placeholder (e.g. 'Any Dragon monster' or 'Any Unchained Card')" />
                   </label>
                   {cardIndex === 1 && (
-                    <button
+                    <Button
                       onClick={() => removeSecondCard(combo.id)}
-                      className="font-medium hover:opacity-80 transition-opacity"
+                      variant="secondary"
+                      size="small"
                       style={{
-                        ...typography.body,
                         color: 'var(--text-main)'
                       }}
                     >
                       Remove
-                    </button>
+                    </Button>
                   )}
                 </div>
                 <SearchableCardInput
@@ -156,21 +157,18 @@ const ComboBuilder = ({
                   <Tooltip text="Total copies of this card in your deck. More copies = higher chance to draw" />
                 </label>
                 <div className="flex items-center space-x-3">
-                  <button
+                  <Button
                     onClick={() => updateCombo(combo.id, cardIndex, 'startersInDeck', Math.max(0, card.startersInDeck - 1))}
-                    className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
-                    style={{ 
-                      backgroundColor: 'var(--bg-secondary)', 
-                      color: 'var(--text-secondary)',
+                    variant="secondary"
+                    size="medium"
+                    style={{
                       width: '40px',
-                      height: '40px',
-                      borderRadius: '999px',
-                      border: '1px solid var(--border-main)',
-                      boxSizing: 'border-box'
+                      padding: '0',
+                      fontWeight: 'bold'
                     }}
                   >
                     -
-                  </button>
+                  </Button>
                   <input
                     type="number"
                     value={card.startersInDeck}
@@ -190,21 +188,18 @@ const ComboBuilder = ({
                       ...typography.body
                     }}
                   />
-                  <button
+                  <Button
                     onClick={() => updateCombo(combo.id, cardIndex, 'startersInDeck', card.startersInDeck + 1)}
-                    className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
-                    style={{ 
-                      backgroundColor: 'var(--bg-secondary)', 
-                      color: 'var(--text-secondary)',
+                    variant="secondary"
+                    size="medium"
+                    style={{
                       width: '40px',
-                      height: '40px',
-                      borderRadius: '999px',
-                      border: '1px solid var(--border-main)',
-                      boxSizing: 'border-box'
+                      padding: '0',
+                      fontWeight: 'bold'
                     }}
                   >
                     +
-                  </button>
+                  </Button>
                 </div>
                 {errors[`combo-${combo.id}-card-${cardIndex}-startersInDeck`] && (
                   <p className="text-red-500 mt-1" style={typography.body}>{errors[`combo-${combo.id}-card-${cardIndex}-startersInDeck`]}</p>
@@ -219,36 +214,26 @@ const ComboBuilder = ({
                     <Tooltip text="AND = need all cards, OR = need any of these cards" />
                   </label>
                   <div className="flex items-center space-x-2">
-                    <button
+                    <Button
                       onClick={() => updateCombo(combo.id, cardIndex, 'logicOperator', 'AND')}
-                      className="px-4 py-2 rounded font-medium transition-colors"
+                      variant={(card.logicOperator || 'AND') === 'AND' ? 'primary' : 'secondary'}
+                      size="medium"
                       style={{
-                        backgroundColor: (card.logicOperator || 'AND') === 'AND' ? 'var(--bg-action)' : 'var(--bg-secondary)',
-                        color: (card.logicOperator || 'AND') === 'AND' ? 'var(--text-black)' : 'var(--text-main)',
-                        border: '1px solid var(--border-main)',
-                        borderRadius: '999px',
-                        height: '40px',
-                        minWidth: '60px',
-                        ...typography.body
+                        minWidth: '60px'
                       }}
                     >
                       AND
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => updateCombo(combo.id, cardIndex, 'logicOperator', 'OR')}
-                      className="px-4 py-2 rounded font-medium transition-colors"
+                      variant={(card.logicOperator || 'AND') === 'OR' ? 'primary' : 'secondary'}
+                      size="medium"
                       style={{
-                        backgroundColor: (card.logicOperator || 'AND') === 'OR' ? 'var(--bg-action)' : 'var(--bg-secondary)',
-                        color: (card.logicOperator || 'AND') === 'OR' ? 'var(--text-black)' : 'var(--text-main)',
-                        border: '1px solid var(--border-main)',
-                        borderRadius: '999px',
-                        height: '40px',
-                        minWidth: '60px',
-                        ...typography.body
+                        minWidth: '60px'
                       }}
                     >
                       OR
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
@@ -260,21 +245,18 @@ const ComboBuilder = ({
                     <Tooltip text="Minimum copies needed in opening hand for this combo to work" />
                   </label>
                   <div className="flex items-center space-x-3">
-                    <button
+                    <Button
                       onClick={() => updateCombo(combo.id, cardIndex, 'minCopiesInHand', Math.max(0, card.minCopiesInHand - 1))}
-                      className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
-                      style={{ 
-                        backgroundColor: 'var(--bg-secondary)', 
-                        color: 'var(--text-secondary)',
+                      variant="secondary"
+                      size="medium"
+                      style={{
                         width: '40px',
-                        height: '40px',
-                        borderRadius: '999px',
-                        border: '1px solid var(--border-main)',
-                        boxSizing: 'border-box'
+                        padding: '0',
+                        fontWeight: 'bold'
                       }}
                     >
                       -
-                    </button>
+                    </Button>
                     <input
                       type="number"
                       value={card.minCopiesInHand}
@@ -294,21 +276,18 @@ const ComboBuilder = ({
                         ...typography.body
                       }}
                     />
-                    <button
+                    <Button
                       onClick={() => updateCombo(combo.id, cardIndex, 'minCopiesInHand', card.minCopiesInHand + 1)}
-                      className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
-                      style={{ 
-                        backgroundColor: 'var(--bg-secondary)', 
-                        color: 'var(--text-secondary)',
+                      variant="secondary"
+                      size="medium"
+                      style={{
                         width: '40px',
-                        height: '40px',
-                        borderRadius: '999px',
-                        border: '1px solid var(--border-main)',
-                        boxSizing: 'border-box'
+                        padding: '0',
+                        fontWeight: 'bold'
                       }}
                     >
                       +
-                    </button>
+                    </Button>
                   </div>
                   {errors[`combo-${combo.id}-card-${cardIndex}-minCopiesInHand`] && (
                     <p className="text-red-500 mt-1" style={typography.body}>{errors[`combo-${combo.id}-card-${cardIndex}-minCopiesInHand`]}</p>
@@ -321,21 +300,18 @@ const ComboBuilder = ({
                     <Tooltip text="Upper limit of copies you want to see. Helps avoid dead multiples" />
                   </label>
                   <div className="flex items-center space-x-3">
-                    <button
+                    <Button
                       onClick={() => updateCombo(combo.id, cardIndex, 'maxCopiesInHand', Math.max(0, card.maxCopiesInHand - 1))}
-                      className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
-                      style={{ 
-                        backgroundColor: 'var(--bg-secondary)', 
-                        color: 'var(--text-secondary)',
+                      variant="secondary"
+                      size="medium"
+                      style={{
                         width: '40px',
-                        height: '40px',
-                        borderRadius: '999px',
-                        border: '1px solid var(--border-main)',
-                        boxSizing: 'border-box'
+                        padding: '0',
+                        fontWeight: 'bold'
                       }}
                     >
                       -
-                    </button>
+                    </Button>
                     <input
                       type="number"
                       value={card.maxCopiesInHand}
@@ -355,21 +331,18 @@ const ComboBuilder = ({
                         ...typography.body
                       }}
                     />
-                    <button
+                    <Button
                       onClick={() => updateCombo(combo.id, cardIndex, 'maxCopiesInHand', card.maxCopiesInHand + 1)}
-                      className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
-                      style={{ 
-                        backgroundColor: 'var(--bg-secondary)', 
-                        color: 'var(--text-secondary)',
+                      variant="secondary"
+                      size="medium"
+                      style={{
                         width: '40px',
-                        height: '40px',
-                        borderRadius: '999px',
-                        border: '1px solid var(--border-main)',
-                        boxSizing: 'border-box'
+                        padding: '0',
+                        fontWeight: 'bold'
                       }}
                     >
                       +
-                    </button>
+                    </Button>
                   </div>
                   {errors[`combo-${combo.id}-card-${cardIndex}-maxCopiesInHand`] && (
                     <p className="text-red-500 mt-1" style={typography.body}>{errors[`combo-${combo.id}-card-${cardIndex}-maxCopiesInHand`]}</p>
@@ -381,25 +354,16 @@ const ComboBuilder = ({
           
           {combo.cards.length === 1 && (
             <div className="flex items-center mt-4">
-              <button
+              <Button
                 onClick={() => addSecondCard(combo.id)}
-                className="font-medium transition-colors hover:opacity-80"
-                style={{ 
-                  boxSizing: 'border-box',
-                  width: '200px',
-                  height: '40px',
-                  display: 'block',
-                  backgroundColor: 'var(--bg-secondary)',
-                  overflow: 'visible',
-                  gap: '7px',
-                  borderRadius: '999px',
-                  color: 'var(--text-main)',
-                  border: 'none',
-                  ...typography.body
+                variant="secondary"
+                size="medium"
+                style={{
+                  width: '200px'
                 }}
               >
                 + Add 2nd card
-              </button>
+              </Button>
               <Tooltip text="Test 2-card combos by adding a second required piece to this setup" />
             </div>
           )}
@@ -410,25 +374,16 @@ const ComboBuilder = ({
         <div>
           <hr className="my-4" style={{ borderColor: 'var(--border-secondary)', borderTop: '1px solid var(--border-secondary)' }} />
           <div className="flex items-center">
-            <button
+            <Button
               onClick={addCombo}
-              className="font-medium transition-colors hover:opacity-80"
-              style={{ 
-                boxSizing: 'border-box',
-                width: '200px',
-                height: '40px',
-                display: 'block',
-                backgroundColor: 'var(--bg-secondary)',
-                overflow: 'visible',
-                gap: '7px',
-                borderRadius: '999px',
-                color: 'var(--text-main)',
-                border: 'none',
-                ...typography.body
+              variant="secondary"
+              size="medium"
+              style={{
+                width: '200px'
               }}
             >
               + Add another combo
-            </button>
+            </Button>
             <Tooltip text="Test multiple combo lines to see your deck's overall consistency options" />
           </div>
         </div>

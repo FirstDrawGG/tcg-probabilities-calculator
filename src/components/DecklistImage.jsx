@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import CardImage from './CardImage';
+import { Button } from './ui';
 
 const DecklistImage = ({
   ydkCards,
@@ -599,44 +600,28 @@ const DecklistImage = ({
                         Logic:
                       </label>
                       <div style={{ display: 'flex', gap: '6px' }}>
-                        <button
+                        <Button
                           onClick={() => {
                             setComboLogicSelections(prev => ({...prev, [combo.id]: 'AND'}));
                             updateCardComboAssignment(combo.id, minValue, maxValue, true, 'AND');
                           }}
-                          style={{
-                            padding: '4px 12px',
-                            borderRadius: '4px',
-                            border: '1px solid var(--border-main)',
-                            backgroundColor: (comboLogicSelections[combo.id] || 'AND') === 'AND' ? 'var(--bg-action)' : 'var(--bg-input)',
-                            color: (comboLogicSelections[combo.id] || 'AND') === 'AND' ? 'var(--text-black)' : 'var(--text-main)',
-                            fontSize: '12px',
-                            fontFamily: 'Geist Regular, sans-serif',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s'
-                          }}
+                          variant={(comboLogicSelections[combo.id] || 'AND') === 'AND' ? 'primary' : 'secondary'}
+                          size="small"
+                          style={{ fontSize: '12px' }}
                         >
                           AND
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           onClick={() => {
                             setComboLogicSelections(prev => ({...prev, [combo.id]: 'OR'}));
                             updateCardComboAssignment(combo.id, minValue, maxValue, true, 'OR');
                           }}
-                          style={{
-                            padding: '4px 12px',
-                            borderRadius: '4px',
-                            border: '1px solid var(--border-main)',
-                            backgroundColor: (comboLogicSelections[combo.id] || 'AND') === 'OR' ? 'var(--bg-action)' : 'var(--bg-input)',
-                            color: (comboLogicSelections[combo.id] || 'AND') === 'OR' ? 'var(--text-black)' : 'var(--text-main)',
-                            fontSize: '12px',
-                            fontFamily: 'Geist Regular, sans-serif',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s'
-                          }}
+                          variant={(comboLogicSelections[combo.id] || 'AND') === 'OR' ? 'primary' : 'secondary'}
+                          size="small"
+                          style={{ fontSize: '12px' }}
                         >
                           OR
-                        </button>
+                        </Button>
                       </div>
                       <div style={{ ...typography.body, fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>
                         {(comboLogicSelections[combo.id] || 'AND') === 'AND' ? 'Need all cards in combo' : 'Need any of these cards'}
@@ -651,7 +636,7 @@ const DecklistImage = ({
           {/* AC #6, #7: Add new combo button */}
           <div style={{ borderTop: '1px solid var(--border-secondary)', paddingTop: '12px' }}>
             {combos.length < 9 ? (
-              <button
+              <Button
                 onClick={() => {
                   const newCombo = addNewCombo();
                   if (newCombo) {
@@ -660,23 +645,15 @@ const DecklistImage = ({
                     updateCardComboAssignment(newCombo.id, 1, Math.min(3, cardCount), true);
                   }
                 }}
+                variant="primary"
+                size="medium"
                 style={{
                   width: '100%',
-                  padding: '8px 16px',
-                  backgroundColor: 'var(--bg-action)',
-                  color: 'var(--text-action)',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  fontFamily: 'Geist Regular, sans-serif',
-                  cursor: 'pointer',
-                  transition: 'opacity 0.2s'
+                  fontSize: '14px'
                 }}
-                onMouseOver={(e) => e.target.style.opacity = '0.8'}
-                onMouseOut={(e) => e.target.style.opacity = '1'}
               >
                 Add new combo
-              </button>
+              </Button>
             ) : (
               <p style={{
                 ...typography.body,
