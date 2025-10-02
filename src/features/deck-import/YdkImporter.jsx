@@ -118,6 +118,17 @@ const YdkImporter = ({
   const addCardToDeckZone = (card, targetZone) => {
     if (!setDeckZones || !card) return;
 
+    // Check 3-card limit per card name across all zones
+    const allCards = [...(deckZones.main || []), ...(deckZones.extra || []), ...(deckZones.side || [])];
+    const existingCopies = allCards.filter(existingCard =>
+      existingCard.name.toLowerCase() === card.name.toLowerCase()
+    ).length;
+
+    if (existingCopies >= 3) {
+      showToast(`Cannot add more than 3 copies of ${card.name}`);
+      return;
+    }
+
     // Create a new card object for the deck
     const newCard = {
       id: `${targetZone}_${card.id}_${Date.now()}_${Math.random()}`,
@@ -331,7 +342,7 @@ const YdkImporter = ({
       </div>
       
       {/* AC #1: Placeholder text when no YDK file is uploaded */}
-      {!uploadedYdkFile && !showClipboardField && !isLoadingDeck && (
+      {!uploadedYdkFile && !showClipboardField && !isLoadingDeck && !showCardSearch && (
         <div className="mb-4">
           <p style={{...typography.body, color: 'var(--text-secondary)', fontSize: '14px'}}>
             Upload your decklist to preview it

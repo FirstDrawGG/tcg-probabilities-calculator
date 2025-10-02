@@ -15,6 +15,8 @@ const CardSearchDrawer = ({ isOpen, onClose, onCardSelect, addCardToDeckZone, de
   const [slowConnectionWarning, setSlowConnectionWarning] = useState(false);
   const [abortController, setAbortController] = useState(null);
   const [fuzzyMatchMessage, setFuzzyMatchMessage] = useState('');
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const closeTimeoutRef = useRef(null);
 
   // Performance optimizations - search cache
   const searchCacheRef = useRef(new Map());
@@ -40,6 +42,15 @@ const CardSearchDrawer = ({ isOpen, onClose, onCardSelect, addCardToDeckZone, de
       searchInputRef.current.focus();
     }
   }, [isOpen]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Cache management utilities
   const getCacheKey = (query, filters) => {
@@ -427,13 +438,26 @@ const CardSearchDrawer = ({ isOpen, onClose, onCardSelect, addCardToDeckZone, de
               value={searchQuery}
               onChange={handleSearchInput}
               placeholder="Search cards by name or text..."
-              className="w-full px-4 py-3 pr-10 border rounded-lg"
+              className="w-full px-3 border"
               style={{
-                backgroundColor: 'var(--bg-input)',
-                borderColor: 'var(--border-main)',
+                backgroundColor: 'var(--bg-secondary)',
+                border: `1px solid var(--border-main)`,
                 color: 'var(--text-main)',
-                fontSize: '16px',
-                height: '48px'
+                borderRadius: '999px',
+                height: '40px',
+                cursor: 'text',
+                outline: 'none',
+                fontSize: 'var(--font-body-size)',
+                lineHeight: 'var(--font-body-line-height)',
+                fontFamily: 'Geist Regular, sans-serif'
+              }}
+              onFocus={(e) => {
+                e.target.style.border = '1px solid var(--border-action)';
+                e.target.style.color = 'var(--text-main)';
+              }}
+              onBlur={(e) => {
+                e.target.style.border = `1px solid var(--border-main)`;
+                e.target.style.color = 'var(--text-main)';
               }}
               maxLength={50}
               aria-label="Search Yu-Gi-Oh cards"
@@ -661,10 +685,7 @@ const CardSearchDrawer = ({ isOpen, onClose, onCardSelect, addCardToDeckZone, de
 
         {/* Default State */}
         {!searchQuery && searchResults.length === 0 && !isSearching && (
-          <div className="text-center py-12">
-            <div className="mb-4" style={{color: 'var(--text-secondary)'}}>
-              <Icon name="magnifying-glass" size={48} />
-            </div>
+          <div className="text-center py-6">
             <h3 className="mb-2" style={{...typography.h3, color: 'var(--text-main)'}}>
               Search for cards to add to your deck
             </h3>
@@ -733,16 +754,90 @@ const CardSearchDrawer = ({ isOpen, onClose, onCardSelect, addCardToDeckZone, de
               {searchResults.map((card, index) => (
                 <div
                   key={card.id}
-                  onClick={(e) => {
-                    // Prevent opening modal if we just finished dragging
+                  onMouseEnter={(e) => {
                     if (!isDragging) {
+                      // Clear any pending close timeout
+                      if (closeTimeoutRef.current) {
+                        clearTimeout(closeTimeoutRef.current);
+                        closeTimeoutRef.current = null;
+                      }
+
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const tooltipWidth = 440;
+                      const tooltipHeight = 200; // Estimated minimum height
+                      const viewportWidth = window.innerWidth;
+                      const viewportHeight = window.innerHeight;
+                      const margin = 10; // Safety margin from viewport edges
+
+                      // Calculate initial position (centered above card)
+                      let x = rect.left + rect.width / 2;
+                      let y = rect.top - margin;
+
+                      // Adjust horizontal position if tooltip would overflow
+                      const tooltipLeft = x - tooltipWidth / 2;
+                      const tooltipRight = x + tooltipWidth / 2;
+
+                      if (tooltipLeft < margin) {
+                        // Too far left, align to left edge with margin
+                        x = margin + tooltipWidth / 2;
+                      } else if (tooltipRight > viewportWidth - margin) {
+                        // Too far right, align to right edge with margin
+                        x = viewportWidth - margin - tooltipWidth / 2;
+                      }
+
+                      // Adjust vertical position if tooltip would overflow
+                      const tooltipTop = y - tooltipHeight;
+
+                      if (tooltipTop < margin) {
+                        // Not enough space above, show below the card instead
+                        y = rect.bottom + margin + tooltipHeight;
+                      }
+
+                      // Final check - if still too close to bottom, adjust upward
+                      if (y > viewportHeight - margin) {
+                        y = viewportHeight - margin;
+                      }
+
+                      setTooltipPosition({ x, y });
                       openCardModal(card, index);
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    // Immediate close when leaving card area
+                    closeTimeoutRef.current = setTimeout(() => {
+                      closeCardModal();
+                    }, 50); // Very short delay only to allow moving to tooltip
+                  }}
+                  onClick={(e) => {
+                    // On click, add to deck if deck zone function is available
+                    if (addCardToDeckZone && !isDragging) {
+                      const cardType = card.type.toLowerCase();
+                      let targetZone = 'main';
+
+                      if (cardType.includes('fusion') || cardType.includes('synchro') ||
+                          cardType.includes('xyz') || cardType.includes('link') ||
+                          cardType.includes('pendulum')) {
+                        targetZone = 'extra';
+                      }
+
+                      addCardToDeckZone(card, targetZone);
                     }
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
-                      openCardModal(card, index);
+                      if (addCardToDeckZone) {
+                        const cardType = card.type.toLowerCase();
+                        let targetZone = 'main';
+
+                        if (cardType.includes('fusion') || cardType.includes('synchro') ||
+                            cardType.includes('xyz') || cardType.includes('link') ||
+                            cardType.includes('pendulum')) {
+                          targetZone = 'extra';
+                        }
+
+                        addCardToDeckZone(card, targetZone);
+                      }
                     }
                   }}
                   // AC #10: Drag and drop functionality
@@ -762,7 +857,7 @@ const CardSearchDrawer = ({ isOpen, onClose, onCardSelect, addCardToDeckZone, de
                   style={{
                     backgroundColor: 'var(--bg-main)',
                     border: '1px solid var(--border-main)',
-                    width: '120px',
+                    width: '60px',
                     cursor: addCardToDeckZone ? 'grab' : 'pointer'
                   }}
                   role="button"
@@ -799,45 +894,6 @@ const CardSearchDrawer = ({ isOpen, onClose, onCardSelect, addCardToDeckZone, de
                       </div>
                     )}
                   </div>
-                  <div className="p-2">
-                    <h4
-                      className="font-medium mb-1 line-clamp-2 text-xs"
-                      style={{
-                        ...typography.caption,
-                        color: 'var(--text-main)'
-                      }}
-                      title={card.name}
-                    >
-                      {card.name}
-                    </h4>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
-                        <div className="w-3 h-3 flex items-center justify-center">
-                          {card.type.toLowerCase().includes('monster') && (
-                            <div className="w-2 h-2 rounded-full" style={{backgroundColor: '#ff6b35'}}></div>
-                          )}
-                          {card.type.toLowerCase().includes('spell') && (
-                            <div className="w-2 h-2 rounded-full" style={{backgroundColor: '#4ecdc4'}}></div>
-                          )}
-                          {card.type.toLowerCase().includes('trap') && (
-                            <div className="w-2 h-2 rounded-full" style={{backgroundColor: '#c44569'}}></div>
-                          )}
-                        </div>
-                        <span className="text-xs px-1 py-1 rounded" style={{
-                          backgroundColor: 'var(--bg-action-secondary)',
-                          color: 'var(--text-main)',
-                          fontSize: '10px'
-                        }}>
-                          {card.type.split(' ')[0]}
-                        </span>
-                      </div>
-                      {card.atk !== undefined && card.def !== undefined && (
-                        <span className="text-xs" style={{color: 'var(--text-secondary)', fontSize: '10px'}}>
-                          {card.atk}/{card.def}
-                        </span>
-                      )}
-                    </div>
-                  </div>
                 </div>
               ))}
             </div>
@@ -845,202 +901,122 @@ const CardSearchDrawer = ({ isOpen, onClose, onCardSelect, addCardToDeckZone, de
         )}
       </div>
 
-      {/* Card Detail Modal - same as original */}
+      {/* Card Detail Tooltip */}
       {showCardModal && selectedCard && (
         <div
-          className="fixed inset-0 z-60 flex items-center justify-center p-4"
-          style={{backgroundColor: 'rgba(0,0,0,0.9)'}}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              closeCardModal();
-            }
+          className="fixed z-60 pointer-events-none"
+          style={{
+            left: `${tooltipPosition.x}px`,
+            top: `${tooltipPosition.y}px`,
+            transform: 'translate(-50%, -100%)',
+            width: '440px'
           }}
         >
           <div
-            className="relative max-w-4xl w-full max-h-[90vh] overflow-auto rounded-lg"
+            className="rounded-lg pointer-events-auto"
             style={{
               backgroundColor: 'var(--bg-main)',
-              border: '1px solid var(--border-main)'
+              border: '1px solid #ffffff',
+              boxShadow: '0 4px 12px rgba(255, 255, 255, 0.2), 0 8px 24px rgba(0, 0, 0, 0.4)',
+              padding: '4px'
+            }}
+            onMouseEnter={() => {
+              // Clear any pending close timeout when entering tooltip
+              if (closeTimeoutRef.current) {
+                clearTimeout(closeTimeoutRef.current);
+                closeTimeoutRef.current = null;
+              }
+            }}
+            onMouseLeave={() => {
+              // Close immediately when leaving tooltip
+              closeCardModal();
             }}
           >
-            {/* Modal Header */}
-            <div className="flex justify-between items-center p-4 border-b" style={{borderColor: 'var(--border-main)'}}>
-              <h3 style={{...typography.h3, color: 'var(--text-main)'}}>
+            {/* Tooltip Header */}
+            <div className="p-2 border-b" style={{borderColor: 'var(--border-main)'}}>
+              <h3 style={{fontSize: 'var(--font-body-size)', lineHeight: 'var(--font-body-line-height)', color: 'var(--text-main)', fontWeight: '600', margin: 0}}>
                 {selectedCard.name}
               </h3>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => navigateCard('prev')}
-                  disabled={currentCardIndex === 0}
-                  className="p-2 rounded hover:opacity-80 transition-opacity disabled:opacity-30"
-                  style={{backgroundColor: 'var(--bg-secondary)'}}
-                >
-                  <Icon name="arrow-left" size={16} />
-                </button>
-                <span style={{...typography.caption, color: 'var(--text-secondary)'}}>
-                  {currentCardIndex + 1} of {searchResults.length}
-                </span>
-                <button
-                  onClick={() => navigateCard('next')}
-                  disabled={currentCardIndex === searchResults.length - 1}
-                  className="p-2 rounded hover:opacity-80 transition-opacity disabled:opacity-30"
-                  style={{backgroundColor: 'var(--bg-secondary)'}}
-                >
-                  <Icon name="arrow-right" size={16} />
-                </button>
-                <button
-                  onClick={closeCardModal}
-                  className="p-2 rounded hover:opacity-80 transition-opacity"
-                  style={{backgroundColor: 'var(--bg-secondary)'}}
-                >
-                  <Icon name="x" size={16} />
-                </button>
-              </div>
             </div>
 
-            {/* Modal Content */}
-            <div className="p-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="flex justify-center">
+            {/* Tooltip Content */}
+            <div className="p-2">
+              <div className="flex gap-2">
+                <div className="flex-shrink-0">
                   <img
-                    src={selectedCard.card_images?.[0]?.image_url || '/placeholder-card.jpg'}
+                    src={selectedCard.card_images?.[0]?.image_url_small || selectedCard.card_images?.[0]?.image_url || '/placeholder-card.jpg'}
                     alt={selectedCard.name}
-                    className="max-w-full h-auto rounded-lg"
-                    style={{maxHeight: '500px'}}
+                    className="rounded"
+                    style={{width: '60px', height: 'auto'}}
                   />
                 </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="mb-2" style={{...typography.body, color: 'var(--text-main)', fontWeight: '600'}}>
-                      Card Type
-                    </h4>
-                    <p style={{...typography.body, color: 'var(--text-secondary)'}}>
-                      {selectedCard.type}
-                    </p>
-                  </div>
-
-                  {selectedCard.attribute && (
+                <div className="flex-1 space-y-1">
+                  {/* Card stats in compact layout */}
+                  <div className="space-y-1">
                     <div>
-                      <h4 className="mb-2" style={{...typography.body, color: 'var(--text-main)', fontWeight: '600'}}>
-                        Attribute
-                      </h4>
-                      <p style={{...typography.body, color: 'var(--text-secondary)'}}>
-                        {selectedCard.attribute}
-                      </p>
-                    </div>
-                  )}
+                      <span style={{fontSize: 'var(--font-body-size)', color: 'var(--text-main)', fontWeight: '600'}}>Type: </span>
+                      <span style={{fontSize: 'var(--font-body-size)', color: 'var(--text-secondary)'}}>
+                        {(() => {
+                          const cardType = selectedCard.type.toLowerCase();
+                          if (cardType.includes('monster')) {
+                            const monsterTypes = ['fiend', 'fairy', 'beast', 'spellcaster', 'warrior', 'dragon',
+                                                 'machine', 'zombie', 'aqua', 'plant', 'insect', 'thunder',
+                                                 'rock', 'pyro', 'winged beast', 'dinosaur', 'reptile',
+                                                 'fish', 'sea serpent', 'beast-warrior', 'psychic',
+                                                 'divine-beast', 'creator god', 'wyrm', 'cyberse'];
 
-                  {selectedCard.level && (
-                    <div>
-                      <h4 className="mb-2" style={{...typography.body, color: 'var(--text-main)', fontWeight: '600'}}>
-                        Level
-                      </h4>
-                      <p style={{...typography.body, color: 'var(--text-secondary)'}}>
-                        {selectedCard.level}
-                      </p>
+                            for (const type of monsterTypes) {
+                              if (cardType.includes(type)) {
+                                return type.charAt(0).toUpperCase() + type.slice(1);
+                              }
+                            }
+                            return 'Monster';
+                          }
+                          else if (cardType.includes('spell')) return 'Spell';
+                          else if (cardType.includes('trap')) return 'Trap';
+                          return selectedCard.type;
+                        })()}
+                      </span>
                     </div>
-                  )}
 
-                  {(selectedCard.atk !== undefined || selectedCard.def !== undefined) && (
-                    <div>
-                      <h4 className="mb-2" style={{...typography.body, color: 'var(--text-main)', fontWeight: '600'}}>
-                        ATK/DEF
-                      </h4>
-                      <p style={{...typography.body, color: 'var(--text-secondary)'}}>
-                        {selectedCard.atk !== undefined ? selectedCard.atk : '?'} / {selectedCard.def !== undefined ? selectedCard.def : '?'}
-                      </p>
-                    </div>
-                  )}
-
-                  {selectedCard.desc && (
-                    <div>
-                      <h4 className="mb-2" style={{...typography.body, color: 'var(--text-main)', fontWeight: '600'}}>
-                        Effect
-                      </h4>
-                      <p style={{...typography.body, color: 'var(--text-secondary)', lineHeight: '1.6'}}>
-                        {selectedCard.desc}
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="pt-4 border-t" style={{borderColor: 'var(--border-main)'}}>
-                    {/* AC #10: Quick add buttons for deck zones */}
-                    {addCardToDeckZone ? (
-                      <div className="space-y-2">
-                        <p style={{...typography.caption, color: 'var(--text-secondary)', textAlign: 'center', marginBottom: '12px'}}>
-                          Add to deck:
-                        </p>
-                        <div className="grid grid-cols-3 gap-2">
-                          <button
-                            onClick={() => {
-                              addCardToDeckZone(selectedCard, 'main');
-                              closeCardModal();
-                            }}
-                            className="px-3 py-2 rounded-lg hover:opacity-80 transition-opacity"
-                            style={{
-                              backgroundColor: 'var(--bg-action-primary)',
-                              color: 'var(--text-action)',
-                              fontSize: '12px',
-                              fontWeight: '600'
-                            }}
-                          >
-                            Main Deck
-                          </button>
-                          <button
-                            onClick={() => {
-                              addCardToDeckZone(selectedCard, 'extra');
-                              closeCardModal();
-                            }}
-                            className="px-3 py-2 rounded-lg hover:opacity-80 transition-opacity"
-                            style={{
-                              backgroundColor: 'var(--bg-secondary)',
-                              color: 'var(--text-main)',
-                              border: '1px solid var(--border-main)',
-                              fontSize: '12px',
-                              fontWeight: '600'
-                            }}
-                          >
-                            Extra Deck
-                          </button>
-                          <button
-                            onClick={() => {
-                              addCardToDeckZone(selectedCard, 'side');
-                              closeCardModal();
-                            }}
-                            className="px-3 py-2 rounded-lg hover:opacity-80 transition-opacity"
-                            style={{
-                              backgroundColor: 'var(--bg-secondary)',
-                              color: 'var(--text-main)',
-                              border: '1px solid var(--border-main)',
-                              fontSize: '12px',
-                              fontWeight: '600'
-                            }}
-                          >
-                            Side Deck
-                          </button>
-                        </div>
+                    {selectedCard.attribute && (
+                      <div>
+                        <span style={{fontSize: 'var(--font-body-size)', color: 'var(--text-main)', fontWeight: '600'}}>Attribute: </span>
+                        <span style={{fontSize: 'var(--font-body-size)', color: 'var(--text-secondary)'}}>
+                          {selectedCard.attribute}
+                        </span>
                       </div>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          onCardSelect(selectedCard);
-                          closeCardModal();
-                        }}
-                        className="w-full px-4 py-2 rounded-lg hover:opacity-80 transition-opacity"
-                        style={{
-                          backgroundColor: 'var(--bg-action-primary)',
-                          color: 'var(--text-action)',
-                          fontSize: '14px',
-                          fontWeight: '600'
-                        }}
-                      >
-                        Select Card
-                      </button>
+                    )}
+
+                    {selectedCard.level && (
+                      <div>
+                        <span style={{fontSize: 'var(--font-body-size)', color: 'var(--text-main)', fontWeight: '600'}}>Level: </span>
+                        <span style={{fontSize: 'var(--font-body-size)', color: 'var(--text-secondary)'}}>
+                          {selectedCard.level}
+                        </span>
+                      </div>
+                    )}
+
+                    {(selectedCard.atk !== undefined || selectedCard.def !== undefined) && (
+                      <div>
+                        <span style={{fontSize: 'var(--font-body-size)', color: 'var(--text-main)', fontWeight: '600'}}>ATK/DEF: </span>
+                        <span style={{fontSize: 'var(--font-body-size)', color: 'var(--text-secondary)'}}>
+                          {selectedCard.atk !== undefined ? selectedCard.atk : '?'} / {selectedCard.def !== undefined ? selectedCard.def : '?'}
+                        </span>
+                      </div>
                     )}
                   </div>
                 </div>
               </div>
+
+              {selectedCard.desc && (
+                <div className="mt-2 pt-2 border-t" style={{borderColor: 'var(--border-main)'}}>
+                  <p style={{fontSize: 'var(--font-body-size)', lineHeight: 'var(--font-body-line-height)', color: 'var(--text-secondary)', wordWrap: 'break-word'}}>
+                    {selectedCard.desc}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

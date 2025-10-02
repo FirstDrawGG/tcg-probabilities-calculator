@@ -1819,53 +1819,8 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
 
   return (
     <div>
-      <div className="mb-4">
-        <p style={{...typography.body, color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px'}}>
-          Build your deck visually by searching and adding cards to different zones
-        </p>
-      </div>
-
       {/* Visual deck builder mode */}
       <div>
-          <div className="mb-4 flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-4 items-start sm:items-center">
-
-            {/* Format Selector */}
-            <div className="flex items-center gap-2">
-              <label style={{...typography.body, color: 'var(--text-main)', fontSize: '14px'}}>
-                Format:
-              </label>
-              <select
-                value={selectedFormat}
-                onChange={(e) => setSelectedFormat(e.target.value)}
-                className="px-3 py-2 rounded-lg border"
-                style={{
-                  backgroundColor: 'var(--bg-secondary)',
-                  borderColor: 'var(--border-main)',
-                  color: 'var(--text-main)',
-                  fontSize: '14px'
-                }}
-              >
-                <option value="TCG">TCG</option>
-                <option value="OCG">OCG</option>
-                <option value="Master Duel">Master Duel</option>
-                <option value="No Banlist">No Banlist</option>
-              </select>
-            </div>
-
-            {/* Auto-sort Toggle */}
-            <div className="flex items-center gap-2">
-              <label style={{...typography.body, color: 'var(--text-main)', fontSize: '14px'}}>
-                Auto-sort:
-              </label>
-              <input
-                type="checkbox"
-                checked={autoSort}
-                onChange={(e) => setAutoSort(e.target.checked)}
-                style={{accentColor: 'var(--bg-action)'}}
-              />
-            </div>
-          </div>
-
           {/* Deck Zones - Vertical Layout */}
           <div className="space-y-4">
             {/* Main Deck */}
@@ -1886,6 +1841,7 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                 handleTouchMove={handleTouchMove}
                 handleTouchEnd={handleTouchEnd}
                 typography={typography}
+                borderColor="var(--border-secondary)"
                 maxCards={10}
                 onCardClick={handleCardClick}
                 combos={combos}
@@ -1911,7 +1867,7 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                 handleTouchMove={handleTouchMove}
                 handleTouchEnd={handleTouchEnd}
                 typography={typography}
-                borderColor="var(--bg-action-secondary)"
+                borderColor="var(--border-secondary)"
                 maxCards={10}
                 onCardClick={handleCardClick}
                 combos={combos}
@@ -1937,7 +1893,7 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                 handleTouchMove={handleTouchMove}
                 handleTouchEnd={handleTouchEnd}
                 typography={typography}
-                borderColor="var(--text-secondary)"
+                borderColor="var(--border-secondary)"
                 maxCards={10}
                 onCardClick={handleCardClick}
                 combos={combos}
@@ -2253,7 +2209,7 @@ const DeckZone = ({
         {cards.length === 0 ? (
           <div className="flex items-center justify-center h-24">
             <p style={{...typography.body, color: 'var(--text-secondary)'}}>
-              Drop cards here or click "Add Cards"
+              Drop cards here or click "Search Cards"
             </p>
           </div>
         ) : (
@@ -2514,17 +2470,6 @@ const DeckStatistics = ({ statistics, typography }) => {
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-center">
-        <span
-          className="px-3 py-1 rounded-full text-sm font-medium"
-          style={{
-            backgroundColor: deckStatus === 'legal' ? 'var(--bg-success)' : 'var(--bg-error)',
-            color: 'white'
-          }}
-        >
-          {deckStatus === 'legal' ? 'Legal Deck' : 'Invalid Deck'}
-        </span>
-      </div>
     </div>
   );
 };
