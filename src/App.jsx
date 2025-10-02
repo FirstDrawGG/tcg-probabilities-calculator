@@ -1,237 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
+
+// Service imports
 import ProbabilityService from './services/ProbabilityService';
+import URLService from './services/URLService';
+import CardDatabaseService from './services/CardDatabaseService';
+import TitleGeneratorService from './services/TitleGeneratorService';
+import HandTrapService from './services/HandTrapService';
 import YdkParser from './services/YdkParser';
+
+// Component imports
 import ComboBuilder from './features/calculator/ComboBuilder';
 import ResultsDisplay from './features/calculator/ResultsDisplay';
 import DeckInputs from './features/calculator/DeckInputs';
 import YdkImporter from './features/deck-import/YdkImporter';
 import Icon from './components/Icon';
+import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
 
-// URL encoding/decoding utilities
-const URLService = {
-  encodeCalculation: (deckSize, handSize, combos, ydkFile = null, testHandFromDecklist = true) => {
-    try {
-      const data = {
-        d: deckSize,
-        h: handSize,
-        c: combos.map(combo => ({
-          i: combo.id,
-          n: combo.name,
-          cards: combo.cards.map(card => ({
-            s: card.starterCard,
-            cId: card.cardId,
-            iC: card.isCustom,
-            deck: card.startersInDeck,
-            min: card.minCopiesInHand,
-            max: card.maxCopiesInHand,
-            logic: card.logicOperator || 'AND'  // AC #6: Save AND/OR logic in URLs
-          }))
-        })),
-        testHand: testHandFromDecklist
-      };
-      
-      // Add YDK file data if present
-      if (ydkFile) {
-        data.ydk = {
-          name: ydkFile.name,
-          content: ydkFile.content
-        };
-      }
-      
-      const jsonString = JSON.stringify(data);
-      const encoded = btoa(jsonString);
-      return encoded;
-    } catch (error) {
-      console.error('Failed to encode calculation:', error);
-      return null;
-    }
-  },
-
-  decodeCalculation: () => {
-    try {
-      const hash = window.location.hash;
-      const match = hash.match(/#calc=(.+)/);
-      if (!match) return null;
-      
-      const decoded = atob(match[1]);
-      const data = JSON.parse(decoded);
-      
-      if (!data.d || !data.h || !data.c || !Array.isArray(data.c)) {
-        return null;
-      }
-      
-      const result = {
-        deckSize: data.d,
-        handSize: data.h,
-        combos: data.c.map(combo => ({
-          id: combo.i,
-          name: combo.n,
-          cards: combo.cards.map(card => ({
-            starterCard: card.s || '',
-            cardId: card.cId || null,
-            isCustom: card.iC || false,
-            startersInDeck: card.deck,
-            minCopiesInHand: card.min,
-            maxCopiesInHand: card.max,
-            logicOperator: card.logic || 'AND'  // AC #6: Default to AND for old URLs
-          }))
-        })),
-        testHandFromDecklist: data.testHand !== undefined ? data.testHand : true
-      };
-      
-      // Add YDK file data if present
-      if (data.ydk) {
-        result.ydkFile = {
-          name: data.ydk.name,
-          content: data.ydk.content
-        };
-      }
-      
-      return result;
-    } catch (error) {
-      console.error('Failed to decode calculation:', error);
-      return null;
-    }
-  },
-
-  updateURL: (deckSize, handSize, combos, ydkFile = null, testHandFromDecklist = true) => {
-    const encoded = URLService.encodeCalculation(deckSize, handSize, combos, ydkFile, testHandFromDecklist);
-    if (encoded) {
-      window.history.replaceState(null, '', `#calc=${encoded}`);
-    }
-  }
-};
-
-// Card database service
-const CardDatabaseService = {
-  CACHE_KEY: 'yugioh_cards_cache',
-  CACHE_DURATION: 7 * 24 * 60 * 60 * 1000,
-  
-  // Blob storage configuration
-  BLOB_BASE_URL: 'https://ws8edzxhvgmmgmdj.public.blob.vercel-storage.com', // Updated with correct Vercel Blob URL
-  BLOB_ENABLED: true, // Enable blob storage for card images
-  
-  async fetchCards() {
-    try {
-      // Try Vercel Blob first for faster, more reliable access
-      console.log('Fetching cards from Vercel Blob...');
-      const blobUrl = `${this.BLOB_BASE_URL}/cardDatabase-full.json`;
-      const response = await fetch(blobUrl);
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('✅ Loaded from Vercel Blob:', data.data ? data.data.length : 0, 'cards');
-        return data.data || [];
-      }
-
-      // Fallback to YGOPro API if Blob fails
-      console.warn('⚠️  Vercel Blob fetch failed, falling back to YGOPro API...');
-      throw new Error('Blob fetch failed, trying fallback');
-
-    } catch (error) {
-      // Fallback to YGOPro API
-      try {
-        console.log('📡 Fetching cards from YGOPro API (fallback)...');
-        const response = await fetch('https://db.ygoprodeck.com/api/v7/cardinfo.php');
-        console.log('API response status:', response.status);
-
-        if (!response.ok) {
-          throw new Error(`API returned ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('✅ Loaded from YGOPro API:', data.data ? data.data.length : 0, 'cards');
-        console.log('First card example:', data.data ? data.data[0] : 'No cards');
-
-        return data.data || [];
-      } catch (fallbackError) {
-        console.error('❌ Both Blob and API fetch failed:', fallbackError);
-        return [];
-      }
-    }
-  },
-  
-  loadFromCache() {
-    try {
-      const cached = localStorage.getItem(this.CACHE_KEY);
-      if (!cached) return null;
-      
-      const { data, timestamp } = JSON.parse(cached);
-      if (Date.now() - timestamp > this.CACHE_DURATION) {
-        localStorage.removeItem(this.CACHE_KEY);
-        return null;
-      }
-      
-      return data;
-    } catch (error) {
-      console.error('Cache load error:', error);
-      return null;
-    }
-  },
-  
-  saveToCache(cards) {
-    try {
-      const cacheData = {
-        data: cards,
-        timestamp: Date.now()
-      };
-      localStorage.setItem(this.CACHE_KEY, JSON.stringify(cacheData));
-    } catch (error) {
-      console.error('Cache save error:', error);
-    }
-  },
-  
-  /**
-   * Sanitize card name for URL generation (matches migration script)
-   * @param {string} cardName - The card name
-   * @returns {string} Sanitized card name
-   */
-  sanitizeCardName(cardName) {
-    const result = cardName
-      .replace(/[^a-zA-Z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .toLowerCase()
-      .substring(0, 50);
-    console.log(`Sanitized "${cardName}" -> "${result}"`);
-    return result;
-  },
-
-  /**
-   * Generate optimized image URL for a card using new structure
-   * @param {string} cardName - The card name
-   * @param {string} size - Image size ('full' or 'small')
-   * @returns {string} The optimized image URL
-   */
-  getImageUrl(cardName, size = 'small') {
-    if (!cardName) {
-      console.log('❌ No card name provided for image URL generation');
-      return '';
-    }
-    
-    const sanitizedName = this.sanitizeCardName(cardName);
-    // Always use full-size images from cards/ directory - no need for separate small images  
-    const url = `${this.BLOB_BASE_URL}/cards/${sanitizedName}.webp`;
-    console.log(`🔗 Generated Vercel Blob URL for "${cardName}":`, url);
-    return url;
-  },
-  
-  /**
-   * Generate image props for WebP with YGOPro fallback
-   * @param {string} cardName - The card name
-   * @param {string} cardId - The card ID (for fallback)
-   * @param {string} size - Image size ('full' or 'small')
-   * @returns {object} Props for HTML img element with WebP support
-   */
-  getImageProps(cardName, cardId, size = 'small') {
-    const webpUrl = this.getImageUrl(cardName, size);
-    
-    return {
-      src: webpUrl,
-      alt: cardName || 'Yu-Gi-Oh Card',
-      loading: 'lazy'
-    };
-  }
-};
+// Constants imports
+import { DEFAULT_DECK_SIZE, DEFAULT_HAND_SIZE, TYPOGRAPHY } from './constants/config';
 
 
 // Opening hand generation service
@@ -408,65 +195,6 @@ const OpeningHandService = {
 
     console.log('🎯 Generated YDK hand:', hand);
     return hand;
-  }
-};
-
-
-// Title generation service
-const TitleGeneratorService = {
-  generateFunTitle: (combos, deckSize, results) => {
-    const cardNames = combos.flatMap(combo =>
-      combo.cards.map(card => card.starterCard)
-    ).filter(name => name.trim() !== '');
-
-    // Calculate average probability for multiple combos
-    const avgProbability = results.reduce((sum, r) => sum + r.probability, 0) / results.length;
-    
-    // Probability-based emoji selection
-    const probEmoji = avgProbability > 80 ? "🔥" :
-                     avgProbability > 60 ? "⚡" :
-                     avgProbability > 40 ? "🎲" : "💀";
-
-    // Fun suffixes based on card count
-    const suffixes = {
-      1: ["Hunt", "Check", "Math", "Dreams"],
-      2: ["Combo", "Engine", "Pair", "Duo"],
-      multi: ["Analysis", "Package", "Study", "Report"]
-    };
-
-    const flavorTexts = {
-      high: ["Going Off!", "Maximum Consistency", "Trust the Math", "Opening Hand Magic"],
-      medium: ["Solid Chances", "Decent Odds", "Making It Work", "The Sweet Spot"],
-      low: ["Brick City?", "Pray to RNGesus", "Heart of the Cards", "Bold Strategy"]
-    };
-
-    let title = "";
-
-    if (cardNames.length === 0) {
-      // Edge case: no cards
-      title = `${probEmoji} Mystery Deck Analysis (${deckSize} Cards)`;
-    } else if (cardNames.length === 1) {
-      const suffix = suffixes[1][Math.floor(Math.random() * suffixes[1].length)];
-      title = `${probEmoji} ${cardNames[0]} ${suffix}: `;
-      
-      if (avgProbability > 80) {
-        title += flavorTexts.high[Math.floor(Math.random() * flavorTexts.high.length)];
-      } else if (avgProbability > 40) {
-        title += flavorTexts.medium[Math.floor(Math.random() * flavorTexts.medium.length)];
-      } else {
-        title += flavorTexts.low[Math.floor(Math.random() * flavorTexts.low.length)];
-      }
-      
-      title += ` (${deckSize} Cards)`;
-    } else if (cardNames.length === 2) {
-      const suffix = suffixes[2][Math.floor(Math.random() * suffixes[2].length)];
-      title = `✨ ${cardNames[0]} + ${cardNames[1]}: The ${suffix}`;
-    } else {
-      const suffix = suffixes.multi[Math.floor(Math.random() * suffixes.multi.length)];
-      title = `🧮 ${cardNames.length}-Card ${suffix}: Tournament Ready?`;
-    }
-
-    return title;
   }
 };
 
@@ -2493,14 +2221,14 @@ const DeckStatistics = ({ statistics, typography }) => {
 };
 
 export default function TCGCalculator() {
-  const [deckSize, setDeckSize] = useState(40);
-  const [handSize, setHandSize] = useState(5);
+  const [deckSize, setDeckSize] = useState(DEFAULT_DECK_SIZE);
+  const [handSize, setHandSize] = useState(DEFAULT_HAND_SIZE);
   const [combos, setCombos] = useState([createCombo(1, 0)]);
   const [results, setResults] = useState({ individual: [], combined: null });
   const [errors, setErrors] = useState({});
   const [dashboardValues, setDashboardValues] = useState({
-    deckSize: 40,
-    handSize: 5,
+    deckSize: DEFAULT_DECK_SIZE,
+    handSize: DEFAULT_HAND_SIZE,
     combos: []
   });
   const [editingComboId, setEditingComboId] = useState(null);
@@ -3425,66 +3153,8 @@ useEffect(() => {
         </div>
       )}
       <div className="w-full mx-auto" style={{ maxWidth: '520px' }}>
-        {/* Logo and brand header */}
-        <div className="flex items-center justify-between mb-8 px-0">
-          <div className="flex items-center">
-            <img 
-              src="https://raw.githubusercontent.com/FirstDrawGG/tcg-probabilities-calculator/main/Logo.png" 
-              alt="FirstDrawGG Logo"
-              style={{
-                width: '24px',
-                height: '24px',
-                objectFit: 'contain',
-                marginRight: '8px'
-              }}
-              onError={(e) => {
-                e.target.style.display = 'none';
-                const fallback = e.target.nextElementSibling;
-                if (fallback) fallback.style.display = 'block';
-              }}
-            />
-            <h1 style={{ 
-              fontSize: '24px',
-              lineHeight: '24px',
-              color: 'var(--text-main)',
-              fontFamily: 'Geist Regular, sans-serif',
-              fontWeight: 'normal',
-              margin: 0
-            }}>
-              FirstDrawGG
-            </h1>
-          </div>
-          
-          {/* Help button */}
-          <a
-            href="https://aboard-fog-a81.notion.site/FirstDrawGG-Help-Center-23130fcd61f381afb4e4e81f2f5db13b?source=copy_link"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              backgroundColor: 'transparent',
-              color: 'var(--text-main)',
-              fontFamily: 'Geist Regular, sans-serif',
-              fontSize: '14px',
-              lineHeight: '20px',
-              borderRadius: '999px',
-              border: 'none',
-              height: '32px',
-              paddingLeft: '16px',
-              paddingRight: '16px',
-              textAlign: 'center',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textDecoration: 'none',
-              transition: 'opacity 0.2s ease'
-            }}
-            className="hover:opacity-80 transition-opacity"
-          >
-            <Icon name="question-mark" ariaLabel="Help" size={24} />
-          </a>
-        </div>
-        
-        
+        <Header typography={typography} />
+
         <div className="p-0" style={{ margin: 0, paddingBottom: '16px' }}>
           <h2 className="mb-4" style={{...typography.h2, color: 'var(--text-main)'}}>Define a Combo</h2>
           
@@ -3977,11 +3647,12 @@ useEffect(() => {
             Remember: In Yu-Gi-Oh!, understanding whether your combo is at 43% or 83% is what separates consistent decks from inconsistent ones. Happy deck building!
           </p>
         </div>
-        
+
+        <Footer typography={typography} />
 
         {/* Toast notification */}
         {toastMessage && (
-          <div 
+          <div
             className="fixed bottom-4 right-4 px-4 py-2 rounded-md"
             style={{
               backgroundColor: 'var(--bg-action)',
