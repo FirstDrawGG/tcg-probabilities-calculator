@@ -30,6 +30,7 @@ const DeckConfigInputs = ({
 
   // DeckImageSection component and props
   DeckImageSection,
+  initialDeckZones,
 
   // Shared props
   typography

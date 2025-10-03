@@ -39,7 +39,10 @@
       "Bash(timeout 10 npm run preview)",
       "Bash(npm uninstall:*)",
       "mcp__ide__getDiagnostics",
-      "Bash(timeout 8 npm run dev)"
+      "Bash(timeout 8 npm run dev)",
+      "Bash(git pull:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)"
     ],
     "deny": []
   }
