@@ -376,7 +376,7 @@ const ResultsDisplay = ({
         </div>
       </div>
 
-      {results.individual.length > 0 && (
+      {results?.individual?.length > 0 && (
         <div className="mt-6 space-y-2">
           {/* Combined probability result - only show if multiple combos */}
           {results.combined !== null && (
@@ -431,7 +431,7 @@ const ResultsDisplay = ({
       )}
 
       {/* Sharing Section */}
-      {results.individual.length > 0 && generatedTitle && (
+      {results?.individual?.length > 0 && generatedTitle && (
         <div className="mt-6">
           <h2 className="mb-4" style={typography.h2}>Deck list link</h2>
           

@@ -1,5 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+// Custom Hooks
+import useCombos from './hooks/useCombos';
+import useDeckConfig from './hooks/useDeckConfig';
+import useCalculations from './hooks/useCalculations';
+import useCardSearch from './hooks/useCardSearch';
+import useShareableUrl from './hooks/useShareableUrl';
+import useYdkImport from './hooks/useYdkImport';
+import useToast from './hooks/useToast';
+import useOpeningHand from './hooks/useOpeningHand';
+import useErrors from './hooks/useErrors';
+
 // Service imports
 import ProbabilityService from './services/ProbabilityService';
 import URLService from './services/URLService';
@@ -2105,11 +2116,37 @@ const DeckStatistics = ({ statistics, typography }) => {
 };
 
 export default function TCGCalculator() {
-  const [deckSize, setDeckSize] = useState(DEFAULT_DECK_SIZE);
-  const [handSize, setHandSize] = useState(DEFAULT_HAND_SIZE);
-  const [combos, setCombos] = useState([createCombo(1, 0)]);
-  const [results, setResults] = useState({ individual: [], combined: null });
-  const [errors, setErrors] = useState({});
+  // Custom Hooks
+  const { deckSize, handSize, setDeckSize, setHandSize } = useDeckConfig();
+  const { combos, setCombos } = useCombos(createCombo(1, 0));
+  const { results } = useCalculations();
+  const { cardDatabase, setCardDatabase } = useCardSearch();
+  const [toastMessage, setToastMessage] = useState('');
+  const { openingHand, setOpeningHand, isRefreshing, setIsRefreshing } = useOpeningHand();
+  const { errors, setErrors } = useErrors();
+
+  // YDK Import hook
+  const {
+    uploadedYdkFile,
+    setUploadedYdkFile,
+    ydkCards,
+    setYdkCards,
+    ydkCardCounts,
+    setYdkCardCounts,
+    testHandFromDecklist,
+    setTestHandFromDecklist,
+    initialDeckZones,
+    setInitialDeckZones,
+    deckZones,
+    setDeckZones,
+    updateDeckZones,
+    clearYdkImport
+  } = useYdkImport();
+
+  // Shareable URL hook
+  const { shareableUrl, setShareableUrl, showCopiedMessage, setShowCopiedMessage } = useShareableUrl();
+
+  // State that doesn't have hooks (keep as-is)
   const [dashboardValues, setDashboardValues] = useState({
     deckSize: DEFAULT_DECK_SIZE,
     handSize: DEFAULT_HAND_SIZE,
@@ -2117,26 +2154,12 @@ export default function TCGCalculator() {
   });
   const [editingComboId, setEditingComboId] = useState(null);
   const [tempComboName, setTempComboName] = useState('');
-  const [cardDatabase, setCardDatabase] = useState([]);
   const [isRestoringFromURL, setIsRestoringFromURL] = useState(false);
   const [generatedTitle, setGeneratedTitle] = useState('');
-  const [shareableUrl, setShareableUrl] = useState('');
-  const [toastMessage, setToastMessage] = useState('');
-  const [openingHand, setOpeningHand] = useState([]);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [staticCardDatabase, setStaticCardDatabase] = useState({});
+
   const refreshDebounceRef = useRef(null);
   const calculationDashboardRef = useRef(null);
-  const [uploadedYdkFile, setUploadedYdkFile] = useState(null);
-  const [ydkCards, setYdkCards] = useState([]);
-  const [ydkCardCounts, setYdkCardCounts] = useState({});
-  const [staticCardDatabase, setStaticCardDatabase] = useState({});
-  const [testHandFromDecklist, setTestHandFromDecklist] = useState(true);
-  const [initialDeckZones, setInitialDeckZones] = useState(null);
-  const [deckZones, setDeckZones] = useState({
-    main: [],
-    extra: [],
-    side: []
-  });
 
   // Sync deckZones when initialDeckZones changes (from YDK upload)
   useEffect(() => {
@@ -2953,7 +2976,7 @@ useEffect(() => {
   }, [deckSize, handSize]);
 
   useEffect(() => {
-    if (results.individual.length > 0) validate();
+    if (results?.individual?.length > 0) validate();
   }, [deckSize, handSize, combos]);
 
   useEffect(() => {

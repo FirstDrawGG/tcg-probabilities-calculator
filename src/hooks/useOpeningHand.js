@@ -25,6 +25,7 @@ const useOpeningHand = () => {
     openingHand,
     setOpeningHand,
     isRefreshing,
+    setIsRefreshing,
     refreshOpeningHand,
     clearOpeningHand
   };
