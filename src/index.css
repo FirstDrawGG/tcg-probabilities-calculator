@@ -71,25 +71,29 @@ input:-ms-input-placeholder {
 /* Enhanced Button Component */
 .enhanced-button {
   box-sizing: border-box;
-  width: 100%; /* AC #2: Fill current UI width */
+  width: 140px;
   height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
 
-  /* AC #4: Enhanced shadows using #141414 color */
+  /* White color scheme shadows */
   box-shadow:
-    0px 1px 2px 0px rgba(20, 20, 20, 0.25),
-    0px 2px 6px 1px rgba(20, 20, 20, 0.18),
-    0px 4px 12px 2px rgba(20, 20, 20, 0.15),
-    0px 6px 20px 3px rgba(20, 20, 20, 0.12);
+    0px 0.64px 2.16px -0.25px rgba(255, 255, 255, 0.05),
+    0px 1.93px 6.57px -0.5px rgba(255, 255, 255, 0.06),
+    0px 5.1px 17.36px -0.75px rgba(255, 255, 255, 0.08),
+    0px 8px 25px -1px rgba(255, 255, 255, 0.03);
 
   border-radius: 8px;
-  background-color: var(--bg-action); /* AC #3: Use bg-action variable */
+  background-color: var(--bg-action);
   border: none;
   cursor: pointer;
   text-decoration: none;
   transition: all 0.2s ease;
   user-select: none;
   overflow: hidden;
+  gap: 4px;
 }
 
 .enhanced-button:hover {
@@ -133,13 +137,7 @@ input:-ms-input-placeholder {
     0px 2px 6px 1px rgba(20, 20, 20, 0.08);
 }
 
-/* Center the icon and text together with 4px gap */
-.enhanced-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-}
+/* Icon and text centering is now handled in main .enhanced-button definition above */
 
 /* Button text - use body typography */
 .enhanced-button .button-text {

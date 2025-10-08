@@ -173,6 +173,9 @@ const DeckCard = ({ card, onDragStart, onTouchStart, onTouchMove, onTouchEnd, on
         size="small"
         className="absolute -top-1 -left-1 w-5 h-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
         style={{
+          position: 'absolute',
+          top: '-4px',
+          left: '-4px',
           fontSize: '12px',
           width: '20px',
           height: '20px',

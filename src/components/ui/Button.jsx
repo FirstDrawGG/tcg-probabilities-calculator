@@ -51,13 +51,23 @@ const Button = ({
       onClick={onClick}
       disabled={disabled}
       style={{
-        borderRadius: '999px',
+        boxSizing: 'border-box',
+        width: '140px',
+        height: '28px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0px 0.64px 2.16px -0.25px rgba(255, 255, 255, 0.05), 0px 1.93px 6.57px -0.5px rgba(255, 255, 255, 0.06), 0px 5.1px 17.36px -0.75px rgba(255, 255, 255, 0.08), 0px 8px 25px -1px rgba(255, 255, 255, 0.03)',
+        overflow: 'hidden',
+        gap: '4px',
+        position: 'relative',
+        borderRadius: '8px',
         cursor: disabled ? 'not-allowed' : 'pointer',
         fontFamily: 'Geist, sans-serif',
         opacity: disabled ? 0.5 : 1,
         transition: 'opacity 0.2s',
+        border: 'none',
         ...getVariantStyles(),
-        ...getSizeStyles(),
         ...style
       }}
       {...props}
