@@ -18,38 +18,56 @@ Calculate optimal deck ratios for trading card game combos using Monte Carlo sim
 ```
 src/
 ├── components/          # Reusable UI components
-│   ├── ui/             # Basic UI components (Button, Input, etc.)
-│   ├── CardImage.jsx   # Card image display with Vercel Blob fallback
+│   ├── ui/             # Basic UI components
+│   │   ├── Button.jsx
+│   │   ├── Input.jsx
+│   │   └── Tooltip.jsx
+│   ├── layout/         # Layout components
+│   │   ├── Header.jsx
+│   │   └── Footer.jsx
+│   ├── CardImage.jsx
+│   ├── CardSearchModal.jsx
+│   ├── CardSearchDrawer.jsx
+│   ├── DecklistImage.jsx
 │   ├── FormulaDisplay.jsx
 │   └── Icon.jsx
 ├── features/           # Feature-specific components
-│   └── calculator/
-│       ├── ComboForm.jsx
-│       ├── DeckConfigInputs.jsx
-│       ├── ResultsDisplay.jsx
-│       └── YdkImporter.jsx
+│   ├── calculator/     # Main calculator features
+│   │   ├── ComboBuilder.jsx
+│   │   ├── DeckConfigInputs.jsx
+│   │   ├── DeckInputs.jsx
+│   │   └── ResultsDisplay.jsx
+│   ├── combo/          # Combo-specific components
+│   │   ├── ComboCard.jsx
+│   │   └── ComboForm.jsx
+│   ├── deck-import/    # YDK import feature
+│   │   └── YdkImporter.jsx
+│   └── shared/         # Shared feature components
+│       └── SearchableCardInput.jsx
 ├── hooks/              # Custom React hooks
-│   ├── useCalculations.js
-│   ├── useCardSearch.js
-│   ├── useCombos.js
-│   ├── useDeckConfig.js
-│   ├── useErrors.js
-│   ├── useOpeningHand.js
-│   ├── useShareableUrl.js
-│   ├── useToast.js
-│   └── useYdkImport.js
+│   ├── useCalculations.js    # Probability calculations
+│   ├── useCardSearch.js      # Card database search
+│   ├── useCombos.js          # Combo state management
+│   ├── useDeckConfig.js      # Deck configuration
+│   ├── useErrors.js          # Error state management
+│   ├── useOpeningHand.js     # Opening hand generation
+│   ├── useShareableUrl.js    # URL encoding/decoding
+│   ├── useToast.js           # Toast notifications
+│   └── useYdkImport.js       # YDK file import
 ├── services/           # Business logic services
-│   ├── CardDatabaseService.js
-│   ├── HandTrapService.js
-│   ├── ProbabilityService.js
-│   ├── TitleGeneratorService.js
-│   ├── URLService.js
-│   └── YdkParser.js
+│   ├── CardDatabaseService.js  # Card data management
+│   ├── HandTrapService.js      # Hand trap identification
+│   ├── ProbabilityService.js   # Monte Carlo simulation
+│   ├── TitleGeneratorService.js # Result title generation
+│   ├── URLService.js           # URL state encoding
+│   └── YdkParser.js            # YDK file parsing
+├── constants/          # Application constants
+│   └── config.js       # Configuration values
 ├── utils/              # Utility functions
-│   └── validation.js
+│   └── validation.js   # Input validation helpers
 ├── App.jsx             # Main application component
-├── main.jsx            # Entry point
-└── index.css           # Global styles
+├── main.jsx            # Entry point with Vercel Analytics
+└── index.css           # Global styles & Tailwind imports
 ```
 
 ## 🛠️ Development
@@ -66,6 +84,22 @@ npm run build
 
 # Preview production build
 npm run preview
+
+# Run tests
+npm test
+```
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm test -- --watch
+
+# Run tests with coverage
+npm test -- --coverage
 ```
 
 ## 📚 Architecture
@@ -73,7 +107,7 @@ npm run preview
 ### Services
 
 - **CardDatabaseService**: Manages card metadata from Vercel Blob with YGOPro API fallback and 7-day localStorage cache
-- **ProbabilityService**: Monte Carlo simulation engine with result caching
+- **ProbabilityService**: Monte Carlo simulation engine (100,000 iterations) with result caching
 - **TitleGeneratorService**: Generates contextual titles for calculation results
 - **URLService**: Encodes/decodes calculation state to/from URL hash for sharing
 - **HandTrapService**: Identifies and categorizes hand trap cards
@@ -84,8 +118,8 @@ npm run preview
 - **useCombos**: Manages combo state and operations (add, update, delete)
 - **useDeckConfig**: Handles deck size and hand size with validation
 - **useCalculations**: Manages probability calculations with loading state
-- **useCardSearch**: Manages card database state
-- **useShareableUrl**: Manages shareable URL state
+- **useCardSearch**: Manages card database state and search functionality
+- **useShareableUrl**: Manages shareable URL generation and state persistence
 - **useYdkImport**: Manages YDK file import and deck zone state
 - **useToast**: Toast notification state management
 - **useOpeningHand**: Opening hand state and refresh logic
@@ -93,11 +127,30 @@ npm run preview
 
 ### Components
 
+#### UI Components
+- **Button**: Reusable button with variants (primary, secondary, danger)
+- **Input**: Styled input component with error states
+- **Tooltip**: Accessible tooltip component
+
+#### Layout Components
+- **Header**: Application header with branding
+- **Footer**: Application footer with links
+
+#### Feature Components
+- **ComboBuilder**: Container for multiple combo forms
 - **ComboForm**: Individual combo configuration with card management
+- **ComboCard**: Individual card within a combo
 - **DeckConfigInputs**: Deck size, hand size, and YDK import controls
+- **DeckInputs**: Deck configuration panel
 - **ResultsDisplay**: Calculation results, opening hand, and sharing UI
 - **YdkImporter**: YDK file upload and deck list management
+- **SearchableCardInput**: Card search with autocomplete
+
+#### Shared Components
 - **CardImage**: Card image display with WebP optimization and fallbacks
+- **CardSearchModal**: Modal for card search
+- **CardSearchDrawer**: Drawer-style card search interface
+- **DecklistImage**: Deck list visualization
 - **FormulaDisplay**: Mathematical formula visualization
 - **Icon**: SVG icon component with accessibility
 
@@ -105,7 +158,7 @@ npm run preview
 
 The app uses:
 - **Tailwind CSS** for layout and utilities
-- **Custom CSS variables** for theming (`--bg-main`, `--text-main`, etc.)
+- **Custom CSS variables** for theming (\`--bg-main\`, \`--text-main\`, etc.)
 - **Geist font family** throughout
 - **Dark theme** with specific color palette
 - **Pill-shaped inputs** (40px height, 999px border-radius)
@@ -123,7 +176,7 @@ The app uses:
 - **Optimization**: Lazy loading, responsive sizing
 
 ### Static Database
-- **Location**: `/public/cardDatabase.json` (2.1 MB)
+- **Location**: \`/public/cardDatabase.json\` (2.1 MB)
 - **Purpose**: Offline YDK parsing
 
 ## 📊 Performance
@@ -144,12 +197,29 @@ The app uses:
 - **Vite**: Build tool and dev server
 - **Tailwind CSS**: Utility-first CSS
 
+## 📊 Refactoring Metrics
+
+**Before Refactoring:**
+- App.jsx: 3,677 lines
+- Services: Embedded in App.jsx
+- Components: 2 files
+- Hooks: 0 custom hooks
+- Maintainability: Low
+
+**After Phase 4 Refactoring:**
+- App.jsx: ~3,262 lines
+- Services: 6 separate files (with tests)
+- Components: 20+ organized files
+- Hooks: 9 custom hooks
+- Maintainability: High
+- Code organization: Modular architecture
+
 ## 📝 License
 
 MIT
 
 ## 🤝 Contributing
 
-This project has been refactored from a monolithic 3,677-line component into a modular, maintainable architecture. Contributions are welcome!
+This project has been refactored from a monolithic 3,677-line component into a modular, maintainable architecture with custom hooks, separated services, and organized components. Contributions are welcome!
 
 See [CLAUDE.md](CLAUDE.md) for detailed development guidance.
