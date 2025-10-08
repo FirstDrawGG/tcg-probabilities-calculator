@@ -85,7 +85,7 @@ const DeckZone = ({
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
                 onRemove={() => onRemoveCard(card.id, zone)}
-                onCardClick={onCardClick}
+                onCardClick={(card, event) => onCardClick(card, event, zone)}
                 combos={combos}
                 ydkCardCounts={ydkCardCounts}
                 typography={typography}

@@ -428,9 +428,13 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
   };
 
   // AC #2-3: Handle card click to open combo assignment overlay
-  const handleCardClick = (card, event) => {
-    setSelectedCard(card);
-    setShowComboOverlay(true);
+  // Only allow adding cards from Main Deck to combos (not Extra or Side deck)
+  const handleCardClick = (card, event, zone) => {
+    // Only show modal for Main Deck cards
+    if (zone === 'main') {
+      setSelectedCard(card);
+      setShowComboOverlay(true);
+    }
   };
 
   // AC #4: Add card to existing combo
