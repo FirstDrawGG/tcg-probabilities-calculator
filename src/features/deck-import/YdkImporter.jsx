@@ -266,7 +266,6 @@ const YdkImporter = ({
               borderRadius: '999px',
               userSelect: 'none',
               cursor: isLoadingDeck ? 'not-allowed' : 'pointer',
-              opacity: isLoadingDeck ? 0.5 : 1,
               ...typography.body
             }}
           >
@@ -298,7 +297,6 @@ const YdkImporter = ({
               borderRadius: '999px',
               userSelect: 'none',
               cursor: isLoadingDeck ? 'not-allowed' : 'pointer',
-              opacity: isLoadingDeck ? 0.5 : 1,
               ...typography.body
             }}
           >
