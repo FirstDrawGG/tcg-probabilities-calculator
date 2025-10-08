@@ -49,6 +49,7 @@ const useCalculations = () => {
 
   return {
     results,
+    setResults,
     isCalculating,
     calculate,
     clearResults

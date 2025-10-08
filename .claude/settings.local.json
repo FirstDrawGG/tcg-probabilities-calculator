@@ -44,7 +44,8 @@
       "Bash(netstat:*)",
       "Bash(findstr:*)",
       "Bash(dir:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(defined\" error because useCalculations hook wasn''t exporting setResults\n\nFix: Added setResults to the hook''s return values and destructured \nit in App.jsx\n\nThis fixes:\n- YDK file upload\n- Clipboard import\n- Shareable URL loading\n- All calculation result updates\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": []
   }

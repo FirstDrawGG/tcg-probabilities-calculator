@@ -49,7 +49,7 @@ export default function TCGCalculator() {
   // Custom Hooks
   const { deckSize, handSize, setDeckSize, setHandSize } = useDeckConfig();
   const { combos, setCombos } = useCombos(createCombo(1, 0));
-  const { results } = useCalculations();
+  const { results, setResults } = useCalculations();
   const { cardDatabase, setCardDatabase } = useCardSearch();
   const [toastMessage, setToastMessage] = useState('');
   const { openingHand, setOpeningHand, isRefreshing, setIsRefreshing } = useOpeningHand();
