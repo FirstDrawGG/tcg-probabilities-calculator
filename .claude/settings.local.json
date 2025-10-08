@@ -42,7 +42,9 @@
       "Bash(timeout 8 npm run dev)",
       "Bash(git pull:*)",
       "Bash(netstat:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(dir:*)",
+      "Bash(git log:*)"
     ],
     "deny": []
   }

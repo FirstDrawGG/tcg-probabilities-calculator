@@ -11101,6 +11101,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "11212437": {
+    "name": "Diabolic Dragon Fortress - Draluvice",
+    "type": "Normal Tuner Monster",
+    "level": 7,
+    "attribute": "DARK",
+    "isExtraDeck": false
+  },
   "11221418": {
     "name": "Bujincident",
     "type": "Trap Card",
@@ -96501,11 +96508,32 @@
     "attribute": "DARK",
     "isExtraDeck": true
   },
+  "101303033": {
+    "name": "D/D/D Sage King Alfred",
+    "type": "Fusion Monster",
+    "level": 6,
+    "attribute": "DARK",
+    "isExtraDeck": true
+  },
   "101303036": {
-    "name": "Lucifer, Darklord of the Evening Twilight",
+    "name": "Darklord Eveningstar",
     "type": "Fusion Monster",
     "level": 12,
     "attribute": "DARK",
+    "isExtraDeck": true
+  },
+  "101303037": {
+    "name": "Dracotail Shaurus",
+    "type": "Fusion Monster",
+    "level": null,
+    "attribute": "LIGHT",
+    "isExtraDeck": true
+  },
+  "101303043": {
+    "name": "K9-X \"Ripper/Millennia\"",
+    "type": "XYZ Monster",
+    "level": 9,
+    "attribute": "WIND",
     "isExtraDeck": true
   },
   "101303047": {
@@ -96513,6 +96541,13 @@
     "type": "Link Monster",
     "level": null,
     "attribute": "DARK",
+    "isExtraDeck": true
+  },
+  "101303049": {
+    "name": "Radiant Typhoon Varuroon, the Sea Spirit",
+    "type": "Link Monster",
+    "level": null,
+    "attribute": "WIND",
     "isExtraDeck": true
   },
   "101303050": {
@@ -96558,7 +96593,14 @@
     "isExtraDeck": false
   },
   "101303063": {
-    "name": "Darklord Pleasure",
+    "name": "Darklord Dance",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
+  "101303065": {
+    "name": "Radiant Typhoon Elation",
     "type": "Spell Card",
     "level": null,
     "attribute": null,
@@ -96587,6 +96629,13 @@
   },
   "101303075": {
     "name": "Secret Technique Fur Hire",
+    "type": "Trap Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
+  "101303076": {
+    "name": "Assist★Yummy!",
     "type": "Trap Card",
     "level": null,
     "attribute": null,
