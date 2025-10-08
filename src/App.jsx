@@ -426,35 +426,31 @@ export default function TCGCalculator() {
       fontSize: 'var(--font-h2-size)',
       lineHeight: 'var(--font-h2-line-height)',
       color: 'var(--text-main)',
-      fontFamily: 'Geist Regular, sans-serif',
-      fontWeight: 'normal'
+      fontFamily: 'Geist, sans-serif'
     },
     h2: {
       fontSize: 'var(--font-h2-size)',
       lineHeight: 'var(--font-h2-line-height)',
       color: 'var(--text-main)',
-      fontFamily: 'Geist Regular, sans-serif',
-      fontWeight: 'normal'
+      fontFamily: 'Geist, sans-serif'
     },
     h3: {
       fontSize: 'var(--font-h3-size)',
       lineHeight: 'var(--font-h3-line-height)',
       color: 'var(--text-main)',
-      fontFamily: 'Geist Regular, sans-serif',
-      fontWeight: 'normal'
+      fontFamily: 'Geist, sans-serif'
     },
     h4: {
       fontSize: 'var(--font-h3-size)',
       lineHeight: 'var(--font-h3-line-height)',
       color: 'var(--text-main)',
-      fontFamily: 'Geist Regular, sans-serif',
-      fontWeight: 'normal'
+      fontFamily: 'Geist, sans-serif'
     },
     body: {
       fontSize: 'var(--font-body-size)',
       lineHeight: 'var(--font-body-line-height)',
       color: 'var(--text-secondary)',
-      fontFamily: 'Geist Regular, sans-serif'
+      fontFamily: 'Geist, sans-serif'
     }
   };
 
@@ -955,7 +951,7 @@ useEffect(() => {
   }, []);
 
   return (
-    <div className="min-h-screen p-4" style={{ backgroundColor: 'var(--bg-main)', fontFamily: 'Geist Regular, sans-serif' }}>
+    <div className="min-h-screen p-4" style={{ backgroundColor: 'var(--bg-main)', fontFamily: 'Geist, sans-serif' }}>
       <style>
         {`
           input[type="number"]::-webkit-outer-spin-button,
@@ -1136,7 +1132,7 @@ useEffect(() => {
 
 
         <div className="p-0" style={{ marginTop: 'var(--spacing-lg)' }}>
-          <h2 className="font-semibold mb-3" style={typography.h2}>Understanding Your Probability Results</h2>
+          <h2 className="mb-3" style={typography.h2}>Understanding Your Probability Results</h2>
           
           <h3 className="font-semibold mb-2" style={typography.h3}>Why do I see slight variations in percentages?</h3>
           <p className="mb-3" style={{ ...typography.body, color: 'var(--text-secondary)' }}>

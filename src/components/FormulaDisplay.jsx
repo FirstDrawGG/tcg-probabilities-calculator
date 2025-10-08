@@ -20,7 +20,7 @@ const CardHeader = ({ cardName, logicOperator = '' }) => (
         fontSize: '12px',
         marginBottom: '4px',
         textAlign: 'center',
-        fontFamily: 'Geist Regular, sans-serif'
+        fontFamily: 'Geist, sans-serif'
       }}>
         {logicOperator}
       </div>
@@ -29,7 +29,7 @@ const CardHeader = ({ cardName, logicOperator = '' }) => (
       color: 'var(--text-secondary)',
       fontWeight: 'normal',
       fontSize: 'var(--font-h3-size)',
-      fontFamily: 'Geist Regular, sans-serif'
+      fontFamily: 'Geist, sans-serif'
     }}>
       {cardName}
     </div>
@@ -112,7 +112,7 @@ const FormulaDisplay = ({
           margin: '0 0 12px 0',
           fontSize: 'var(--font-h3-size)',
           lineHeight: 'var(--font-h3-line-height)',
-          fontFamily: 'Geist Regular, sans-serif',
+          fontFamily: 'Geist, sans-serif',
           fontWeight: '600',
           color: 'var(--text-main)'
         }}>

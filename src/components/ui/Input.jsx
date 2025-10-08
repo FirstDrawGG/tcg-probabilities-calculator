@@ -19,7 +19,7 @@ const Input = ({
           display: 'block',
           marginBottom: '8px',
           color: 'var(--text-main)',
-          fontFamily: 'Geist Regular, sans-serif',
+          fontFamily: 'Geist, sans-serif',
           fontSize: TYPOGRAPHY.body.fontSize
         }}>
           {label}
@@ -39,7 +39,7 @@ const Input = ({
           border: `1px solid ${error ? '#dc2626' : 'var(--border-main)'}`,
           backgroundColor: 'var(--bg-secondary)',
           color: 'var(--text-main)',
-          fontFamily: 'Geist Regular, sans-serif',
+          fontFamily: 'Geist, sans-serif',
           fontSize: TYPOGRAPHY.body.fontSize,
           outline: 'none',
           ...style

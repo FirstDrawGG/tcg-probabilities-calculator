@@ -5,7 +5,7 @@ import { Button } from '../../components/ui';
 // Typography and styling constants (moved from App.jsx)
 const typography = {
   h2: {
-    fontFamily: 'Geist Bold, sans-serif',
+    fontFamily: 'Geist, sans-serif',
     fontSize: '24px',
     lineHeight: '30px',
     color: '#ffffff',
@@ -13,7 +13,7 @@ const typography = {
     margin: 0
   },
   h3: {
-    fontFamily: 'Geist Bold, sans-serif',
+    fontFamily: 'Geist, sans-serif',
     fontSize: '20px',
     lineHeight: '26px',
     color: '#ffffff',
@@ -21,7 +21,7 @@ const typography = {
     margin: 0
   },
   body: {
-    fontFamily: 'Geist Regular, sans-serif',
+    fontFamily: 'Geist, sans-serif',
     fontSize: '16px',
     lineHeight: '22px',
     color: '#ffffff',

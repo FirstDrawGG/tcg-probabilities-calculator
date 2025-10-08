@@ -63,7 +63,7 @@ const SearchableCardInput = ({
       fontSize: 'var(--font-body-size)',
       lineHeight: 'var(--font-body-line-height)',
       color: 'var(--text-main)',
-      fontFamily: 'Geist Regular, sans-serif'
+      fontFamily: 'Geist, sans-serif'
     }
   };
   

@@ -78,7 +78,7 @@ const Tooltip = ({ text, children }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontFamily: 'Geist Regular, sans-serif',
+            fontFamily: 'Geist, sans-serif',
             cursor: 'pointer',
             flexShrink: 0,
             userSelect: 'none'
@@ -106,7 +106,7 @@ const Tooltip = ({ text, children }) => {
             width: 'max-content',
             zIndex: 1000,
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-            fontFamily: 'Geist Regular, sans-serif',
+            fontFamily: 'Geist, sans-serif',
             whiteSpace: 'normal',
             wordWrap: 'break-word'
           }}
@@ -166,7 +166,7 @@ const DeckInputs = ({
               color: handSize === 5 ? 'var(--text-action)' : 'var(--text-main)',
               cursor: 5 < minHandSize ? 'not-allowed' : 'pointer',
               opacity: 5 < minHandSize ? 0.5 : 1,
-              fontFamily: 'Geist Regular, sans-serif',
+              fontFamily: 'Geist, sans-serif',
               fontSize: '14px',
               lineHeight: '20px',
               transition: 'opacity 0.2s'
@@ -187,7 +187,7 @@ const DeckInputs = ({
               color: handSize === 6 ? 'var(--text-action)' : 'var(--text-main)',
               cursor: 6 < minHandSize ? 'not-allowed' : 'pointer',
               opacity: 6 < minHandSize ? 0.5 : 1,
-              fontFamily: 'Geist Regular, sans-serif',
+              fontFamily: 'Geist, sans-serif',
               fontSize: '14px',
               lineHeight: '20px',
               transition: 'opacity 0.2s'
@@ -208,7 +208,7 @@ const DeckInputs = ({
                 backgroundColor: handSize === minHandSize ? 'var(--bg-action)' : 'transparent',
                 color: handSize === minHandSize ? 'var(--text-action)' : 'var(--text-main)',
                 cursor: 'pointer',
-                fontFamily: 'Geist Regular, sans-serif',
+                fontFamily: 'Geist, sans-serif',
                 fontSize: '14px',
                 lineHeight: '20px',
                 transition: 'opacity 0.2s'

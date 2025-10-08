@@ -82,7 +82,7 @@ const Tooltip = ({ text, children }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontFamily: 'Geist Regular, sans-serif'
+            fontFamily: 'Geist, sans-serif'
           }}>
             i
           </span>
@@ -100,7 +100,7 @@ const Tooltip = ({ text, children }) => {
             color: '#ffffff',
             fontSize: '12px',
             lineHeight: '16px',
-            fontFamily: 'Geist Regular, sans-serif',
+            fontFamily: 'Geist, sans-serif',
             border: '1px solid var(--border-main)',
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
             whiteSpace: 'normal',
@@ -322,7 +322,7 @@ const ResultsDisplay = ({
               borderRadius: '20px',
               fontSize: '14px',
               lineHeight: '20px',
-              fontFamily: 'Geist Regular, sans-serif'
+              fontFamily: 'Geist, sans-serif'
             }}
           >
             {isRefreshing ? 'Shuffling...' : 'Refresh'}

@@ -393,7 +393,7 @@ const DecklistImage = ({
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                fontFamily: 'Geist Regular, sans-serif',
+                                fontFamily: 'Geist, sans-serif',
                                 border: '1px solid white',
                                 boxShadow: '0 1px 2px rgba(0,0,0,0.3)'
                               }}
@@ -416,7 +416,7 @@ const DecklistImage = ({
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                fontFamily: 'Geist Regular, sans-serif',
+                                fontFamily: 'Geist, sans-serif',
                                 border: '1px solid white',
                                 boxShadow: '0 1px 2px rgba(0,0,0,0.3)'
                               }}

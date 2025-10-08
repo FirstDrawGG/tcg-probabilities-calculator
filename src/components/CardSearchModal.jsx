@@ -25,11 +25,11 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
 
   // Typography from original app
   const typography = {
-    h1: { fontSize: 'var(--font-h1-size)', lineHeight: 'var(--font-h1-line-height)', fontFamily: 'Geist Regular, sans-serif' },
-    h2: { fontSize: 'var(--font-h2-size)', lineHeight: 'var(--font-h2-line-height)', fontFamily: 'Geist Regular, sans-serif' },
-    h3: { fontSize: 'var(--font-h3-size)', lineHeight: 'var(--font-h3-line-height)', fontFamily: 'Geist Regular, sans-serif' },
-    body: { fontSize: 'var(--font-body-size)', lineHeight: 'var(--font-body-line-height)', fontFamily: 'Geist Regular, sans-serif' },
-    caption: { fontSize: 'var(--font-caption-size)', lineHeight: 'var(--font-caption-line-height)', fontFamily: 'Geist Regular, sans-serif' }
+    h1: { fontSize: 'var(--font-h1-size)', lineHeight: 'var(--font-h1-line-height)', fontFamily: 'Geist, sans-serif' },
+    h2: { fontSize: 'var(--font-h2-size)', lineHeight: 'var(--font-h2-line-height)', fontFamily: 'Geist, sans-serif' },
+    h3: { fontSize: 'var(--font-h3-size)', lineHeight: 'var(--font-h3-line-height)', fontFamily: 'Geist, sans-serif' },
+    body: { fontSize: 'var(--font-body-size)', lineHeight: 'var(--font-body-line-height)', fontFamily: 'Geist, sans-serif' },
+    caption: { fontSize: 'var(--font-caption-size)', lineHeight: 'var(--font-caption-line-height)', fontFamily: 'Geist, sans-serif' }
   };
 
   // Auto-focus search on open

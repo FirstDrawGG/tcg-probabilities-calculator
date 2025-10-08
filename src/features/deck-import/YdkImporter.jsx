@@ -380,7 +380,7 @@ const YdkImporter = ({
               border: `1px solid var(--border-main)`,
               borderRadius: '16px',
               color: 'var(--text-main)',
-              fontFamily: 'Geist Regular, sans-serif',
+              fontFamily: 'Geist, sans-serif',
               fontSize: '14px',
               lineHeight: '20px',
               resize: 'vertical',

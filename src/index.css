@@ -145,8 +145,7 @@ input:-ms-input-placeholder {
 .enhanced-button .button-text {
   font-size: var(--font-body-size);
   line-height: var(--font-body-line-height);
-  font-family: 'Geist Regular, sans-serif';
-  font-weight: normal;
+  font-family: 'Geist', sans-serif;
   color: #141414;
 }
 
@@ -178,7 +177,7 @@ input:-ms-input-placeholder {
   color: var(--text-main) !important;
   font-size: var(--font-body-size) !important;
   line-height: var(--font-body-line-height) !important;
-  font-family: 'Geist Regular, sans-serif' !important;
+  font-family: 'Geist', sans-serif !important;
   padding: 0 12px !important;
   box-sizing: border-box !important;
   transition: border-color 0.2s ease !important;

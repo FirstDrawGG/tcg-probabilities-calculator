@@ -24,7 +24,7 @@ const Header = ({ typography }) => {
           fontSize: '24px',
           lineHeight: '24px',
           color: 'var(--text-main)',
-          fontFamily: 'Geist Regular, sans-serif',
+          fontFamily: 'Geist, sans-serif',
           fontWeight: 'normal',
           margin: 0
         }}>
@@ -40,7 +40,7 @@ const Header = ({ typography }) => {
         style={{
           backgroundColor: 'transparent',
           color: 'var(--text-main)',
-          fontFamily: 'Geist Regular, sans-serif',
+          fontFamily: 'Geist, sans-serif',
           fontSize: '14px',
           lineHeight: '20px',
           borderRadius: '999px',

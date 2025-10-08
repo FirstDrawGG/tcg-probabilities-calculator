@@ -376,7 +376,7 @@ const CardSearchDrawer = ({ isOpen, onClose, onCardSelect, addCardToDeckZone, de
                 outline: 'none',
                 fontSize: 'var(--font-body-size)',
                 lineHeight: 'var(--font-body-line-height)',
-                fontFamily: 'Geist Regular, sans-serif'
+                fontFamily: 'Geist, sans-serif'
               }}
               onFocus={(e) => {
                 e.target.style.border = '1px solid var(--border-action)';

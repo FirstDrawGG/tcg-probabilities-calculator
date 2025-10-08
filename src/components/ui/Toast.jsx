@@ -58,7 +58,7 @@ const Toast = ({ message, onClose }) => {
         <span style={{
           color: 'var(--text-main)',
           fontSize: '14px',
-          fontFamily: 'Geist Regular, sans-serif',
+          fontFamily: 'Geist, sans-serif',
           marginRight: '24px'
         }}>
           {message}

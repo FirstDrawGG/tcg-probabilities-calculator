@@ -4,7 +4,11 @@
     "allow": [
       "Bash(npm run build:*)",
       "Bash(npm run dev:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git log:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nUpdate search UI and fix combo card selection bug\n\n- Update search placeholder from \"Search cards by name or text...\" to \"Search cards by name\"\n- Update search description from \"Search by card name, type, or any text that appears on the card\" to \"Search cards\"\n- Remove all filter functionality (Show filters button, filter panels, filter state)\n- Update footer text from \"TCG community\" to \"Yu-Gi-Oh community\"\n- Fix critical bug: addCardToCombo now fills first empty slot instead of appending, preventing UI breakage when adding cards to combos\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(xargs sed:*)"
     ],
     "deny": [],
     "ask": []

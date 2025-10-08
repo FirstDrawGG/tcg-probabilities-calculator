@@ -53,7 +53,7 @@ const Button = ({
       style={{
         borderRadius: '999px',
         cursor: disabled ? 'not-allowed' : 'pointer',
-        fontFamily: 'Geist Regular, sans-serif',
+        fontFamily: 'Geist, sans-serif',
         opacity: disabled ? 0.5 : 1,
         transition: 'opacity 0.2s',
         ...getVariantStyles(),
