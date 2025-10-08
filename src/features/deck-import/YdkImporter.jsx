@@ -258,14 +258,15 @@ const YdkImporter = ({
           <button
             onClick={handleFromClipboard}
             disabled={isLoadingDeck}
-            className={`inline-flex items-center px-0 py-2 transition-opacity ${isLoadingDeck ? 'cursor-not-allowed' : 'cursor-pointer hover:opacity-80'}`}
+            className="inline-flex items-center px-0 py-2 hover:opacity-80 transition-opacity"
             style={{
               backgroundColor: 'transparent',
               border: 'none',
-              color: isLoadingDeck ? 'var(--text-secondary)' : 'var(--text-main)',
+              color: 'var(--text-secondary)',
               borderRadius: '999px',
-              opacity: isLoadingDeck ? 0.5 : 1,
               userSelect: 'none',
+              cursor: isLoadingDeck ? 'not-allowed' : 'pointer',
+              opacity: isLoadingDeck ? 0.5 : 1,
               ...typography.body
             }}
           >
@@ -289,14 +290,15 @@ const YdkImporter = ({
           />
           <label
             htmlFor="ydk-file-input"
-            className={`inline-flex items-center px-0 py-2 transition-opacity ${isLoadingDeck ? 'cursor-not-allowed' : 'cursor-pointer hover:opacity-80'}`}
+            className="inline-flex items-center px-0 py-2 hover:opacity-80 transition-opacity"
             style={{
               backgroundColor: 'transparent',
               border: 'none',
-              color: isLoadingDeck ? 'var(--text-secondary)' : 'var(--text-main)',
+              color: 'var(--text-secondary)',
               borderRadius: '999px',
-              opacity: isLoadingDeck ? 0.5 : 1,
               userSelect: 'none',
+              cursor: isLoadingDeck ? 'not-allowed' : 'pointer',
+              opacity: isLoadingDeck ? 0.5 : 1,
               ...typography.body
             }}
           >
@@ -319,6 +321,7 @@ const YdkImporter = ({
               color: 'var(--text-secondary)',
               borderRadius: '999px',
               userSelect: 'none',
+              cursor: 'pointer',
               ...typography.body
             }}
           >
