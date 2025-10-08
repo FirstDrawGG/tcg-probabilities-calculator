@@ -13,7 +13,7 @@ const Footer = ({ typography }) => {
         color: 'var(--text-secondary)',
         margin: 0
       }}>
-        Built with ❤️ for the TCG community
+        Built with ❤️ for the Yu-Gi-Oh community
       </p>
     </footer>
   );

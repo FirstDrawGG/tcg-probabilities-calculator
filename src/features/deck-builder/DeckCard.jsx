@@ -101,11 +101,11 @@ const DeckCard = ({ card, onDragStart, onTouchStart, onTouchMove, onTouchEnd, on
         </div>
       )}
 
-      {/* AC #9, #11, #13: Combo icons on cards */}
+      {/* AC #9, #11, #13: Combo icons on cards - positioned bottom-left to avoid X button */}
       {cardCombos.length > 0 && (
         <div style={{
           position: 'absolute',
-          top: '4px',
+          bottom: '4px',
           left: '4px',
           display: 'flex',
           flexDirection: 'column',

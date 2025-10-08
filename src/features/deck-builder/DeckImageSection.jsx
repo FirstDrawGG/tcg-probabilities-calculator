@@ -432,6 +432,7 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
   const handleCardClick = (card, event, zone) => {
     // Only show modal for Main Deck cards
     if (zone === 'main') {
+      // Always show modal - validation happens inside
       setSelectedCard(card);
       setShowComboOverlay(true);
     }
@@ -452,6 +453,11 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
             return combo;
           }
 
+          // Check if there's an empty slot to fill first
+          const emptyCardIndex = combo.cards.findIndex(c =>
+            !c.starterCard || c.starterCard.trim() === ''
+          );
+
           // Add card to combo
           const newCard = {
             starterCard: card.name,
@@ -463,10 +469,20 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
             logicOperator: 'AND' // Default value
           };
 
-          return {
-            ...combo,
-            cards: [...combo.cards, newCard]
-          };
+          // If there's an empty slot, replace it; otherwise append
+          if (emptyCardIndex !== -1) {
+            return {
+              ...combo,
+              cards: combo.cards.map((c, index) =>
+                index === emptyCardIndex ? newCard : c
+              )
+            };
+          } else {
+            return {
+              ...combo,
+              cards: [...combo.cards, newCard]
+            };
+          }
         }
         return combo;
       });
@@ -684,7 +700,7 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
               backgroundColor: 'var(--bg-main)',
               borderRadius: '16px',
               padding: '24px',
-              maxWidth: '500px',
+              maxWidth: '520px',
               width: '90%',
               maxHeight: '80vh',
               overflow: 'auto',
@@ -719,9 +735,19 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
 
             {/* Combo List */}
             <div style={{ marginBottom: '16px' }}>
-              <p style={{...typography.body, color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '12px'}}>
-                Select which combo to add this card to:
-              </p>
+              {(() => {
+                // Check if there are ANY cards in ANY combo
+                const hasAnyCards = combos.some(combo =>
+                  combo.cards.some(c => c.starterCard && c.starterCard.trim() !== '')
+                );
+
+                return (
+                  <>
+                    <p style={{...typography.body, color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '12px'}}>
+                      {!hasAnyCards
+                        ? 'You must add this card to Combo 1 first:'
+                        : 'Select which combo to add this card to:'}
+                    </p>
 
               {combos.map((combo, index) => {
                 const cardExists = combo.cards.some(c =>
@@ -755,16 +781,13 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                           // AC #7: Remove card from combo
                           removeCardFromCombo(combo.id, selectedCard);
                           showToast(`Removed ${selectedCard.name} from Combo ${index + 1}`);
-                          setShowComboOverlay(false);
-                          setSelectedCard(null);
                         } else {
                           // AC #4: Add card to selected combo
                           addCardToCombo(combo.id, selectedCard);
                           showToast(`Added ${selectedCard.name} to Combo ${index + 1}`);
-                          setShowComboOverlay(false);
-                          setSelectedCard(null);
                         }
                       }}
+                      disabled={!hasAnyCards && index !== 0}
                       variant={cardExists ? "primary" : "secondary"}
                       style={{
                         width: '100%',
@@ -861,14 +884,50 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                   </div>
                 );
               })}
+                  </>
+                );
+              })()}
             </div>
 
             {/* Create New Combo Button */}
+            {(() => {
+              // Check if there are ANY cards in ANY combo (for button disabling)
+              const hasAnyCards = combos.some(combo =>
+                combo.cards.some(c => c.starterCard && c.starterCard.trim() !== '')
+              );
+
+              return (
+                <>
             <Button
+              disabled={!hasAnyCards}
               onClick={() => {
                 // AC #6: Create new combo with this card (or populate first empty slot)
                 createNewComboWithCard(selectedCard);
                 showToast(`Added ${selectedCard.name} to combo`);
+                setShowComboOverlay(false);
+                setSelectedCard(null);
+              }}
+              variant="primary"
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '8px',
+                backgroundColor: '#000000',
+                color: '#ffffff',
+                border: '1px solid #333',
+                ...typography.body,
+                fontWeight: 'medium',
+                marginBottom: '12px'
+              }}
+              className="hover:bg-opacity-80 transition-all"
+            >
+              + New combo
+            </Button>
+
+            {/* Save Button (closes modal) */}
+            <Button
+              disabled={!hasAnyCards}
+              onClick={() => {
                 setShowComboOverlay(false);
                 setSelectedCard(null);
               }}
@@ -882,8 +941,11 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
               }}
               className="hover:bg-opacity-80 transition-all"
             >
-              + Add to New Combo
+              Save
             </Button>
+                </>
+              );
+            })()}
           </div>
         </div>
       )}

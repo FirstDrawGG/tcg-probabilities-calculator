@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Icon from './Icon';
 import { Button } from './ui';
 
@@ -7,7 +7,6 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const [showCardModal, setShowCardModal] = useState(false);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -19,16 +18,6 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
   // Performance optimizations - search cache
   const searchCacheRef = useRef(new Map());
   const maxCacheSize = 50;
-
-  // Filter state
-  const [filters, setFilters] = useState({
-    cardType: [],
-    monsterSubType: [],
-    attribute: [],
-    level: [],
-    sets: [],
-    archetype: []
-  });
 
   // Refs
   const searchInputRef = useRef(null);
@@ -51,8 +40,8 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
   }, [isOpen]);
 
   // Cache management utilities
-  const getCacheKey = (query, filters) => {
-    return JSON.stringify({ query: query.toLowerCase(), filters });
+  const getCacheKey = (query) => {
+    return query.toLowerCase();
   };
 
   const getCachedResults = (cacheKey) => {
@@ -167,37 +156,9 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
       .trim();
   };
 
-  const applyFiltersToResults = (results, activeFilters) => {
-    if (activeFilters.cardType.length > 0) {
-      results = results.filter(card =>
-        activeFilters.cardType.some(type => card.type.toLowerCase().includes(type.toLowerCase()))
-      );
-    }
-
-    if (activeFilters.monsterSubType.length > 0) {
-      results = results.filter(card =>
-        activeFilters.monsterSubType.some(subType => card.type.toLowerCase().includes(subType.toLowerCase()))
-      );
-    }
-
-    if (activeFilters.attribute.length > 0) {
-      results = results.filter(card =>
-        card.attribute && activeFilters.attribute.includes(card.attribute)
-      );
-    }
-
-    if (activeFilters.level.length > 0) {
-      results = results.filter(card =>
-        card.level && activeFilters.level.includes(card.level)
-      );
-    }
-
-    return results;
-  };
-
-  const performSearch = async (query, activeFilters, signal) => {
+  const performSearch = async (query, signal) => {
     try {
-      const cacheKey = getCacheKey(query, activeFilters);
+      const cacheKey = getCacheKey(query);
       const cachedData = getCachedResults(cacheKey);
 
       if (cachedData && isCacheValid(cachedData)) {
@@ -206,10 +167,7 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
         return;
       }
 
-      // Build API URL - if no query but filters are active, get all cards; otherwise search by name
-      const apiUrl = query.trim()
-        ? `https://db.ygoprodeck.com/api/v7/cardinfo.php?fname=${encodeURIComponent(query)}&num=50&offset=0`
-        : `https://db.ygoprodeck.com/api/v7/cardinfo.php?num=50&offset=0`;
+      const apiUrl = `https://db.ygoprodeck.com/api/v7/cardinfo.php?fname=${encodeURIComponent(query)}&num=50&offset=0`;
 
       const response = await fetch(apiUrl, {
         signal
@@ -221,8 +179,6 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
 
       const data = await response.json();
       let results = data.data || [];
-
-      results = applyFiltersToResults(results, activeFilters);
 
       const query_lower = query.toLowerCase();
       const resultsWithScores = results.map(card => ({
@@ -274,9 +230,7 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
       clearTimeout(debounceTimerRef.current);
     }
 
-    const hasActiveFilters = getActiveFilterCount() > 0;
-
-    if (searchQuery.length < 2 && !hasActiveFilters) {
+    if (searchQuery.length < 2) {
       setSearchResults([]);
       setIsSearching(false);
       return;
@@ -295,7 +249,7 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
 
     debounceTimerRef.current = setTimeout(async () => {
       try {
-        await performSearch(searchQuery, filters, controller.signal);
+        await performSearch(searchQuery, controller.signal);
         clearTimeout(slowConnectionTimer);
         setSlowConnectionWarning(false);
       } catch (err) {
@@ -313,7 +267,7 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [searchQuery, filters]);
+  }, [searchQuery]);
 
   const handleSearchInput = (e) => {
     const value = e.target.value;
@@ -339,34 +293,6 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
     setSlowConnectionWarning(false);
     setError('');
   };
-
-  const handleFilterChange = (filterType, value, checked) => {
-    const newFilters = {
-      ...filters,
-      [filterType]: checked
-        ? [...filters[filterType], value]
-        : filters[filterType].filter(item => item !== value)
-    };
-
-    setFilters(newFilters);
-  };
-
-  const clearAllFilters = () => {
-    setFilters({
-      cardType: [],
-      monsterSubType: [],
-      attribute: [],
-      level: [],
-      sets: [],
-      archetype: []
-    });
-  };
-
-  const activeFilterCount = useMemo(() => {
-    return Object.values(filters).reduce((count, filterArray) => count + filterArray.length, 0);
-  }, [filters]);
-
-  const getActiveFilterCount = () => activeFilterCount;
 
   const openCardModal = (card, index) => {
     setSelectedCard(card);
@@ -419,14 +345,6 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
   const handleClose = () => {
     setSearchQuery('');
     setSearchResults([]);
-    setFilters({
-      cardType: [],
-      monsterSubType: [],
-      attribute: [],
-      level: [],
-      sets: [],
-      archetype: []
-    });
     setError('');
     setFuzzyMatchMessage('');
     onClose();
@@ -469,7 +387,7 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
                 type="text"
                 value={searchQuery}
                 onChange={handleSearchInput}
-                placeholder="Search cards by name or text..."
+                placeholder="Search cards by name"
                 className="w-full px-4 py-3 pr-10 border rounded-lg"
                 style={{
                   backgroundColor: 'var(--bg-secondary)',
@@ -506,149 +424,7 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
                 Type at least 2 characters to search
               </p>
             )}
-
-            {/* Filter toggle */}
-            <Button
-              onClick={() => setShowFilters(!showFilters)}
-              variant="secondary"
-              size="medium"
-              aria-expanded={showFilters}
-              type="button"
-              style={{display: 'flex', alignItems: 'center', gap: '8px'}}
-            >
-              <Icon name="funnel" size={16} />
-              <span>
-                {showFilters ? 'Hide Filters' : 'Show Filters'}
-              </span>
-              {getActiveFilterCount() > 0 && (
-                <span
-                  className="ml-2 px-2 py-1 rounded-full text-xs"
-                  style={{
-                    backgroundColor: 'var(--bg-action-primary)',
-                    color: 'white'
-                  }}
-                  aria-label={`${getActiveFilterCount()} filter${getActiveFilterCount() > 1 ? 's' : ''} active`}
-                >
-                  {getActiveFilterCount()}
-                </span>
-              )}
-            </Button>
           </div>
-
-          {/* Filter Panel */}
-          {showFilters && (
-            <div
-              className="mb-6 p-4 rounded-lg"
-              style={{
-                backgroundColor: 'var(--bg-secondary)',
-                border: '1px solid var(--border-main)'
-              }}
-              role="region"
-              aria-label="Card search filters"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h3 style={{...typography.h3, color: 'var(--text-main)'}}>Filters</h3>
-                {getActiveFilterCount() > 0 && (
-                  <Button
-                    onClick={clearAllFilters}
-                    variant="secondary"
-                    size="small"
-                    style={{fontSize: '14px'}}
-                  >
-                    Clear All Filters ({getActiveFilterCount()})
-                  </Button>
-                )}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {/* Card Type Filter */}
-                <div>
-                  <h4 className="mb-3" style={{...typography.body, color: 'var(--text-main)', fontWeight: '600'}}>
-                    Card Type
-                  </h4>
-                  <div className="flex flex-wrap gap-4">
-                    {['Monster', 'Spell', 'Trap'].map(type => (
-                      <label key={type} className="flex items-center cursor-pointer hover:opacity-80" style={{width: '80px'}}>
-                        <input
-                          type="checkbox"
-                          checked={filters.cardType.includes(type)}
-                          onChange={(e) => handleFilterChange('cardType', type, e.target.checked)}
-                          className="mr-2"
-                          style={{accentColor: 'var(--bg-action-primary)'}}
-                        />
-                        <span style={{...typography.body, color: 'var(--text-main)'}}>{type}</span>
-                      </label>
-                    ))}
-                  </div>
-
-                  {/* Monster Sub-types */}
-                  {filters.cardType.includes('Monster') && (
-                    <div className="mt-4 pl-4 border-l-2" style={{borderColor: 'var(--border-secondary)'}}>
-                      <h5 className="mb-2" style={{...typography.caption, color: 'var(--text-secondary)', fontWeight: '600'}}>
-                        Monster Sub-types
-                      </h5>
-                      <div className="flex flex-wrap gap-4">
-                        {['Normal', 'Effect', 'Fusion', 'Ritual', 'Synchro', 'Xyz', 'Pendulum', 'Link', 'Token', 'Tuner', 'Flip', 'Toon', 'Spirit', 'Union', 'Gemini'].map(subType => (
-                          <label key={subType} className="flex items-center cursor-pointer hover:opacity-80" style={{width: '80px'}}>
-                            <input
-                              type="checkbox"
-                              checked={filters.monsterSubType.includes(subType)}
-                              onChange={(e) => handleFilterChange('monsterSubType', subType, e.target.checked)}
-                              className="mr-2"
-                              style={{accentColor: 'var(--bg-action-primary)'}}
-                            />
-                            <span style={{...typography.caption, color: 'var(--text-secondary)'}}>{subType}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Attribute Filter */}
-                <div>
-                  <h4 className="mb-3" style={{...typography.body, color: 'var(--text-main)', fontWeight: '600'}}>
-                    Attribute
-                  </h4>
-                  <div className="flex flex-wrap gap-4">
-                    {['DARK', 'LIGHT', 'EARTH', 'WIND', 'WATER', 'FIRE', 'DIVINE'].map(attr => (
-                      <label key={attr} className="flex items-center cursor-pointer hover:opacity-80" style={{width: '80px'}}>
-                        <input
-                          type="checkbox"
-                          checked={filters.attribute.includes(attr)}
-                          onChange={(e) => handleFilterChange('attribute', attr, e.target.checked)}
-                          className="mr-2"
-                          style={{accentColor: 'var(--bg-action-primary)'}}
-                        />
-                        <span style={{...typography.body, color: 'var(--text-main)'}}>{attr}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Level Filter */}
-                <div>
-                  <h4 className="mb-3" style={{...typography.body, color: 'var(--text-main)', fontWeight: '600'}}>
-                    Level/Rank
-                  </h4>
-                  <div className="flex flex-wrap gap-4">
-                    {Array.from({length: 12}, (_, i) => i + 1).map(level => (
-                      <label key={level} className="flex items-center cursor-pointer hover:opacity-80" style={{width: '40px'}}>
-                        <input
-                          type="checkbox"
-                          checked={filters.level.includes(level)}
-                          onChange={(e) => handleFilterChange('level', level, e.target.checked)}
-                          className="mr-1"
-                          style={{accentColor: 'var(--bg-action-primary)'}}
-                        />
-                        <span style={{...typography.caption, color: 'var(--text-main)'}}>{level}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Loading State */}
           {isSearching && (
@@ -686,7 +462,7 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
             }}>
               <p style={typography.body}>{error}</p>
               <Button
-                onClick={() => performSearch(searchQuery, filters)}
+                onClick={() => performSearch(searchQuery)}
                 variant="primary"
                 size="small"
                 style={{marginTop: '8px'}}
@@ -706,7 +482,7 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
                 Search for cards to add to your deck
               </h3>
               <p style={{...typography.body, color: 'var(--text-secondary)'}}>
-                Search by card name, type, or any text that appears on the card
+                Search cards
               </p>
             </div>
           )}
@@ -718,20 +494,9 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
                 No cards found matching your search
               </h3>
               <div className="space-y-2" style={{color: 'var(--text-secondary)'}}>
-                <p style={typography.body}>Try removing some filters</p>
                 <p style={typography.body}>Check your spelling</p>
                 <p style={typography.body}>Search for partial card names</p>
               </div>
-              {getActiveFilterCount() > 0 && (
-                <Button
-                  onClick={clearAllFilters}
-                  variant="primary"
-                  size="medium"
-                  style={{marginTop: '16px'}}
-                >
-                  Clear Filters
-                </Button>
-              )}
             </div>
           )}
 
@@ -741,7 +506,6 @@ const CardSearchModal = ({ isOpen, onClose, onCardSelect }) => {
               <div className="mb-4 space-y-2">
                 <p style={{...typography.body, color: 'var(--text-secondary)'}}>
                   Showing {searchResults.length} results
-                  {getActiveFilterCount() > 0 && ` with ${getActiveFilterCount()} filter${getActiveFilterCount() > 1 ? 's' : ''} applied`}
                 </p>
                 {fuzzyMatchMessage && (
                   <div className="flex items-center gap-2 p-2 rounded" style={{

@@ -96494,6 +96494,13 @@
     "attribute": "WIND",
     "isExtraDeck": false
   },
+  "101303029": {
+    "name": "WAKE CUP! Erl",
+    "type": "Flip Effect Monster",
+    "level": 7,
+    "attribute": "WIND",
+    "isExtraDeck": false
+  },
   "101303031": {
     "name": "Doom Emperor Archfiend",
     "type": "Pendulum Effect Ritual Monster",
