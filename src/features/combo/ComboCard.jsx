@@ -119,10 +119,11 @@ const ComboCard = ({
               variant="secondary"
               className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
               style={{
-                width: '40px',
-                height: '40px',
+                width: '52px',
+                height: '28px',
                 padding: '0',
-                minWidth: '40px'
+                minWidth: '52px',
+                boxShadow: 'none'
               }}
             >
               <Icon name="minus" ariaLabel="Decrease count" size={16} variant="secondary" />
@@ -143,10 +144,11 @@ const ComboCard = ({
               variant="secondary"
               className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
               style={{
-                width: '40px',
-                height: '40px',
+                width: '52px',
+                height: '28px',
                 padding: '0',
-                minWidth: '40px'
+                minWidth: '52px',
+                boxShadow: 'none'
               }}
             >
               <Icon name="plus" ariaLabel="Increase count" size={16} variant="secondary" />
@@ -169,10 +171,11 @@ const ComboCard = ({
                 variant="secondary"
                 className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                 style={{
-                  width: '40px',
-                  height: '40px',
+                  width: '52px',
+                  height: '28px',
                   padding: '0',
-                  minWidth: '40px'
+                  minWidth: '52px',
+                  boxShadow: 'none'
                 }}
               >
                 <Icon name="minus" ariaLabel="Decrease count" size={16} variant="secondary" />
@@ -193,10 +196,11 @@ const ComboCard = ({
                 variant="secondary"
                 className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                 style={{
-                  width: '40px',
-                  height: '40px',
+                  width: '52px',
+                  height: '28px',
                   padding: '0',
-                  minWidth: '40px'
+                  minWidth: '52px',
+                  boxShadow: 'none'
                 }}
               >
                 <Icon name="plus" ariaLabel="Increase count" size={16} variant="secondary" />
@@ -218,10 +222,11 @@ const ComboCard = ({
                 variant="secondary"
                 className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                 style={{
-                  width: '40px',
-                  height: '40px',
+                  width: '52px',
+                  height: '28px',
                   padding: '0',
-                  minWidth: '40px'
+                  minWidth: '52px',
+                  boxShadow: 'none'
                 }}
               >
                 <Icon name="minus" ariaLabel="Decrease count" size={16} variant="secondary" />
@@ -242,10 +247,11 @@ const ComboCard = ({
                 variant="secondary"
                 className="flex items-center justify-center font-semibold hover:opacity-80 transition-colors"
                 style={{
-                  width: '40px',
-                  height: '40px',
+                  width: '52px',
+                  height: '28px',
                   padding: '0',
-                  minWidth: '40px'
+                  minWidth: '52px',
+                  boxShadow: 'none'
                 }}
               >
                 <Icon name="plus" ariaLabel="Increase count" size={16} variant="secondary" />

@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { Button } from '../../components/ui';
 
 const Tooltip = ({ text, children }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -153,69 +154,31 @@ const DeckInputs = ({
           <Tooltip text="Cards you draw to start the game. 5 going first, 6 going second" />
         </label>
         <div className="flex space-x-2">
-          <button
+          <Button
             onClick={() => setHandSize(5)}
             disabled={5 < minHandSize}
-            style={{
-              flex: 1,
-              height: '40px',
-              padding: '0 16px',
-              borderRadius: '999px',
-              border: '1px solid var(--border-main)',
-              backgroundColor: handSize === 5 ? 'var(--bg-action)' : 'transparent',
-              color: handSize === 5 ? 'var(--text-action)' : 'var(--text-main)',
-              cursor: 5 < minHandSize ? 'not-allowed' : 'pointer',
-              opacity: 5 < minHandSize ? 0.5 : 1,
-              fontFamily: 'Geist, sans-serif',
-              fontSize: '14px',
-              lineHeight: '20px',
-              transition: 'opacity 0.2s'
-            }}
+            variant={handSize === 5 ? 'primary' : 'secondary'}
+            style={{ flex: 1, width: 'auto' }}
           >
             5
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setHandSize(6)}
             disabled={6 < minHandSize}
-            style={{
-              flex: 1,
-              height: '40px',
-              padding: '0 16px',
-              borderRadius: '999px',
-              border: '1px solid var(--border-main)',
-              backgroundColor: handSize === 6 ? 'var(--bg-action)' : 'transparent',
-              color: handSize === 6 ? 'var(--text-action)' : 'var(--text-main)',
-              cursor: 6 < minHandSize ? 'not-allowed' : 'pointer',
-              opacity: 6 < minHandSize ? 0.5 : 1,
-              fontFamily: 'Geist, sans-serif',
-              fontSize: '14px',
-              lineHeight: '20px',
-              transition: 'opacity 0.2s'
-            }}
+            variant={handSize === 6 ? 'primary' : 'secondary'}
+            style={{ flex: 1, width: 'auto' }}
           >
             6
-          </button>
+          </Button>
           {/* AC #7: Show current minimum if it's higher than 6 */}
           {minHandSize > 6 && (
-            <button
+            <Button
               onClick={() => setHandSize(minHandSize)}
-              style={{
-                flex: 1,
-                height: '40px',
-                padding: '0 16px',
-                borderRadius: '999px',
-                border: '1px solid var(--border-main)',
-                backgroundColor: handSize === minHandSize ? 'var(--bg-action)' : 'transparent',
-                color: handSize === minHandSize ? 'var(--text-action)' : 'var(--text-main)',
-                cursor: 'pointer',
-                fontFamily: 'Geist, sans-serif',
-                fontSize: '14px',
-                lineHeight: '20px',
-                transition: 'opacity 0.2s'
-              }}
+              variant={handSize === minHandSize ? 'primary' : 'secondary'}
+              style={{ flex: 1, width: 'auto' }}
             >
               {minHandSize}
-            </button>
+            </Button>
           )}
         </div>
         {minHandSize > handSize && (

@@ -156,6 +156,11 @@ input:-ms-input-placeholder {
   flex-shrink: 0;
 }
 
+/* Reset button icon - white color */
+.enhanced-button-reset .button-icon {
+  color: white !important;
+}
+
 /* Enhanced button with max width constraint for Add buttons */
 .enhanced-button-add {
   max-width: 220px;

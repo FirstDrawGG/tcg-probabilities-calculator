@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import CardDatabaseService from '../../services/CardDatabaseService';
 import { Button } from '../../components/ui';
+import { XCircle } from '@phosphor-icons/react';
 
 const DeckCard = ({ card, onDragStart, onTouchStart, onTouchMove, onTouchEnd, onRemove, onCardClick, combos, ydkCardCounts, typography }) => {
   const [imageError, setImageError] = useState(false);
@@ -164,27 +165,30 @@ const DeckCard = ({ card, onDragStart, onTouchStart, onTouchMove, onTouchEnd, on
         </div>
       )}
 
-      <Button
+      <button
         onClick={(e) => {
           e.stopPropagation(); // Prevent the card click from triggering
           onRemove();
         }}
-        variant="danger"
-        size="small"
-        className="absolute -top-1 -left-1 w-5 h-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute -top-1 -left-1 opacity-0 group-hover:opacity-100 transition-opacity"
         style={{
           position: 'absolute',
           top: '-4px',
           left: '-4px',
-          fontSize: '12px',
+          background: 'white',
+          border: 'none',
+          padding: '0',
+          cursor: 'pointer',
+          borderRadius: '50%',
           width: '20px',
           height: '20px',
-          padding: '0',
-          minWidth: '20px'
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}
       >
-        ×
-      </Button>
+        <XCircle size={20} weight="fill" color="#333" />
+      </button>
     </div>
   );
 };

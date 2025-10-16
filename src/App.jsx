@@ -1098,21 +1098,26 @@ useEffect(() => {
             </div>
           )}
 
+          <hr style={{ margin: '24px 0', border: 'none', borderTop: '1px solid var(--border-secondary)' }} />
+
           <div className="flex space-x-4 mt-6">
             <Button
               onClick={runCalculation}
               disabled={!allFieldsFilled || hasValidationErrors}
               className="enhanced-button"
+              style={{ flex: 1 }}
             >
               <Icon name="calculator" ariaLabel="Calculate" size={14} className="button-icon" style={{ color: '#141414' }} />
               <span className="button-text">Calculate</span>
             </Button>
             <Button
               onClick={handleReset}
+              variant="secondary"
               className="enhanced-button enhanced-button-reset"
+              style={{ width: '140px', color: 'white' }}
             >
-              <Icon name="arrow-counter-clockwise" ariaLabel="Reset" size={14} className="button-icon" style={{ color: '#141414' }} />
-              <span className="button-text">Reset</span>
+              <Icon name="arrow-counter-clockwise" ariaLabel="Reset" size={14} className="button-icon" style={{ color: 'white' }} />
+              <span className="button-text" style={{ color: 'white' }}>Reset</span>
             </Button>
           </div>
         </div>

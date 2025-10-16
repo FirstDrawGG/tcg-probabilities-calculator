@@ -32,23 +32,6 @@ const DeckZone = ({
         <h3 style={{...typography.h3, color: 'var(--text-main)'}}>
           {title} {subtitle}
         </h3>
-        {cards.length > 0 && (
-          <Button
-            onClick={() => onClearZone(zone)}
-            variant="secondary"
-            size="small"
-            className="text-xs hover:opacity-80 transition-opacity"
-            style={{
-              color: 'var(--text-secondary)',
-              backgroundColor: 'transparent',
-              border: 'none',
-              padding: '0',
-              height: 'auto'
-            }}
-          >
-            Clear
-          </Button>
-        )}
       </div>
 
       <div
