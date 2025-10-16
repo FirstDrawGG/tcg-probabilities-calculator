@@ -63,6 +63,8 @@ export default function TCGCalculator() {
     setYdkCards,
     ydkCardCounts,
     setYdkCardCounts,
+    originalYdkCardCounts,
+    setOriginalYdkCardCounts,
     testHandFromDecklist,
     setTestHandFromDecklist,
     initialDeckZones,
@@ -329,6 +331,7 @@ export default function TCGCalculator() {
       });
       setYdkCards(uniqueCards);
       setYdkCardCounts(parseResult.cardCounts);
+      setOriginalYdkCardCounts(parseResult.cardCounts); // Store original for Reset
       console.log('📊 YDK Card Counts after upload:', parseResult.cardCounts);
 
       // Populate the deck builder with parsed deck zones
@@ -546,15 +549,111 @@ export default function TCGCalculator() {
     }, 100);
   };
 
+  // Sync YDK deck zones and card counts from combo definitions
+  const syncYdkFromCombos = () => {
+    // Collect cards from combos that need count adjustments
+    const cardCountsFromCombos = {};
+
+    combos.forEach(combo => {
+      combo.cards.forEach(card => {
+        if (card.starterCard && card.starterCard.trim()) {
+          const cardName = card.starterCard;
+          const count = card.startersInDeck || 0;
+
+          // Use the highest count if card appears in multiple combos
+          if (!cardCountsFromCombos[cardName] || cardCountsFromCombos[cardName].count < count) {
+            cardCountsFromCombos[cardName] = {
+              count,
+              cardId: card.cardId,
+              isCustom: card.isCustom
+            };
+          }
+        }
+      });
+    });
+
+    // Update existing deck by adjusting card counts
+    setDeckZones(prev => {
+      const currentMainDeck = [...(prev.main || [])];
+      const updatedMainDeck = [];
+      const processedCards = new Set();
+
+      // First, process cards that are in combos
+      Object.entries(cardCountsFromCombos).forEach(([cardName, data]) => {
+        const existingCards = currentMainDeck.filter(c =>
+          c.name.toLowerCase() === cardName.toLowerCase()
+        );
+        const currentCount = existingCards.length;
+        const targetCount = data.count;
+
+        processedCards.add(cardName.toLowerCase());
+
+        if (targetCount > 0) {
+          // Add or keep the required number of copies
+          for (let i = 0; i < targetCount; i++) {
+            if (i < existingCards.length) {
+              // Keep existing card
+              updatedMainDeck.push(existingCards[i]);
+            } else {
+              // Add new copy
+              updatedMainDeck.push({
+                id: `main_${data.cardId || 'custom'}_${Date.now()}_${Math.random()}_${i}`,
+                cardId: data.cardId,
+                name: cardName,
+                isCustom: data.isCustom || false,
+                zone: 'main'
+              });
+            }
+          }
+        }
+        // If targetCount is 0, card is removed (not added to updatedMainDeck)
+      });
+
+      // Keep cards that are NOT in combos unchanged
+      currentMainDeck.forEach(card => {
+        if (!processedCards.has(card.name.toLowerCase())) {
+          updatedMainDeck.push(card);
+        }
+      });
+
+      return {
+        main: updatedMainDeck,
+        extra: prev.extra || [],
+        side: prev.side || []
+      };
+    });
+
+    // Update ydkCardCounts
+    setYdkCardCounts(prev => {
+      const newCardCounts = { ...prev };
+
+      Object.entries(cardCountsFromCombos).forEach(([cardName, data]) => {
+        if (data.count > 0) {
+          newCardCounts[cardName] = data.count;
+        } else {
+          // Remove card from counts if set to 0
+          delete newCardCounts[cardName];
+        }
+      });
+
+      return newCardCounts;
+    });
+
+    console.log('🔄 Synced YDK from combos:', { adjustedCards: Object.keys(cardCountsFromCombos) });
+  };
+
   const runCalculation = () => {
     if (!validate()) return;
-    
+
+    // Sync YDK display with combo definitions
+    syncYdkFromCombos();
+
     setDashboardValues({
       deckSize,
       handSize,
       combos: combos.map(c => ({ ...c }))
     });
-    
+
     const calculatedResults = ProbabilityService.calculateMultipleCombos(combos, deckSize, handSize);
     setResults(calculatedResults);
     
@@ -592,6 +691,13 @@ export default function TCGCalculator() {
   };
 
   const handleReset = () => {
+    // Restore original YDK deck if one was uploaded
+    if (initialDeckZones) {
+      setDeckZones(initialDeckZones);
+      setYdkCardCounts(originalYdkCardCounts);
+      console.log('🔄 Reset: Restored original YDK deck zones and card counts');
+    }
+
     setDeckSize(40);
     setHandSize(5);
     setCombos([createCombo(1, 0)]);
@@ -608,7 +714,7 @@ export default function TCGCalculator() {
     setShareableUrl('');
     setOpeningHand([]);
     ProbabilityService.clearCache();
-    
+
     window.history.replaceState(null, '', window.location.pathname);
   };
 
@@ -725,11 +831,24 @@ export default function TCGCalculator() {
       // Apply automatic adjustment logic based on acceptance criteria
       const card = updatedCombo.cards[cardIndex];
 
-      // AC06: Auto-adjust Max in hand when Copies in deck decreases
-      if (field === 'startersInDeck' && value < currentCard.maxCopiesInHand) {
+      // Auto-adjust Max in hand when Copies in deck changes (unless user manually set Max)
+      if (field === 'startersInDeck') {
+        // Only auto-adjust if Max in hand currently equals the old Copies in deck
+        // (meaning user hasn't manually customized Max in hand)
         if (currentCard.maxCopiesInHand === currentCard.startersInDeck) {
           card.maxCopiesInHand = value;
+          console.log(`  ✨ Auto-adjusting maxCopiesInHand from ${currentCard.maxCopiesInHand} to ${value}`);
           // Clear any errors for maxCopiesInHand since we auto-adjusted it
+          setErrors(prev => {
+            const newErrors = { ...prev };
+            delete newErrors[`combo-${id}-card-${cardIndex}-maxCopiesInHand`];
+            return newErrors;
+          });
+        }
+        // Also adjust if new value is less than current max (to prevent validation errors)
+        else if (value < currentCard.maxCopiesInHand) {
+          card.maxCopiesInHand = value;
+          console.log(`  ⚠️ Capping maxCopiesInHand to ${value} (can't exceed deck count)`);
           setErrors(prev => {
             const newErrors = { ...prev };
             delete newErrors[`combo-${id}-card-${cardIndex}-maxCopiesInHand`];

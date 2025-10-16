@@ -8,6 +8,7 @@ const useYdkImport = () => {
   const [uploadedYdkFile, setUploadedYdkFile] = useState(null);
   const [ydkCards, setYdkCards] = useState([]);
   const [ydkCardCounts, setYdkCardCounts] = useState({});
+  const [originalYdkCardCounts, setOriginalYdkCardCounts] = useState({}); // Store original counts for Reset
   const [testHandFromDecklist, setTestHandFromDecklist] = useState(true);
   const [initialDeckZones, setInitialDeckZones] = useState(null);
   const [deckZones, setDeckZones] = useState({
@@ -20,6 +21,7 @@ const useYdkImport = () => {
     setUploadedYdkFile(null);
     setYdkCards([]);
     setYdkCardCounts({});
+    setOriginalYdkCardCounts({});
     setTestHandFromDecklist(true);
     setInitialDeckZones(null);
     setDeckZones({
@@ -40,6 +42,8 @@ const useYdkImport = () => {
     setYdkCards,
     ydkCardCounts,
     setYdkCardCounts,
+    originalYdkCardCounts,
+    setOriginalYdkCardCounts,
     testHandFromDecklist,
     setTestHandFromDecklist,
     initialDeckZones,
