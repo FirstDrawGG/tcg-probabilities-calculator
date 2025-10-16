@@ -47,7 +47,12 @@ const ComboCard = ({
         </div>
         <SearchableCardInput
           value={card.starterCard}
-          onChange={(value) => updateCombo(comboId, cardIndex, 'starterCard', value)}
+          onChange={(value) => {
+            console.log('🔵 ComboCard onChange wrapper called with value:', value);
+            console.log('  Calling updateCombo with:', { comboId, cardIndex, field: 'starterCard', value });
+            updateCombo(comboId, cardIndex, 'starterCard', value);
+            console.log('  updateCombo call completed');
+          }}
           placeholder="Search card name"
           errors={errors[`combo-${comboId}-card-${cardIndex}-starterCard`]}
           comboId={comboId}

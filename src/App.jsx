@@ -668,25 +668,62 @@ export default function TCGCalculator() {
     console.log(`🔄 updateCombo called: combo ${id}, card ${cardIndex}, field "${field}", value:`, value);
     setCombos(prevCombos => prevCombos.map(combo => {
       if (combo.id !== id) return combo;
-      
+
       const updatedCombo = { ...combo };
       updatedCombo.cards = [...combo.cards];
       const currentCard = combo.cards[cardIndex];
-      
+
+      console.log('  📋 Current card state before update:', {
+        starterCard: currentCard.starterCard,
+        startersInDeck: currentCard.startersInDeck,
+        minCopiesInHand: currentCard.minCopiesInHand,
+        maxCopiesInHand: currentCard.maxCopiesInHand
+      });
+
       if (field === 'starterCard' && typeof value === 'object') {
-        updatedCombo.cards[cardIndex] = { 
-          ...combo.cards[cardIndex], 
+        console.log('  🔧 Updating starterCard with object value');
+        updatedCombo.cards[cardIndex] = {
+          ...combo.cards[cardIndex],
           starterCard: value.starterCard,
           cardId: value.cardId,
           isCustom: value.isCustom
         };
+
+        // NEW: When adding a card from YDK, set copies in deck and max in hand
+        if (value.startersInDeck !== undefined) {
+          console.log(`  📦 Setting startersInDeck from ${currentCard.startersInDeck} to ${value.startersInDeck}`);
+          updatedCombo.cards[cardIndex].startersInDeck = value.startersInDeck;
+
+          // When selecting from YDK, always adjust Max in hand to match deck count
+          // This ensures YDK cards reflect actual deck composition
+          console.log(`  ✨ Auto-adjusting maxCopiesInHand from ${currentCard.maxCopiesInHand} to ${value.startersInDeck}`);
+          updatedCombo.cards[cardIndex].maxCopiesInHand = value.startersInDeck;
+
+          // Clear any errors for maxCopiesInHand since we auto-adjusted it
+          setErrors(prev => {
+            const newErrors = { ...prev };
+            delete newErrors[`combo-${id}-card-${cardIndex}-maxCopiesInHand`];
+            return newErrors;
+          });
+        }
+        if (value.maxCopiesInHand !== undefined) {
+          console.log(`  🎯 Explicitly setting maxCopiesInHand to ${value.maxCopiesInHand}`);
+          updatedCombo.cards[cardIndex].maxCopiesInHand = value.maxCopiesInHand;
+        }
+
+        console.log('  ✅ Card state after starterCard update:', {
+          starterCard: updatedCombo.cards[cardIndex].starterCard,
+          startersInDeck: updatedCombo.cards[cardIndex].startersInDeck,
+          minCopiesInHand: updatedCombo.cards[cardIndex].minCopiesInHand,
+          maxCopiesInHand: updatedCombo.cards[cardIndex].maxCopiesInHand
+        });
       } else {
         updatedCombo.cards[cardIndex] = { ...combo.cards[cardIndex], [field]: value };
       }
-      
+
       // Apply automatic adjustment logic based on acceptance criteria
       const card = updatedCombo.cards[cardIndex];
-      
+
       // AC06: Auto-adjust Max in hand when Copies in deck decreases
       if (field === 'startersInDeck' && value < currentCard.maxCopiesInHand) {
         if (currentCard.maxCopiesInHand === currentCard.startersInDeck) {
@@ -699,7 +736,7 @@ export default function TCGCalculator() {
           });
         }
       }
-      
+
       // AC07: Auto-adjust Min in hand when Max in hand decreases
       if (field === 'maxCopiesInHand' && value < currentCard.minCopiesInHand) {
         if (currentCard.minCopiesInHand === currentCard.maxCopiesInHand) {
@@ -712,12 +749,12 @@ export default function TCGCalculator() {
           });
         }
       }
-      
+
       // Legacy logic: ensure min doesn't exceed max
       if (field === 'minCopiesInHand' && value > currentCard.maxCopiesInHand) {
         card.maxCopiesInHand = value;
       }
-      
+
       console.log('🔄 Final updated combo:', updatedCombo);
       return updatedCombo;
     }));

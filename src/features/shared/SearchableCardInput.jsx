@@ -24,7 +24,18 @@ const SearchableCardInput = ({
   const dropdownRef = useRef(null);
   const inputRef = useRef(null);
   const debounceTimerRef = useRef(null);
-  
+
+  // DEBUG: Log props on mount and when they change
+  useEffect(() => {
+    console.log('🔍 SearchableCardInput props:', {
+      ydkCardCounts: ydkCardCounts ? JSON.stringify(ydkCardCounts) : 'null/undefined',
+      updateCombo: updateCombo ? 'function exists' : 'MISSING',
+      comboId,
+      cardIndex,
+      value
+    });
+  }, [ydkCardCounts, updateCombo, comboId, cardIndex, value]);
+
   // Helper function to get full card data for hand-trap checking
   const getCardData = (cardName, cardId) => {
     if (!cardName) return null;
@@ -158,25 +169,39 @@ const SearchableCardInput = ({
   };
   
   const handleCardSelect = (card) => {
-    // Update the card name properly
-    onChange({
+    console.log('🎯 SearchableCardInput - handleCardSelect called');
+    console.log('  Card selected:', card);
+    console.log('  ydkCardCounts:', ydkCardCounts);
+    console.log('  onChange function:', onChange);
+    console.log('  updateCombo function:', updateCombo);
+    console.log('  comboId:', comboId);
+    console.log('  cardIndex:', cardIndex);
+
+    // Check if this is a YDK card and get the actual copy count
+    const cardCount = ydkCardCounts && ydkCardCounts[card.name] ? ydkCardCounts[card.name] : undefined;
+    console.log('  Card count from YDK:', cardCount);
+
+    // Build the update object with card info
+    const updateData = {
       starterCard: card.name,
       cardId: card.id,
       isCustom: card.isCustom
-    });
-    
-    // If this is a YDK card, also update the copies in deck and max in hand immediately
-    if (ydkCardCounts && ydkCardCounts[card.name] && updateCombo && comboId !== undefined && cardIndex !== undefined) {
-      const cardCount = ydkCardCounts[card.name];
-      
-      // Update copies in deck
-      updateCombo(comboId, cardIndex, 'startersInDeck', cardCount);
-      
-      // Update max copies in hand to match deck count (but don't exceed reasonable limits)
-      const maxInHand = Math.min(cardCount, 3); // Cap at 3 for reasonable hand size
-      updateCombo(comboId, cardIndex, 'maxCopiesInHand', maxInHand);
+    };
+
+    // If this is a YDK card, include the copies in deck
+    // Note: maxCopiesInHand will be auto-adjusted by updateCombo logic if needed
+    if (cardCount !== undefined) {
+      updateData.startersInDeck = cardCount;
     }
-    
+
+    console.log('  Final updateData being sent:', updateData);
+    console.log('  About to call onChange...');
+
+    // Update the card with all data at once
+    onChange(updateData);
+
+    console.log('  onChange called successfully');
+
     // Close dropdown and clear search - let useEffect handle isEditing
     setSearchTerm('');
     setIsOpen(false);
@@ -326,7 +351,10 @@ const SearchableCardInput = ({
                         key={`${card.id}-${index}`}
                         className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity flex items-center justify-between"
                         style={typography.body}
-                        onClick={() => handleCardSelect(card)}
+                        onClick={() => {
+                          console.log('🖱️ Card clicked in dropdown (YDK section):', card.name);
+                          handleCardSelect(card);
+                        }}
                       >
                         <div className="flex items-center space-x-2">
                           <span>{card.name}</span>
@@ -382,7 +410,10 @@ const SearchableCardInput = ({
                             key={`ydk-${card.id}-${index}`}
                             className="px-3 py-2 hover:opacity-80 cursor-pointer transition-opacity flex items-center justify-between"
                             style={typography.body}
-                            onClick={() => handleCardSelect(card)}
+                            onClick={() => {
+                              console.log('🖱️ Card clicked in dropdown (3+ char YDK section):', card.name);
+                              handleCardSelect(card);
+                            }}
                           >
                             <div className="flex items-center space-x-2">
                               <span>{card.name}</span>

@@ -232,12 +232,19 @@ const DecklistImage = ({
   // Update combo assignment for selected card
   const updateCardComboAssignment = (comboId, minInHand, maxInHand, isAssigned, logicOperator = 'AND') => {
     if (!selectedCard) return;
-    
+
+    console.log('🎯 DecklistImage - updateCardComboAssignment called FOR REAL');
+    console.log('  selectedCard:', selectedCard);
+    console.log('  ydkCardCounts:', ydkCardCounts);
+    console.log('  comboId:', comboId);
+    console.log('  isAssigned:', isAssigned);
+
     setCombos(prevCombos => {
       return prevCombos.map(combo => {
         if (combo.id !== comboId) return combo;
-        
+
         const cardCount = ydkCardCounts[selectedCard.name] || 1;
+        console.log('  cardCount for', selectedCard.name, '=', cardCount);
         const validMin = Math.max(0, Math.min(minInHand, cardCount));
         const validMax = Math.max(validMin, Math.min(maxInHand, cardCount));
         
@@ -256,18 +263,28 @@ const DecklistImage = ({
             maxCopiesInHand: validMax,
             logicOperator: combo.cards.length > 0 ? logicOperator : 'AND' // First card doesn't need logic
           };
-          
+
+          console.log('  📦 cardData being created:', cardData);
+          console.log('  Current updatedCards:', updatedCards);
+          console.log('  existingCardIndex:', existingCardIndex);
+
           if (existingCardIndex >= 0) {
+            console.log('  ✏️ Updating existing card at index', existingCardIndex);
             updatedCards[existingCardIndex] = cardData;
           } else {
             // Replace empty card or add new one
             const emptyIndex = updatedCards.findIndex(card => !card.starterCard.trim());
+            console.log('  emptyIndex:', emptyIndex);
             if (emptyIndex >= 0) {
+              console.log('  📝 Replacing empty card at index', emptyIndex);
               updatedCards[emptyIndex] = cardData;
             } else {
+              console.log('  ➕ Adding new card to end');
               updatedCards.push(cardData);
             }
           }
+
+          console.log('  ✅ Final updatedCards:', updatedCards);
         } else {
           if (existingCardIndex >= 0) {
             updatedCards.splice(existingCardIndex, 1);
@@ -531,7 +548,11 @@ const DecklistImage = ({
                     <input
                       type="checkbox"
                       checked={isAssigned}
-                      onChange={(e) => updateCardComboAssignment(combo.id, minValue, maxValue, e.target.checked, comboLogicSelections[combo.id] || 'AND')}
+                      onChange={(e) => {
+                        console.log('☑️ Checkbox clicked for combo:', combo.id, 'checked:', e.target.checked);
+                        console.log('  minValue:', minValue, 'maxValue:', maxValue);
+                        updateCardComboAssignment(combo.id, minValue, maxValue, e.target.checked, comboLogicSelections[combo.id] || 'AND');
+                      }}
                       style={{ marginRight: '8px' }}
                     />
                     <span style={{ ...typography.body, fontWeight: isAssigned ? 'bold' : 'normal' }}>
