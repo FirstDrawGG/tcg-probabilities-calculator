@@ -459,14 +459,17 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
           );
 
           // Add card to combo
+          // Get actual card count from YDK if available
+          const actualCardCount = ydkCardCounts && ydkCardCounts[card.name] ? ydkCardCounts[card.name] : 3;
+
           const newCard = {
             starterCard: card.name,
             cardId: card.cardId || null,
             isCustom: card.isCustom || false,
-            startersInDeck: 3, // Default value
-            minCopiesInHand: 1, // Default value
-            maxCopiesInHand: 1, // Default value
-            logicOperator: 'AND' // Default value
+            startersInDeck: actualCardCount,
+            minCopiesInHand: 1,
+            maxCopiesInHand: actualCardCount,
+            logicOperator: 'AND'
           };
 
           // If there's an empty slot, replace it; otherwise append
@@ -501,6 +504,9 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
 
         if (emptyCardIndex !== -1) {
           // Found an empty slot, populate it
+          // Get actual card count from YDK if available
+          const actualCardCount = ydkCardCounts && ydkCardCounts[card.name] ? ydkCardCounts[card.name] : 3;
+
           const updatedCombos = [...prevCombos];
           updatedCombos[i] = {
             ...combo,
@@ -510,9 +516,9 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                   starterCard: card.name,
                   cardId: card.cardId || null,
                   isCustom: card.isCustom || false,
-                  startersInDeck: 3,
+                  startersInDeck: actualCardCount,
                   minCopiesInHand: 1,
-                  maxCopiesInHand: 1,
+                  maxCopiesInHand: actualCardCount,
                   logicOperator: 'AND'
                 };
               }
@@ -524,6 +530,9 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
       }
 
       // No empty slots found, create a new combo
+      // Get actual card count from YDK if available
+      const actualCardCount = ydkCardCounts && ydkCardCounts[card.name] ? ydkCardCounts[card.name] : 3;
+
       const newComboId = Math.max(...prevCombos.map(c => c.id)) + 1;
       const newCombo = {
         id: newComboId,
@@ -532,9 +541,9 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
           starterCard: card.name,
           cardId: card.cardId || null,
           isCustom: card.isCustom || false,
-          startersInDeck: 3,
+          startersInDeck: actualCardCount,
           minCopiesInHand: 1,
-          maxCopiesInHand: 1,
+          maxCopiesInHand: actualCardCount,
           logicOperator: 'AND'
         }]
       };

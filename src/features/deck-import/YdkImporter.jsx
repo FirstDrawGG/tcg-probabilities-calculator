@@ -84,6 +84,8 @@ const YdkImporter = ({
         content: content
       });
       setYdkCards(uniqueCards);
+      console.log('🐛 YdkImporter (UPLOAD) - parseResult.cardCounts:', parseResult.cardCounts);
+      console.log('🐛 YdkImporter (UPLOAD) - Sample counts:', Object.entries(parseResult.cardCounts).slice(0, 5));
       setYdkCardCounts(parseResult.cardCounts);
 
       // Populate the deck builder with parsed deck zones

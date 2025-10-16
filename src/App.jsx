@@ -329,6 +329,7 @@ export default function TCGCalculator() {
       });
       setYdkCards(uniqueCards);
       setYdkCardCounts(parseResult.cardCounts);
+      console.log('📊 YDK Card Counts after upload:', parseResult.cardCounts);
 
       // Populate the deck builder with parsed deck zones
       if (parseResult.deckZones) {

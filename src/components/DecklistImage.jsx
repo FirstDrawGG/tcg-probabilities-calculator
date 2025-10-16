@@ -180,6 +180,10 @@ const DecklistImage = ({
 
   // AC #1: Handle card click
   const handleCardClick = (card, event) => {
+    console.log('🖱️ DecklistImage - handleCardClick called');
+    console.log('  Full card object:', card);
+    console.log('  card.name:', card.name);
+    console.log('  card.id:', card.id);
     const rect = event.currentTarget.getBoundingClientRect();
     setSelectedCard(card);
     setOverlayPosition({
@@ -235,7 +239,9 @@ const DecklistImage = ({
 
     console.log('🎯 DecklistImage - updateCardComboAssignment called FOR REAL');
     console.log('  selectedCard:', selectedCard);
+    console.log('  selectedCard.name:', selectedCard.name);
     console.log('  ydkCardCounts:', ydkCardCounts);
+    console.log('  ydkCardCounts keys:', Object.keys(ydkCardCounts));
     console.log('  comboId:', comboId);
     console.log('  isAssigned:', isAssigned);
 
@@ -244,7 +250,9 @@ const DecklistImage = ({
         if (combo.id !== comboId) return combo;
 
         const cardCount = ydkCardCounts[selectedCard.name] || 1;
-        console.log('  cardCount for', selectedCard.name, '=', cardCount);
+        console.log('  🔍 Looking up:', selectedCard.name);
+        console.log('  📊 Found cardCount:', cardCount);
+        console.log('  ⚠️ If cardCount is 1, check if key exists in ydkCardCounts:', selectedCard.name in ydkCardCounts);
         const validMin = Math.max(0, Math.min(minInHand, cardCount));
         const validMax = Math.max(validMin, Math.min(maxInHand, cardCount));
         
