@@ -138,6 +138,7 @@ const ComboCard = ({
               style={{
                 width: '64px'
               }}
+              aria-label="Copies in deck"
             />
             <Button
               onClick={() => updateCombo(comboId, cardIndex, 'startersInDeck', card.startersInDeck + 1)}
@@ -190,6 +191,7 @@ const ComboCard = ({
                 style={{
                   width: '64px'
                 }}
+                aria-label="Minimum copies in hand"
               />
               <Button
                 onClick={() => validateAndUpdateCombo(comboId, cardIndex, 'minCopiesInHand', card.minCopiesInHand + 1)}
@@ -241,6 +243,7 @@ const ComboCard = ({
                 style={{
                   width: '64px'
                 }}
+                aria-label="Maximum copies in hand"
               />
               <Button
                 onClick={() => validateAndUpdateCombo(comboId, cardIndex, 'maxCopiesInHand', card.maxCopiesInHand + 1)}

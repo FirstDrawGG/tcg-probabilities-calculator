@@ -142,6 +142,7 @@ const DeckInputs = ({
           className={`enhanced-input w-full ${
             errors.deckSize ? 'border-red-500' : ''
           }`}
+          aria-label="Deck size"
         />
         {errors.deckSize && (
           <p className="text-red-500 mt-1" style={typography.body}>{errors.deckSize}</p>
