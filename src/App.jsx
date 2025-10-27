@@ -54,6 +54,7 @@ export default function TCGCalculator() {
   const [toastMessage, setToastMessage] = useState('');
   const { openingHand, setOpeningHand, isRefreshing, setIsRefreshing } = useOpeningHand();
   const { errors, setErrors } = useErrors();
+  const [isCalculating, setIsCalculating] = useState(false);
 
   // YDK Import hook
   const {
@@ -645,6 +646,9 @@ export default function TCGCalculator() {
   const runCalculation = () => {
     if (!validate()) return;
 
+    // Set loading state immediately for instant UI feedback
+    setIsCalculating(true);
+
     // Sync YDK display with combo definitions
     syncYdkFromCombos();
 
@@ -654,20 +658,28 @@ export default function TCGCalculator() {
       combos: combos.map(c => ({ ...c }))
     });
 
-    const calculatedResults = ProbabilityService.calculateMultipleCombos(combos, deckSize, handSize);
-    setResults(calculatedResults);
-    
-    // Generate shareable URL
-    URLService.updateURL(deckSize, handSize, combos, uploadedYdkFile, testHandFromDecklist);
-    const url = window.location.href;
-    setShareableUrl(url);
-    
-    // Generate title using individual results for compatibility
-    const title = TitleGeneratorService.generateFunTitle(combos, deckSize, calculatedResults.individual);
-    setGeneratedTitle(title);
+    // Defer heavy calculation to next tick to unblock UI thread
+    setTimeout(() => {
+      try {
+        const calculatedResults = ProbabilityService.calculateMultipleCombos(combos, deckSize, handSize);
+        setResults(calculatedResults);
 
-    // Auto-scroll to Calculation Dashboard
-    setTimeout(() => scrollToCalculationDashboard(), 100);
+        // Generate shareable URL
+        URLService.updateURL(deckSize, handSize, combos, uploadedYdkFile, testHandFromDecklist);
+        const url = window.location.href;
+        setShareableUrl(url);
+
+        // Generate title using individual results for compatibility
+        const title = TitleGeneratorService.generateFunTitle(combos, deckSize, calculatedResults.individual);
+        setGeneratedTitle(title);
+
+        // Auto-scroll to Calculation Dashboard
+        setTimeout(() => scrollToCalculationDashboard(), 100);
+      } finally {
+        // Clear loading state
+        setIsCalculating(false);
+      }
+    }, 0);
   };
 
   const clearPreviousCalculationData = (newDeckSize = null) => {
@@ -1222,12 +1234,12 @@ useEffect(() => {
           <div className="flex space-x-4 mt-6">
             <Button
               onClick={runCalculation}
-              disabled={!allFieldsFilled || hasValidationErrors}
+              disabled={!allFieldsFilled || hasValidationErrors || isCalculating}
               className="enhanced-button"
               style={{ flex: 1 }}
             >
               <Icon name="calculator" ariaLabel="Calculate" size={14} className="button-icon" style={{ color: '#141414' }} />
-              <span className="button-text">Calculate</span>
+              <span className="button-text">{isCalculating ? 'Calculating...' : 'Calculate'}</span>
             </Button>
             <Button
               onClick={handleReset}
