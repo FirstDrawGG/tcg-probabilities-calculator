@@ -315,33 +315,36 @@ const ResultsDisplay = ({
             className={`px-4 py-2 font-medium transition-colors ${
               isRefreshing ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-80'
             }`}
-            style={{ 
-              backgroundColor: 'transparent', 
+            style={{
+              backgroundColor: 'transparent',
               color: 'var(--text-main)',
               border: 'none',
               borderRadius: '20px',
               fontSize: '14px',
               lineHeight: '20px',
-              fontFamily: 'Geist, sans-serif'
+              fontFamily: 'Geist, sans-serif',
+              minWidth: '100px'
             }}
+            aria-label={isRefreshing ? 'Shuffling cards' : 'Refresh opening hand'}
           >
             {isRefreshing ? 'Shuffling...' : 'Refresh'}
           </button>
         </div>
         
-        <p className="mb-4" style={{...typography.body, color: 'var(--text-secondary)'}}>
+        <p className="mb-4" style={{...typography.body, color: 'var(--text-secondary)', minHeight: '20px'}}>
           {testHandFromDecklist && ydkCards && ydkCards.length > 0 && !isToggleDisabled
             ? '*This is a simulated opening hand drawn from your uploaded decklist'
             : '*This is a probabilistic example of your opening hand based on defined combos'
           }
         </p>
         
-        <div 
+        <div
           style={{
             display: 'flex',
             gap: '8px',
             flexWrap: 'wrap',
-            justifyContent: 'flex-start'
+            justifyContent: 'flex-start',
+            minHeight: '112px'
           }}
         >
           {/* AC#7: Lazy-load opening hand display */}

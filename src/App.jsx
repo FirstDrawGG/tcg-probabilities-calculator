@@ -1236,10 +1236,12 @@ useEffect(() => {
               onClick={runCalculation}
               disabled={!allFieldsFilled || hasValidationErrors || isCalculating}
               className="enhanced-button"
-              style={{ flex: 1 }}
+              style={{ flex: 1, minWidth: '150px' }}
             >
               <Icon name="calculator" ariaLabel="Calculate" size={14} className="button-icon" style={{ color: '#141414' }} />
-              <span className="button-text">{isCalculating ? 'Calculating...' : 'Calculate'}</span>
+              <span className="button-text" style={{ minWidth: '90px', display: 'inline-block', textAlign: 'center' }}>
+                {isCalculating ? 'Calculating...' : 'Calculate'}
+              </span>
             </Button>
             <Button
               onClick={handleReset}

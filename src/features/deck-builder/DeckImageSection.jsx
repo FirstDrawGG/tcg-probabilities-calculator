@@ -737,6 +737,7 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                   lineHeight: 1,
                   height: 'auto'
                 }}
+                aria-label="Close add to combo dialog"
               >
                 ×
               </Button>

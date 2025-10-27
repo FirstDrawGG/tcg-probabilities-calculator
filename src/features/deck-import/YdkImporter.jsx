@@ -411,6 +411,7 @@ const YdkImporter = ({
               padding: '4px',
               cursor: 'pointer'
             }}
+            aria-label="Remove decklist"
           >
             ×
           </button>

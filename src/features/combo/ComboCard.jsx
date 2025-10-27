@@ -40,6 +40,7 @@ const ComboCard = ({
                 padding: '0'
               }}
               title="Remove this card"
+              aria-label="Remove this card"
             >
               ×
             </Button>

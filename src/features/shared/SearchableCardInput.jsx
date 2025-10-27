@@ -316,11 +316,12 @@ const SearchableCardInput = ({
             <button
               type="button"
               onClick={(e) => {
-                e.stopPropagation(); 
+                e.stopPropagation();
                 handleClear();
               }}
               className="hover:opacity-80 transition-opacity"
               style={{ fontSize: '16px' }}
+              aria-label="Clear card selection"
             >
               ×
             </button>

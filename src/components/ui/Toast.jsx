@@ -79,6 +79,7 @@ const Toast = ({ message, onClose }) => {
             border: 'none',
             height: 'auto'
           }}
+          aria-label="Close notification"
         >
           ×
         </Button>
