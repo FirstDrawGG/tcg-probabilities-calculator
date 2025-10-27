@@ -2,5 +2,40 @@
   "framework": "vite",
   "outputDirectory": "dist",
   "installCommand": "rm -rf node_modules package-lock.json && npm install",
-  "buildCommand": "npm run build"
+  "buildCommand": "npm run build",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "firstdrawgg.online"
+        }
+      ],
+      "destination": "https://www.firstdrawgg.online/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "http://firstdrawgg.online"
+        }
+      ],
+      "destination": "https://www.firstdrawgg.online/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "http://www.firstdrawgg.online"
+        }
+      ],
+      "destination": "https://www.firstdrawgg.online/:path*",
+      "permanent": true
+    }
+  ]
 }
