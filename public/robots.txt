@@ -1,0 +1,14 @@
+# robots.txt for FirstDrawGG - TCG Probabilities Calculator
+# https://www.firstdrawgg.online/robots.txt
+
+User-agent: *
+Allow: /
+
+# Disallow private/development directories
+Disallow: /api/
+Disallow: /admin/
+Disallow: /src/
+Disallow: /node_modules/
+
+# Sitemap location
+Sitemap: https://www.firstdrawgg.online/sitemap.xml
