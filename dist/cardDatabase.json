@@ -2750,6 +2750,13 @@
     "attribute": "EARTH",
     "isExtraDeck": false
   },
+  "2725599": {
+    "name": "Rescue-ACE Arbitrator",
+    "type": "Link Monster",
+    "level": null,
+    "attribute": "FIRE",
+    "isExtraDeck": true
+  },
   "2729285": {
     "name": "Fluffal Cat",
     "type": "Effect Monster",
@@ -4024,6 +4031,13 @@
     "attribute": "LIGHT",
     "isExtraDeck": false
   },
+  "3957130": {
+    "name": "Trisborrel Dragon",
+    "type": "Link Monster",
+    "level": null,
+    "attribute": "DARK",
+    "isExtraDeck": true
+  },
   "3966653": {
     "name": "Flower Cardian Boardefly",
     "type": "Synchro Monster",
@@ -4163,6 +4177,13 @@
     "level": null,
     "attribute": null,
     "isExtraDeck": false
+  },
+  "4079728": {
+    "name": "Gung-ho! Springans!",
+    "type": "XYZ Monster",
+    "level": 4,
+    "attribute": "FIRE",
+    "isExtraDeck": true
   },
   "4081094": {
     "name": "The Second Sarcophagus",
@@ -4878,6 +4899,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "4891376": {
+    "name": "Zaren the Chainbound Dragon",
+    "type": "Synchro Tuner Monster",
+    "level": 7,
+    "attribute": "DARK",
+    "isExtraDeck": true
+  },
   "4896788": {
     "name": "Spirit of the Pot of Greed",
     "type": "Effect Monster",
@@ -4904,6 +4932,13 @@
     "type": "Effect Monster",
     "level": 3,
     "attribute": "DARK",
+    "isExtraDeck": false
+  },
+  "4909946": {
+    "name": "Boss on Parade",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
     "isExtraDeck": false
   },
   "4914353": {
@@ -5114,6 +5149,13 @@
     "type": "Spell Card",
     "level": null,
     "attribute": null,
+    "isExtraDeck": false
+  },
+  "5121528": {
+    "name": "B.E.S. Derringer Core",
+    "type": "Effect Monster",
+    "level": 10,
+    "attribute": "LIGHT",
     "isExtraDeck": false
   },
   "5126490": {
@@ -5892,6 +5934,13 @@
     "level": null,
     "attribute": null,
     "isExtraDeck": false
+  },
+  "5914858": {
+    "name": "Junora the Power Patron of Tuning",
+    "type": "Synchro Monster",
+    "level": 10,
+    "attribute": "FIRE",
+    "isExtraDeck": true
   },
   "5915629": {
     "name": "The Gift of Greed",
@@ -10107,6 +10156,13 @@
     "attribute": "WIND",
     "isExtraDeck": false
   },
+  "10136446": {
+    "name": "Darklord Eveningstar",
+    "type": "Fusion Monster",
+    "level": 12,
+    "attribute": "DARK",
+    "isExtraDeck": true
+  },
   "10140443": {
     "name": "Salamangreat Burst Gryphon",
     "type": "Synchro Monster",
@@ -10343,6 +10399,13 @@
     "type": "Spell Card",
     "level": null,
     "attribute": null,
+    "isExtraDeck": false
+  },
+  "10426067": {
+    "name": "Darklord Djehuty",
+    "type": "Effect Monster",
+    "level": 4,
+    "attribute": "DARK",
     "isExtraDeck": false
   },
   "10441498": {
@@ -10933,6 +10996,13 @@
     "attribute": "EARTH",
     "isExtraDeck": false
   },
+  "11035075": {
+    "name": "Shichigosan Shugo",
+    "type": "Trap Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "11039171": {
     "name": "Frightfur Wolf",
     "type": "Fusion Monster",
@@ -11148,6 +11218,13 @@
     "type": "Tuner Monster",
     "level": 4,
     "attribute": "WATER",
+    "isExtraDeck": false
+  },
+  "11248645": {
+    "name": "Highness Archfiend",
+    "type": "Effect Monster",
+    "level": 3,
+    "attribute": "LIGHT",
     "isExtraDeck": false
   },
   "11250655": {
@@ -11794,6 +11871,13 @@
     "attribute": "LIGHT",
     "isExtraDeck": false
   },
+  "11852093": {
+    "name": "D/D/D Sage King Alfred",
+    "type": "Fusion Monster",
+    "level": 6,
+    "attribute": "DARK",
+    "isExtraDeck": true
+  },
   "11868731": {
     "name": "Madolche Magileine",
     "type": "Effect Monster",
@@ -12032,6 +12116,13 @@
     "attribute": "EARTH",
     "isExtraDeck": false
   },
+  "12157563": {
+    "name": "Forbidden Ritual Art",
+    "type": "Trap Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "12160911": {
     "name": "Elephant Statue of Disaster",
     "type": "Effect Monster",
@@ -12086,6 +12177,13 @@
     "type": "Pendulum Effect Monster",
     "level": 2,
     "attribute": "LIGHT",
+    "isExtraDeck": false
+  },
+  "12197223": {
+    "name": "Sheena the Twin Storm Deities of Divine Thunder",
+    "type": "Effect Monster",
+    "level": 9,
+    "attribute": "WIND",
     "isExtraDeck": false
   },
   "12197543": {
@@ -12254,6 +12352,13 @@
     "type": "Effect Monster",
     "level": 3,
     "attribute": "WATER",
+    "isExtraDeck": false
+  },
+  "12375297": {
+    "name": "Elvennotes Power Patron",
+    "type": "Tuner Monster",
+    "level": 1,
+    "attribute": "FIRE",
     "isExtraDeck": false
   },
   "12381100": {
@@ -12809,6 +12914,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "12975671": {
+    "name": "First Penguin",
+    "type": "Effect Monster",
+    "level": 1,
+    "attribute": "WATER",
+    "isExtraDeck": false
+  },
   "12977245": {
     "name": "Altergeist Fifinellag",
     "type": "Tuner Monster",
@@ -13222,6 +13334,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "13379114": {
+    "name": "Archfiend's Vigor",
+    "type": "Trap Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "13382806": {
     "name": "Silvervine Senri",
     "type": "Effect Monster",
@@ -13444,6 +13563,13 @@
     "type": "Effect Monster",
     "level": 1,
     "attribute": "DARK",
+    "isExtraDeck": false
+  },
+  "13597785": {
+    "name": "Elvennotes Lucina",
+    "type": "Effect Monster",
+    "level": 6,
+    "attribute": "FIRE",
     "isExtraDeck": false
   },
   "13599884": {
@@ -18962,6 +19088,13 @@
     "attribute": "DARK",
     "isExtraDeck": false
   },
+  "19304410": {
+    "name": "Tri-Brigade Springans Kitt",
+    "type": "Effect Monster",
+    "level": 4,
+    "attribute": "LIGHT",
+    "isExtraDeck": false
+  },
   "19307353": {
     "name": "Spirit Sculptor",
     "type": "Effect Monster",
@@ -20031,6 +20164,13 @@
     "type": "Pendulum Effect Monster",
     "level": 3,
     "attribute": "DARK",
+    "isExtraDeck": false
+  },
+  "20415050": {
+    "name": "Hecahands",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
     "isExtraDeck": false
   },
   "20417688": {
@@ -22819,6 +22959,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "23219323": {
+    "name": "Junk Warrior/Assault Mode",
+    "type": "Effect Monster",
+    "level": 7,
+    "attribute": "DARK",
+    "isExtraDeck": false
+  },
   "23220533": {
     "name": "Starry Knight Rayel",
     "type": "Effect Monster",
@@ -23778,6 +23925,13 @@
     "attribute": "EARTH",
     "isExtraDeck": false
   },
+  "24092792": {
+    "name": "Elvennotes ~Maddening Rhapsodia~",
+    "type": "Trap Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "24094258": {
     "name": "Heavymetalfoes Electrumite",
     "type": "Link Monster",
@@ -24133,6 +24287,13 @@
     "type": "Trap Card",
     "level": null,
     "attribute": null,
+    "isExtraDeck": false
+  },
+  "24431911": {
+    "name": "Tellusrion the Magna Warrior",
+    "type": "Effect Monster",
+    "level": 8,
+    "attribute": "EARTH",
     "isExtraDeck": false
   },
   "24432029": {
@@ -24821,6 +24982,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "25224340": {
+    "name": "Nightmare Hand",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "25231813": {
     "name": "Silver Wing",
     "type": "Spell Card",
@@ -25147,6 +25315,13 @@
     "name": "Blowback Dragon",
     "type": "Effect Monster",
     "level": 6,
+    "attribute": "DARK",
+    "isExtraDeck": false
+  },
+  "25554552": {
+    "name": "Rokket Loader",
+    "type": "Effect Monster",
+    "level": 4,
     "attribute": "DARK",
     "isExtraDeck": false
   },
@@ -25563,6 +25738,13 @@
     "attribute": "DARK",
     "isExtraDeck": false
   },
+  "25940932": {
+    "name": "Radiant Typhoon Elation",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "25955164": {
     "name": "Sanga of the Thunder",
     "type": "Effect Monster",
@@ -25701,6 +25883,13 @@
     "type": "Effect Monster",
     "level": 2,
     "attribute": "EARTH",
+    "isExtraDeck": false
+  },
+  "26162470": {
+    "name": "Fandora, the Fearsome Flying Furtress",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
     "isExtraDeck": false
   },
   "26185991": {
@@ -26744,6 +26933,13 @@
     "type": "Effect Monster",
     "level": 10,
     "attribute": "EARTH",
+    "isExtraDeck": false
+  },
+  "27285068": {
+    "name": "Theorealize Liberation",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
     "isExtraDeck": false
   },
   "27288416": {
@@ -29434,6 +29630,13 @@
     "attribute": "DARK",
     "isExtraDeck": false
   },
+  "30064423": {
+    "name": "Topologic Blaster Dragon",
+    "type": "Link Monster",
+    "level": null,
+    "attribute": "DARK",
+    "isExtraDeck": true
+  },
   "30068120": {
     "name": "Edge Imp Sabres",
     "type": "Effect Monster",
@@ -29656,6 +29859,13 @@
     "type": "Effect Monster",
     "level": 10,
     "attribute": "DARK",
+    "isExtraDeck": false
+  },
+  "30271097": {
+    "name": "The Fallen & The Virtuous",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
     "isExtraDeck": false
   },
   "30276969": {
@@ -30672,6 +30882,13 @@
     "level": 4,
     "attribute": "LIGHT",
     "isExtraDeck": false
+  },
+  "31286915": {
+    "name": "K9-X \"Ripper/Millennia\"",
+    "type": "XYZ Monster",
+    "level": 9,
+    "attribute": "WIND",
+    "isExtraDeck": true
   },
   "31292357": {
     "name": "Performage Hat Tricker",
@@ -37456,6 +37673,13 @@
     "attribute": "EARTH",
     "isExtraDeck": true
   },
+  "38007649": {
+    "name": "DoomZ Changer",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "38007744": {
     "name": "Chronomaly Moai Carrier",
     "type": "Effect Monster",
@@ -37587,6 +37811,13 @@
     "type": "Effect Monster",
     "level": 1,
     "attribute": "EARTH",
+    "isExtraDeck": false
+  },
+  "38129297": {
+    "name": "Double Trigger",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
     "isExtraDeck": false
   },
   "38142739": {
@@ -38778,6 +39009,13 @@
     "level": 4,
     "attribute": "LIGHT",
     "isExtraDeck": false
+  },
+  "39341885": {
+    "name": "Radiant Typhoon Varuroon, the Sea Spirit",
+    "type": "Link Monster",
+    "level": null,
+    "attribute": "WIND",
+    "isExtraDeck": true
   },
   "39343610": {
     "name": "Darkblaze Dragon",
@@ -40977,6 +41215,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "41516133": {
+    "name": "Super B.E.S. Metal Slave",
+    "type": "Effect Monster",
+    "level": 11,
+    "attribute": "DARK",
+    "isExtraDeck": false
+  },
   "41517789": {
     "name": "Star Eater",
     "type": "Synchro Monster",
@@ -41502,6 +41747,13 @@
     "attribute": "WIND",
     "isExtraDeck": true
   },
+  "42125140": {
+    "name": "Dracotail Shaurus",
+    "type": "Fusion Monster",
+    "level": null,
+    "attribute": "LIGHT",
+    "isExtraDeck": true
+  },
   "42129512": {
     "name": "Big Koala",
     "type": "Normal Monster",
@@ -41675,6 +41927,13 @@
     "type": "Synchro Monster",
     "level": 8,
     "attribute": "DARK",
+    "isExtraDeck": true
+  },
+  "42302563": {
+    "name": "Elvennotes Seraphim Stlitzia",
+    "type": "Synchro Monster",
+    "level": 7,
+    "attribute": "FIRE",
     "isExtraDeck": true
   },
   "42303365": {
@@ -46073,6 +46332,13 @@
     "attribute": "LIGHT",
     "isExtraDeck": false
   },
+  "46708514": {
+    "name": "Dark Staring at the Blue Sky",
+    "type": "Effect Monster",
+    "level": 10,
+    "attribute": "DARK",
+    "isExtraDeck": false
+  },
   "46710683": {
     "name": "Blackwing - Mistral the Silver Shield",
     "type": "Tuner Monster",
@@ -46591,6 +46857,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "47247792": {
+    "name": "Conduction Knight Plasma Magnum",
+    "type": "Fusion Monster",
+    "level": 7,
+    "attribute": "EARTH",
+    "isExtraDeck": true
+  },
   "47264717": {
     "name": "Shooting Star",
     "type": "Trap Card",
@@ -46751,6 +47024,13 @@
     "level": 6,
     "attribute": "WATER",
     "isExtraDeck": true
+  },
+  "47425162": {
+    "name": "Rescue-ACE Quick Attacker",
+    "type": "Effect Monster",
+    "level": 3,
+    "attribute": "FIRE",
+    "isExtraDeck": false
   },
   "47432275": {
     "name": "Kuribon",
@@ -46932,6 +47212,13 @@
     "type": "Normal Tuner Monster",
     "level": 1,
     "attribute": "LIGHT",
+    "isExtraDeck": false
+  },
+  "47647354": {
+    "name": "Rex, Gale Fur Hire",
+    "type": "Effect Monster",
+    "level": 5,
+    "attribute": "WIND",
     "isExtraDeck": false
   },
   "47658964": {
@@ -47718,6 +48005,13 @@
     "attribute": "DARK",
     "isExtraDeck": false
   },
+  "48469380": {
+    "name": "Doom Emperor Archfiend",
+    "type": "Pendulum Effect Ritual Monster",
+    "level": 7,
+    "attribute": "FIRE",
+    "isExtraDeck": false
+  },
   "48486809": {
     "name": "Winged Kuriboh LV6",
     "type": "Effect Monster",
@@ -48348,6 +48642,13 @@
     "attribute": "LIGHT",
     "isExtraDeck": true
   },
+  "49181828": {
+    "name": "Threat Armed Dragon",
+    "type": "Effect Monster",
+    "level": 5,
+    "attribute": "WIND",
+    "isExtraDeck": false
+  },
   "49191560": {
     "name": "Charioteer of Prophecy",
     "type": "Effect Monster",
@@ -48724,6 +49025,13 @@
     "type": "Effect Monster",
     "level": 6,
     "attribute": "EARTH",
+    "isExtraDeck": false
+  },
+  "49652661": {
+    "name": "Arsenal Organization",
+    "type": "Trap Card",
+    "level": null,
+    "attribute": null,
     "isExtraDeck": false
   },
   "49655592": {
@@ -49601,6 +49909,13 @@
     "attribute": "WATER",
     "isExtraDeck": true
   },
+  "50590801": {
+    "name": "Elvennotes ~Oracle Aristeia~",
+    "type": "Trap Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "50593156": {
     "name": "Sand Gambler",
     "type": "Effect Monster",
@@ -49620,6 +49935,13 @@
     "type": "Effect Monster",
     "level": 3,
     "attribute": "DARK",
+    "isExtraDeck": false
+  },
+  "50604072": {
+    "name": "Crimson Blader/Assault Mode",
+    "type": "Effect Monster",
+    "level": 10,
+    "attribute": "FIRE",
     "isExtraDeck": false
   },
   "50604950": {
@@ -50497,6 +50819,13 @@
     "attribute": "LIGHT",
     "isExtraDeck": true
   },
+  "51548207": {
+    "name": "Hollowrokket Dragon",
+    "type": "Effect Monster",
+    "level": 6,
+    "attribute": "DARK",
+    "isExtraDeck": false
+  },
   "51549976": {
     "name": "Final Inzektion",
     "type": "Spell Card",
@@ -50565,6 +50894,13 @@
     "type": "Effect Monster",
     "level": 7,
     "attribute": "LIGHT",
+    "isExtraDeck": false
+  },
+  "51612489": {
+    "name": "Riot",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
     "isExtraDeck": false
   },
   "51616747": {
@@ -50755,6 +51091,13 @@
     "level": 7,
     "attribute": "LIGHT",
     "isExtraDeck": true
+  },
+  "51826619": {
+    "name": "Magnet Warrior Σ＋",
+    "type": "Effect Monster",
+    "level": 4,
+    "attribute": "EARTH",
+    "isExtraDeck": false
   },
   "51827737": {
     "name": "Genex Recycled",
@@ -51231,6 +51574,13 @@
     "level": null,
     "attribute": "EARTH",
     "isExtraDeck": true
+  },
+  "52335937": {
+    "name": "Exosister Bat Mater",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
   },
   "52339733": {
     "name": "Lindbloom",
@@ -52497,6 +52847,13 @@
     "type": "Effect Monster",
     "level": 4,
     "attribute": "LIGHT",
+    "isExtraDeck": false
+  },
+  "53557529": {
+    "name": "Storm Fur Hire",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
     "isExtraDeck": false
   },
   "53567095": {
@@ -57749,6 +58106,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "58769832": {
+    "name": "Royal Archfiend",
+    "type": "Effect Monster",
+    "level": 7,
+    "attribute": "FIRE",
+    "isExtraDeck": false
+  },
   "58775978": {
     "name": "Nightmare's Steelcage",
     "type": "Spell Card",
@@ -58330,6 +58694,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "59374259": {
+    "name": "Secret Technique Fur Hire",
+    "type": "Trap Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "59380081": {
     "name": "Big-Tusked Mammoth",
     "type": "Effect Monster",
@@ -58531,6 +58902,13 @@
     "type": "Effect Monster",
     "level": 5,
     "attribute": "FIRE",
+    "isExtraDeck": false
+  },
+  "59581480": {
+    "name": "Elvennotes Dyina",
+    "type": "Effect Monster",
+    "level": 6,
+    "attribute": "WATER",
     "isExtraDeck": false
   },
   "59593925": {
@@ -62397,6 +62775,13 @@
     "attribute": "EARTH",
     "isExtraDeck": false
   },
+  "63679166": {
+    "name": "Throne of Archfiends",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "63689843": {
     "name": "Attack and Receive",
     "type": "Trap Card",
@@ -63123,6 +63508,13 @@
     "type": "Effect Monster",
     "level": 3,
     "attribute": "EARTH",
+    "isExtraDeck": false
+  },
+  "64491754": {
+    "name": "Elvennotes ~Homecoming Parallelism~",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
     "isExtraDeck": false
   },
   "64496451": {
@@ -64098,6 +64490,13 @@
     "attribute": "LIGHT",
     "isExtraDeck": false
   },
+  "65514302": {
+    "name": "Magnet Bonding",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "65515667": {
     "name": "Motor Kaiser",
     "type": "Effect Monster",
@@ -64931,6 +65330,13 @@
     "attribute": "WATER",
     "isExtraDeck": false
   },
+  "66452432": {
+    "name": "Borrelshroud Dragon",
+    "type": "Link Monster",
+    "level": null,
+    "attribute": "DARK",
+    "isExtraDeck": true
+  },
   "66457138": {
     "name": "Fluffal Leo",
     "type": "Effect Monster",
@@ -65224,6 +65630,13 @@
     "level": 1,
     "attribute": "LIGHT",
     "isExtraDeck": false
+  },
+  "66736884": {
+    "name": "Keel, Shipwright Fur Hire",
+    "type": "Link Monster",
+    "level": null,
+    "attribute": "WATER",
+    "isExtraDeck": true
   },
   "66740005": {
     "name": "Bravo, Fighter Fur Hire",
@@ -72064,6 +72477,13 @@
     "attribute": "DARK",
     "isExtraDeck": false
   },
+  "73819701": {
+    "name": "Fallen of the White Dragon",
+    "type": "Effect Monster",
+    "level": 4,
+    "attribute": "DARK",
+    "isExtraDeck": false
+  },
   "73820802": {
     "name": "Onikuji",
     "type": "Trap Card",
@@ -72784,6 +73204,13 @@
     "level": 1,
     "attribute": "EARTH",
     "isExtraDeck": false
+  },
+  "74631897": {
+    "name": "Artmage Non Finito",
+    "type": "Fusion Monster",
+    "level": 7,
+    "attribute": "EARTH",
+    "isExtraDeck": true
   },
   "74637266": {
     "name": "Octoberser",
@@ -74717,6 +75144,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "76666602": {
+    "name": "The Dragon that Devours the Dogma",
+    "type": "Fusion Monster",
+    "level": 8,
+    "attribute": "DARK",
+    "isExtraDeck": true
+  },
   "76672730": {
     "name": "Dark World Archives",
     "type": "Spell Card",
@@ -75676,6 +76110,13 @@
     "attribute": "DARK",
     "isExtraDeck": false
   },
+  "77675029": {
+    "name": "Exosister Karmael",
+    "type": "XYZ Monster",
+    "level": 4,
+    "attribute": "DARK",
+    "isExtraDeck": true
+  },
   "77679716": {
     "name": "Superheavy Samurai Soulbreaker Armor",
     "type": "Effect Monster",
@@ -76264,6 +76705,13 @@
     "attribute": "DARK",
     "isExtraDeck": false
   },
+  "78397661": {
+    "name": "Ecclesia of the Black Dragon",
+    "type": "Synchro Monster",
+    "level": 8,
+    "attribute": "LIGHT",
+    "isExtraDeck": true
+  },
   "78402798": {
     "name": "Night Lizard",
     "type": "Normal Monster",
@@ -76726,6 +77174,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "78910832": {
+    "name": "Vic Viper Type-L",
+    "type": "Effect Monster",
+    "level": 4,
+    "attribute": "LIGHT",
+    "isExtraDeck": false
+  },
   "78917791": {
     "name": "Shaman of the Tenyi",
     "type": "Link Monster",
@@ -77173,6 +77628,13 @@
     "level": 5,
     "attribute": "LIGHT",
     "isExtraDeck": false
+  },
+  "79519259": {
+    "name": "Night Wing Priestess",
+    "type": "Synchro Monster",
+    "level": 8,
+    "attribute": "WIND",
+    "isExtraDeck": true
   },
   "79523365": {
     "name": "Vampire Scarlet Scourge",
@@ -81591,6 +82053,13 @@
     "attribute": "LIGHT",
     "isExtraDeck": true
   },
+  "84031359": {
+    "name": "Darklord Gulgalta",
+    "type": "Effect Monster",
+    "level": 6,
+    "attribute": "DARK",
+    "isExtraDeck": false
+  },
   "84040113": {
     "name": "Muddy Mudragon",
     "type": "Synchro Monster",
@@ -82038,6 +82507,13 @@
     "level": 4,
     "attribute": "DARK",
     "isExtraDeck": false
+  },
+  "84464389": {
+    "name": "Borreload Fatal Flare Dragon",
+    "type": "Fusion Monster",
+    "level": 8,
+    "attribute": "DARK",
+    "isExtraDeck": true
   },
   "84472026": {
     "name": "Ghostrick Yeti",
@@ -82767,6 +83243,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "85154941": {
+    "name": "Duke Archfiend",
+    "type": "Effect Monster",
+    "level": 4,
+    "attribute": "WATER",
+    "isExtraDeck": false
+  },
   "85166216": {
     "name": "Elephant Statue of Blessing",
     "type": "Effect Monster",
@@ -83110,6 +83593,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "85586937": {
+    "name": "WAKE CUP! Erl",
+    "type": "Flip Effect Monster",
+    "level": 7,
+    "attribute": "WIND",
+    "isExtraDeck": false
+  },
   "85590798": {
     "name": "Starry Knight Ceremony",
     "type": "Spell Card",
@@ -83150,6 +83640,13 @@
     "type": "Normal Monster",
     "level": 4,
     "attribute": "WATER",
+    "isExtraDeck": false
+  },
+  "85640370": {
+    "name": "Tip of the Tongue Reduction",
+    "type": "Trap Card",
+    "level": null,
+    "attribute": null,
     "isExtraDeck": false
   },
   "85646474": {
@@ -83502,6 +83999,13 @@
     "attribute": "WIND",
     "isExtraDeck": false
   },
+  "85976588": {
+    "name": "Elvennotes Fortona",
+    "type": "Effect Monster",
+    "level": 6,
+    "attribute": "LIGHT",
+    "isExtraDeck": false
+  },
   "85991529": {
     "name": "Kozmo Dark Planet",
     "type": "Effect Monster",
@@ -83577,6 +84081,13 @@
     "type": "Normal Monster",
     "level": 5,
     "attribute": "LIGHT",
+    "isExtraDeck": false
+  },
+  "86098176": {
+    "name": "Assault Lich",
+    "type": "Tuner Monster",
+    "level": 4,
+    "attribute": "DARK",
     "isExtraDeck": false
   },
   "86099788": {
@@ -83788,6 +84299,13 @@
     "level": 8,
     "attribute": "EARTH",
     "isExtraDeck": true
+  },
+  "86289475": {
+    "name": "Magnet Warrior Ω+",
+    "type": "Effect Monster",
+    "level": 4,
+    "attribute": "EARTH",
+    "isExtraDeck": false
   },
   "86304179": {
     "name": "Tempura of Fortune - EBI",
@@ -84163,6 +84681,13 @@
   "86758915": {
     "name": "Impcantation Inception",
     "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
+  "86762958": {
+    "name": "Assist★Yummy!",
+    "type": "Trap Card",
     "level": null,
     "attribute": null,
     "isExtraDeck": false
@@ -84909,6 +85434,13 @@
     "attribute": "LIGHT",
     "isExtraDeck": false
   },
+  "87607094": {
+    "name": "Borrel Reboot",
+    "type": "Trap Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "87608852": {
     "name": "Temperance of Prophecy",
     "type": "Effect Monster",
@@ -85098,6 +85630,13 @@
     "attribute": "EARTH",
     "isExtraDeck": true
   },
+  "87814728": {
+    "name": "Magnet Warrior Σ－",
+    "type": "Effect Monster",
+    "level": 4,
+    "attribute": "EARTH",
+    "isExtraDeck": false
+  },
   "87819421": {
     "name": "Mask Charge",
     "type": "Spell Card",
@@ -85222,6 +85761,13 @@
     "type": "Normal Tuner Monster",
     "level": 4,
     "attribute": "EARTH",
+    "isExtraDeck": false
+  },
+  "87985506": {
+    "name": "Archfiend's Jest",
+    "type": "Trap Card",
+    "level": null,
+    "attribute": null,
     "isExtraDeck": false
   },
   "87988305": {
@@ -87723,6 +88269,13 @@
     "attribute": "EARTH",
     "isExtraDeck": false
   },
+  "90764871": {
+    "name": "Archfiend's Strategy Game",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "90764875": {
     "name": "Gorgonic Ghoul",
     "type": "Effect Monster",
@@ -87826,6 +88379,13 @@
     "type": "Normal Monster",
     "level": 5,
     "attribute": "LIGHT",
+    "isExtraDeck": false
+  },
+  "90880453": {
+    "name": "Elvennotes ~Reunion Tercet~",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
     "isExtraDeck": false
   },
   "90884403": {
@@ -87952,6 +88512,13 @@
     "type": "Effect Monster",
     "level": 4,
     "attribute": "DARK",
+    "isExtraDeck": false
+  },
+  "91002901": {
+    "name": "Duel Evolution - Assault Zone",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
     "isExtraDeck": false
   },
   "91011603": {
@@ -95332,6 +95899,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "98829635": {
+    "name": "Forbidden Crown",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "98847704": {
     "name": "Release Restraint Wave",
     "type": "Spell Card",
@@ -95456,6 +96030,13 @@
     "type": "Trap Card",
     "level": null,
     "attribute": null,
+    "isExtraDeck": false
+  },
+  "98937206": {
+    "name": "Rokket Detonator",
+    "type": "Effect Monster",
+    "level": 7,
+    "attribute": "DARK",
     "isExtraDeck": false
   },
   "98954106": {
@@ -96375,6 +96956,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "99941223": {
+    "name": "Darklord Dance",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "99946920": {
     "name": "Taotie, Shadow of the Yang Zing",
     "type": "Effect Monster",
@@ -96424,225 +97012,8 @@
     "attribute": null,
     "isExtraDeck": false
   },
-  "101303001": {
-    "name": "Rokket Loader",
-    "type": "Effect Monster",
-    "level": 4,
-    "attribute": "DARK",
-    "isExtraDeck": false
-  },
-  "101303002": {
-    "name": "Hollowrokket Dragon",
-    "type": "Effect Monster",
-    "level": 6,
-    "attribute": "DARK",
-    "isExtraDeck": false
-  },
-  "101303003": {
-    "name": "Rokket Detonator",
-    "type": "Effect Monster",
-    "level": 7,
-    "attribute": "DARK",
-    "isExtraDeck": false
-  },
-  "101303014": {
-    "name": "Royal Archfiend",
-    "type": "Effect Monster",
-    "level": 7,
-    "attribute": "FIRE",
-    "isExtraDeck": false
-  },
-  "101303015": {
-    "name": "Duke Archfiend",
-    "type": "Effect Monster",
-    "level": 4,
-    "attribute": "WATER",
-    "isExtraDeck": false
-  },
-  "101303016": {
-    "name": "Highness Archfiend",
-    "type": "Effect Monster",
-    "level": 3,
-    "attribute": "LIGHT",
-    "isExtraDeck": false
-  },
-  "101303017": {
-    "name": "Rex, Gale Fur Hire",
-    "type": "Effect Monster",
-    "level": 5,
-    "attribute": "WIND",
-    "isExtraDeck": false
-  },
-  "101303018": {
-    "name": "Darklord Gulgalta",
-    "type": "Effect Monster",
-    "level": 6,
-    "attribute": "DARK",
-    "isExtraDeck": false
-  },
-  "101303019": {
-    "name": "Darklord Djehuty",
-    "type": "Effect Monster",
-    "level": 4,
-    "attribute": "DARK",
-    "isExtraDeck": false
-  },
-  "101303028": {
-    "name": "Threat Armed Dragon",
-    "type": "Effect Monster",
-    "level": 5,
-    "attribute": "WIND",
-    "isExtraDeck": false
-  },
-  "101303029": {
-    "name": "WAKE CUP! Erl",
-    "type": "Flip Effect Monster",
-    "level": 7,
-    "attribute": "WIND",
-    "isExtraDeck": false
-  },
-  "101303031": {
-    "name": "Doom Emperor Archfiend",
-    "type": "Pendulum Effect Ritual Monster",
-    "level": 7,
-    "attribute": "FIRE",
-    "isExtraDeck": false
-  },
-  "101303032": {
-    "name": "Borreload Fatal Flare Dragon",
-    "type": "Fusion Monster",
-    "level": 8,
-    "attribute": "DARK",
-    "isExtraDeck": true
-  },
-  "101303033": {
-    "name": "D/D/D Sage King Alfred",
-    "type": "Fusion Monster",
-    "level": 6,
-    "attribute": "DARK",
-    "isExtraDeck": true
-  },
-  "101303036": {
-    "name": "Darklord Eveningstar",
-    "type": "Fusion Monster",
-    "level": 12,
-    "attribute": "DARK",
-    "isExtraDeck": true
-  },
-  "101303037": {
-    "name": "Dracotail Shaurus",
-    "type": "Fusion Monster",
-    "level": null,
-    "attribute": "LIGHT",
-    "isExtraDeck": true
-  },
-  "101303043": {
-    "name": "K9-X \"Ripper/Millennia\"",
-    "type": "XYZ Monster",
-    "level": 9,
-    "attribute": "WIND",
-    "isExtraDeck": true
-  },
-  "101303047": {
-    "name": "Borrelshroud Dragon",
-    "type": "Link Monster",
-    "level": null,
-    "attribute": "DARK",
-    "isExtraDeck": true
-  },
-  "101303049": {
-    "name": "Radiant Typhoon Varuroon, the Sea Spirit",
-    "type": "Link Monster",
-    "level": null,
-    "attribute": "WIND",
-    "isExtraDeck": true
-  },
-  "101303050": {
-    "name": "Keel, Shipwright Fur Hire",
-    "type": "Link Monster",
-    "level": null,
-    "attribute": "WATER",
-    "isExtraDeck": true
-  },
-  "101303052": {
-    "name": "Double Trigger",
-    "type": "Spell Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
-  "101303059": {
-    "name": "Throne of Archfiends",
-    "type": "Spell Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
-  "101303060": {
-    "name": "Archfiend's Strategy Game",
-    "type": "Spell Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
-  "101303061": {
-    "name": "Fandora, the Fearsome Flying Furtress",
-    "type": "Spell Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
-  "101303062": {
-    "name": "Storm Fur Hire",
-    "type": "Spell Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
-  "101303063": {
-    "name": "Darklord Dance",
-    "type": "Spell Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
-  "101303065": {
-    "name": "Radiant Typhoon Elation",
-    "type": "Spell Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
-  "101303067": {
-    "name": "Forbidden Crown",
-    "type": "Spell Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
-  "101303073": {
-    "name": "Archfiend's Jest",
-    "type": "Trap Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
-  "101303074": {
-    "name": "Archfiend's Vigor",
-    "type": "Trap Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
-  "101303075": {
-    "name": "Secret Technique Fur Hire",
-    "type": "Trap Card",
-    "level": null,
-    "attribute": null,
-    "isExtraDeck": false
-  },
-  "101303076": {
-    "name": "Assist★Yummy!",
+  "101303071": {
+    "name": "Elvennotes ~Oracle Alicetea~",
     "type": "Trap Card",
     "level": null,
     "attribute": null,

@@ -103,7 +103,6 @@ input:-ms-input-placeholder {
     0px 4px 8px 2px rgba(20, 20, 20, 0.22),
     0px 6px 16px 3px rgba(20, 20, 20, 0.18),
     0px 8px 25px 4px rgba(20, 20, 20, 0.15);
-  transform: translateY(-2px);
 }
 
 .enhanced-button:active {

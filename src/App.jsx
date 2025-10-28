@@ -644,6 +644,9 @@ export default function TCGCalculator() {
   };
 
   const runCalculation = () => {
+    // Check if all fields are filled before proceeding
+    if (!allFieldsFilled) return;
+
     if (!validate()) return;
 
     // Set loading state immediately for instant UI feedback
@@ -1234,7 +1237,7 @@ useEffect(() => {
           <div className="flex space-x-4 mt-6">
             <Button
               onClick={runCalculation}
-              disabled={!allFieldsFilled || hasValidationErrors || isCalculating}
+              disabled={isCalculating}
               className="enhanced-button"
               style={{ flex: 1, minWidth: '150px' }}
             >
