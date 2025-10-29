@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../../components/ui';
+import Icon from '../../components/Icon';
 import DeckZone from './DeckZone';
 import DeckStatistics from './DeckStatistics';
 
@@ -721,26 +722,24 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
               <h3 style={{...typography.h3, color: 'var(--text-main)', margin: 0}}>
                 Add "{selectedCard.name}" to Combo
               </h3>
-              <Button
+              <button
                 onClick={() => {
                   setShowComboOverlay(false);
                   setSelectedCard(null);
                 }}
-                variant="secondary"
-                size="small"
                 style={{
                   backgroundColor: 'transparent',
                   border: 'none',
-                  color: 'var(--text-secondary)',
-                  fontSize: '24px',
                   padding: '4px',
-                  lineHeight: 1,
-                  height: 'auto'
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
                 aria-label="Close add to combo dialog"
               >
-                ×
-              </Button>
+                <Icon name="x-circle" size={24} />
+              </button>
             </div>
 
             {/* Combo List */}
@@ -804,23 +803,14 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                         textAlign: 'left',
                         padding: '12px',
                         borderRadius: '8px',
-                        ...typography.body
+                        fontSize: typography.body.fontSize,
+                        lineHeight: typography.body.lineHeight,
+                        fontFamily: typography.body.fontFamily
                       }}
                       className="hover:bg-opacity-80 transition-all"
                     >
                       <div style={{ fontWeight: 'medium', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {cardExists ? '✓' : '+'} Combo {index + 1}
-                        {cardExists && (
-                          <span style={{ fontSize: '10px', opacity: 0.8 }}>
-                            (Click to remove)
-                          </span>
-                        )}
-                      </div>
-                      <div style={{ fontSize: '12px', color: cardExists ? 'var(--text-action)' : 'var(--text-secondary)', marginTop: '4px', opacity: 0.8 }}>
-                        {combo.cards && combo.cards.length > 0
-                          ? `${combo.cards.length} cards: ${combo.cards.slice(0, 2).map(c => c.starterCard).join(', ')}${combo.cards.length > 2 ? '...' : ''}`
-                          : 'No cards added yet'
-                        }
                       </div>
                     </Button>
 
@@ -852,7 +842,7 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                               borderRadius: '4px',
                               fontSize: '11px',
                               height: 'auto',
-                              ...typography.body
+                              fontFamily: typography.body.fontFamily
                             }}
                           >
                             AND
@@ -872,7 +862,7 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                               borderRadius: '4px',
                               fontSize: '11px',
                               height: 'auto',
-                              ...typography.body
+                              fontFamily: typography.body.fontFamily
                             }}
                           >
                             OR
@@ -925,7 +915,9 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                 backgroundColor: '#000000',
                 color: '#ffffff',
                 border: '1px solid #333',
-                ...typography.body,
+                fontSize: typography.body.fontSize,
+                lineHeight: typography.body.lineHeight,
+                fontFamily: typography.body.fontFamily,
                 fontWeight: 'medium',
                 marginBottom: '12px'
               }}
@@ -946,7 +938,9 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                 width: '100%',
                 padding: '12px',
                 borderRadius: '8px',
-                ...typography.body,
+                fontSize: typography.body.fontSize,
+                lineHeight: typography.body.lineHeight,
+                fontFamily: typography.body.fontFamily,
                 fontWeight: 'medium'
               }}
               className="hover:bg-opacity-80 transition-all"
