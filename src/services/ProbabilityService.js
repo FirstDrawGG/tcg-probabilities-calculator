@@ -1,11 +1,38 @@
 /**
  * ProbabilityService - Core probability calculation engine for TCG scenarios
- * 
+ *
  * This service handles Monte Carlo simulations for calculating the probability
  * of drawing specific card combinations in trading card games.
+ *
+ * Uses strict AND logic only - all cards in a combo must be drawn for success.
  */
 
 import HandTrapService from './HandTrapService.js';
+
+// Expression tree node classes for AND-only evaluation
+class PredicateNode {
+  constructor(cardIndex, minCopies, maxCopies) {
+    this.cardIndex = cardIndex;
+    this.minCopies = minCopies;
+    this.maxCopies = maxCopies;
+  }
+
+  eval(cardCounts) {
+    const count = cardCounts[this.cardIndex] || 0;
+    return count >= this.minCopies && count <= this.maxCopies;
+  }
+}
+
+class AndNode {
+  constructor(left, right) {
+    this.left = left;
+    this.right = right;
+  }
+
+  eval(cardCounts) {
+    return this.left.eval(cardCounts) && this.right.eval(cardCounts);
+  }
+}
 
 class ProbabilityService {
   constructor() {
@@ -21,24 +48,108 @@ class ProbabilityService {
 
   /**
    * Generates a cache key for a single combo
+   * All cards are connected with AND logic only
    */
   getCacheKey(combo, deckSize, handSize) {
-    const cardsKey = combo.cards.map(card => 
-      `${card.startersInDeck}-${card.minCopiesInHand}-${card.maxCopiesInHand}-${card.logicOperator || 'AND'}`
+    const cardsKey = combo.cards.map(card =>
+      `${card.startersInDeck}-${card.minCopiesInHand}-${card.maxCopiesInHand}`
     ).join('|');
     return `${cardsKey}-${deckSize}-${handSize}`;
   }
 
   /**
    * Generates a cache key for multiple combos
+   * All cards within each combo are connected with AND logic only
    */
   getCombinedCacheKey(combos, deckSize, handSize) {
-    const combosKey = combos.map(combo => 
-      combo.cards.map(card => 
-        `${card.startersInDeck}-${card.minCopiesInHand}-${card.maxCopiesInHand}-${card.logicOperator || 'AND'}`
+    const combosKey = combos.map(combo =>
+      combo.cards.map(card =>
+        `${card.startersInDeck}-${card.minCopiesInHand}-${card.maxCopiesInHand}`
       ).join('|')
     ).join('||');
     return `combined-${combosKey}-${deckSize}-${handSize}`;
+  }
+
+  /**
+   * Validates combo configuration for edge cases
+   * @param {Object} combo - The combo configuration
+   * @param {number} deckSize - Total deck size
+   * @param {number} handSize - Hand size to draw
+   * @returns {Object} { valid: boolean, error: string }
+   */
+  validateCombo(combo, deckSize, handSize) {
+    // Edge case: Check if deck composition is valid
+    const totalCopiesInDeck = combo.cards.reduce((sum, card) => sum + card.startersInDeck, 0);
+    if (totalCopiesInDeck > deckSize) {
+      return { valid: false, error: 'Total card copies exceed deck size' };
+    }
+
+    // Edge case: Check for impossible constraints
+    for (const card of combo.cards) {
+      // Min copies can't exceed copies in deck
+      if (card.minCopiesInHand > card.startersInDeck) {
+        return { valid: false, error: `Min copies in hand (${card.minCopiesInHand}) exceeds copies in deck (${card.startersInDeck})` };
+      }
+
+      // Min copies can't exceed hand size
+      if (card.minCopiesInHand > handSize) {
+        return { valid: false, error: `Min copies in hand (${card.minCopiesInHand}) exceeds hand size (${handSize})` };
+      }
+
+      // Max copies can't be less than min copies
+      if (card.maxCopiesInHand < card.minCopiesInHand) {
+        return { valid: false, error: 'Max copies cannot be less than min copies' };
+      }
+
+      // Zero copies in deck means only count=0 can be satisfied
+      if (card.startersInDeck === 0 && card.minCopiesInHand > 0) {
+        return { valid: false, error: 'Card has 0 copies in deck but requires min > 0 in hand' };
+      }
+    }
+
+    // Edge case: Sum of minimums can't exceed hand size
+    const sumOfMins = combo.cards.reduce((sum, card) => sum + card.minCopiesInHand, 0);
+    if (sumOfMins > handSize) {
+      return { valid: false, error: `Sum of minimum copies (${sumOfMins}) exceeds hand size (${handSize})` };
+    }
+
+    return { valid: true };
+  }
+
+  /**
+   * Builds an expression tree from combo cards using strict AND logic
+   * All cards must be drawn for the combo to succeed
+   *
+   * Logic rules:
+   * - Single card: returns a predicate for that card
+   * - Multiple cards: chains all cards with AND operators
+   * - Example: Card1 AND Card2 AND Card3 AND Card4
+   *
+   * @param {Array} cards - Array of card configurations
+   * @returns {Object} Expression tree root node
+   */
+  buildExpressionTree(cards) {
+    if (cards.length === 0) {
+      return null;
+    }
+
+    if (cards.length === 1) {
+      // Single card: just return the predicate
+      return new PredicateNode(0, cards[0].minCopiesInHand, cards[0].maxCopiesInHand);
+    }
+
+    // Start with the first card as the root
+    let root = new PredicateNode(0, cards[0].minCopiesInHand, cards[0].maxCopiesInHand);
+
+    // Chain all remaining cards with AND operators
+    for (let i = 1; i < cards.length; i++) {
+      const card = cards[i];
+      const predicate = new PredicateNode(i, card.minCopiesInHand, card.maxCopiesInHand);
+      // Always use AND - no OR logic supported
+      root = new AndNode(root, predicate);
+    }
+
+    return root;
   }
 
   /**
@@ -51,101 +162,71 @@ class ProbabilityService {
    */
   monteCarloSimulation(combo, deckSize, handSize, simulations = 100000) {
     const cacheKey = this.getCacheKey(combo, deckSize, handSize);
-    
+
     if (this.resultCache.has(cacheKey)) {
       return this.resultCache.get(cacheKey);
     }
-    
+
+    // Validate combo configuration
+    const validation = this.validateCombo(combo, deckSize, handSize);
+    if (!validation.valid) {
+      console.warn('Invalid combo configuration:', validation.error);
+      return 0; // Impossible scenario returns 0%
+    }
+
+    // Build expression tree for proper AND/OR evaluation
+    const expressionTree = this.buildExpressionTree(combo.cards);
+    if (!expressionTree) {
+      return 0;
+    }
+
     let successes = 0;
-    
+
     for (let i = 0; i < simulations; i++) {
+      // Build deck as multiset of card labels
       const deck = [];
-      let currentPosition = 0;
-      
+
       // Add cards to deck based on combo requirements
       combo.cards.forEach((card, cardIndex) => {
         for (let j = 0; j < card.startersInDeck; j++) {
           deck.push(cardIndex);
         }
-        currentPosition += card.startersInDeck;
       });
-      
-      // Fill remaining deck slots with non-combo cards
-      for (let j = currentPosition; j < deckSize; j++) {
+
+      // Fill remaining deck slots with "Other" cards (-1)
+      const otherCount = deckSize - deck.length;
+      for (let j = 0; j < otherCount; j++) {
         deck.push(-1);
       }
-      
-      // Shuffle deck using Fisher-Yates algorithm
+
+      // Shuffle deck using Fisher-Yates algorithm (uniform random sampling)
       for (let j = deck.length - 1; j > 0; j--) {
         const k = Math.floor(Math.random() * (j + 1));
         [deck[j], deck[k]] = [deck[k], deck[j]];
       }
-      
-      // Count cards drawn in hand
+
+      // Draw hand (first handSize cards after shuffle = random sample without replacement)
       const cardCounts = new Array(combo.cards.length).fill(0);
       for (let j = 0; j < handSize; j++) {
         if (deck[j] >= 0) {
           cardCounts[deck[j]]++;
         }
       }
-      
-      // Check if combo criteria are met with AND/OR logic
-      let comboMet = false;
-      
-      if (combo.cards.length === 1) {
-        // Single card combo - just check the one card
-        const card = combo.cards[0];
-        const drawnCount = cardCounts[0];
-        comboMet = (drawnCount >= card.minCopiesInHand && drawnCount <= card.maxCopiesInHand);
-      } else {
-        // Multi-card combo: 1st AND 2nd AND/OR 3rd+ cards
-        const firstCard = combo.cards[0];
-        const firstCardMet = (cardCounts[0] >= firstCard.minCopiesInHand && cardCounts[0] <= firstCard.maxCopiesInHand);
-        
-        if (combo.cards.length === 2) {
-          // Two-card combo: 1st AND 2nd
-          const secondCard = combo.cards[1];
-          const secondCardMet = (cardCounts[1] >= secondCard.minCopiesInHand && cardCounts[1] <= secondCard.maxCopiesInHand);
-          comboMet = firstCardMet && secondCardMet;
-        } else {
-          // Three+ card combo: 1st AND 2nd, then AND/OR for 3rd+ cards
-          const secondCard = combo.cards[1];
-          const secondCardMet = (cardCounts[1] >= secondCard.minCopiesInHand && cardCounts[1] <= secondCard.maxCopiesInHand);
-          
-          // First two cards must be met (AND logic)
-          let baseResult = firstCardMet && secondCardMet;
-          
-          // Process 3rd+ cards with their logic operators against the base (1st AND 2nd)
-          for (let cardIndex = 2; cardIndex < combo.cards.length; cardIndex++) {
-            const card = combo.cards[cardIndex];
-            const drawnCount = cardCounts[cardIndex];
-            const cardMet = (drawnCount >= card.minCopiesInHand && drawnCount <= card.maxCopiesInHand);
-            const logicOp = card.logicOperator || 'AND';
-            
-            if (logicOp === 'AND') {
-              baseResult = baseResult && cardMet;
-            } else if (logicOp === 'OR') {
-              baseResult = baseResult || cardMet;
-            }
-          }
-          
-          comboMet = baseResult;
-        }
-      }
-      
-      if (comboMet) {
+
+      // Evaluate expression tree
+      if (expressionTree.eval(cardCounts)) {
         successes++;
       }
     }
-    
+
     const probability = (successes / simulations) * 100;
     this.resultCache.set(cacheKey, probability);
-    
+
     return probability;
   }
 
   /**
-   * Runs Monte Carlo simulation for multiple combos (OR logic)
+   * Runs Monte Carlo simulation for multiple combos (OR logic between combos)
    * @param {Array} combos - Array of combo configurations
    * @param {number} deckSize - Total deck size
    * @param {number} handSize - Hand size to draw
@@ -154,17 +235,16 @@ class ProbabilityService {
    */
   combinedMonteCarloSimulation(combos, deckSize, handSize, simulations = 100000) {
     const cacheKey = this.getCombinedCacheKey(combos, deckSize, handSize);
-    
+
     if (this.resultCache.has(cacheKey)) {
       return this.resultCache.get(cacheKey);
     }
-    
-    let successes = 0;
-    
+
     // Create a unified card mapping for all combos
+    // Cards are identified by their unique name + cardId combination
     const allUniqueCards = new Map();
     let cardIdCounter = 0;
-    
+
     combos.forEach(combo => {
       combo.cards.forEach(card => {
         const cardKey = `${card.starterCard}-${card.cardId || 'custom'}`;
@@ -175,121 +255,127 @@ class ProbabilityService {
             totalInDeck: 0
           });
         }
+        // Use maximum copies in deck across all combos
         allUniqueCards.get(cardKey).totalInDeck = Math.max(
           allUniqueCards.get(cardKey).totalInDeck,
           card.startersInDeck
         );
       });
     });
-    
+
+    // Build expression trees for each combo
+    const comboTrees = combos.map(combo => {
+      // Map combo cards to global card IDs
+      const cardsWithGlobalIds = combo.cards.map(card => {
+        const cardKey = `${card.starterCard}-${card.cardId || 'custom'}`;
+        const globalCardInfo = allUniqueCards.get(cardKey);
+        return {
+          ...card,
+          globalCardId: globalCardInfo.id
+        };
+      });
+
+      return {
+        tree: this.buildExpressionTreeForGlobalCards(cardsWithGlobalIds),
+        cards: cardsWithGlobalIds
+      };
+    });
+
+    let successes = 0;
+
     for (let i = 0; i < simulations; i++) {
       const deck = [];
-      
+
       // Build deck with all unique cards
       allUniqueCards.forEach((cardInfo) => {
         for (let j = 0; j < cardInfo.totalInDeck; j++) {
           deck.push(cardInfo.id);
         }
       });
-      
-      // Fill remaining deck slots
-      for (let j = deck.length; j < deckSize; j++) {
+
+      // Fill remaining deck slots with "Other" cards
+      const otherCount = deckSize - deck.length;
+      for (let j = 0; j < otherCount; j++) {
         deck.push(-1);
       }
-      
+
       // Shuffle deck
       for (let j = deck.length - 1; j > 0; j--) {
         const k = Math.floor(Math.random() * (j + 1));
         [deck[j], deck[k]] = [deck[k], deck[j]];
       }
-      
-      // Count cards in hand
-      const handCounts = new Map();
+
+      // Count cards in hand using global card IDs
+      const globalHandCounts = new Map();
       allUniqueCards.forEach((cardInfo) => {
-        handCounts.set(cardInfo.id, 0);
+        globalHandCounts.set(cardInfo.id, 0);
       });
-      
+
       for (let j = 0; j < handSize; j++) {
         if (deck[j] >= 0) {
-          handCounts.set(deck[j], (handCounts.get(deck[j]) || 0) + 1);
+          globalHandCounts.set(deck[j], (globalHandCounts.get(deck[j]) || 0) + 1);
         }
       }
-      
-      // Check if ANY combo succeeds
+
+      // Check if ANY combo succeeds (OR logic between combos)
       let anyComboSucceeds = false;
-      
-      for (const combo of combos) {
-        let comboSucceeds = false;
-        
-        if (combo.cards.length === 1) {
-          // Single card combo
-          const card = combo.cards[0];
-          const cardKey = `${card.starterCard}-${card.cardId || 'custom'}`;
-          const cardInfo = allUniqueCards.get(cardKey);
-          const drawnCount = handCounts.get(cardInfo.id) || 0;
-          comboSucceeds = (drawnCount >= card.minCopiesInHand && drawnCount <= card.maxCopiesInHand);
-        } else {
-          // Multi-card combo: 1st AND 2nd AND/OR 3rd+ cards
-          const firstCard = combo.cards[0];
-          const firstCardKey = `${firstCard.starterCard}-${firstCard.cardId || 'custom'}`;
-          const firstCardInfo = allUniqueCards.get(firstCardKey);
-          const firstDrawnCount = handCounts.get(firstCardInfo.id) || 0;
-          const firstCardMet = (firstDrawnCount >= firstCard.minCopiesInHand && firstDrawnCount <= firstCard.maxCopiesInHand);
-          
-          if (combo.cards.length === 2) {
-            // Two-card combo: 1st AND 2nd
-            const secondCard = combo.cards[1];
-            const secondCardKey = `${secondCard.starterCard}-${secondCard.cardId || 'custom'}`;
-            const secondCardInfo = allUniqueCards.get(secondCardKey);
-            const secondDrawnCount = handCounts.get(secondCardInfo.id) || 0;
-            const secondCardMet = (secondDrawnCount >= secondCard.minCopiesInHand && secondDrawnCount <= secondCard.maxCopiesInHand);
-            comboSucceeds = firstCardMet && secondCardMet;
-          } else {
-            // Three+ card combo: 1st AND 2nd, then AND/OR for 3rd+ cards
-            const secondCard = combo.cards[1];
-            const secondCardKey = `${secondCard.starterCard}-${secondCard.cardId || 'custom'}`;
-            const secondCardInfo = allUniqueCards.get(secondCardKey);
-            const secondDrawnCount = handCounts.get(secondCardInfo.id) || 0;
-            const secondCardMet = (secondDrawnCount >= secondCard.minCopiesInHand && secondDrawnCount <= secondCard.maxCopiesInHand);
-            
-            // First two cards must be met (AND logic)
-            let baseResult = firstCardMet && secondCardMet;
-            
-            // Process 3rd+ cards with their logic operators against the base (1st AND 2nd)
-            for (let cardIndex = 2; cardIndex < combo.cards.length; cardIndex++) {
-              const card = combo.cards[cardIndex];
-              const cardKey = `${card.starterCard}-${card.cardId || 'custom'}`;
-              const cardInfo = allUniqueCards.get(cardKey);
-              const drawnCount = handCounts.get(cardInfo.id) || 0;
-              const cardMet = (drawnCount >= card.minCopiesInHand && drawnCount <= card.maxCopiesInHand);
-              const logicOp = card.logicOperator || 'AND';
-              
-              if (logicOp === 'AND') {
-                baseResult = baseResult && cardMet;
-              } else if (logicOp === 'OR') {
-                baseResult = baseResult || cardMet;
-              }
-            }
-            
-            comboSucceeds = baseResult;
-          }
-        }
-        
-        if (comboSucceeds) {
+
+      for (const comboTree of comboTrees) {
+        if (comboTree.tree && comboTree.tree.eval(globalHandCounts)) {
           anyComboSucceeds = true;
-          break;
+          break; // Short-circuit: at least one combo succeeded
         }
       }
-      
+
       if (anyComboSucceeds) {
         successes++;
       }
     }
-    
+
     const probability = (successes / simulations) * 100;
     this.resultCache.set(cacheKey, probability);
-    
+
     return probability;
+  }
+
+  /**
+   * Builds expression tree using global card IDs (for combined simulation)
+   * Uses strict AND logic only - all cards must be drawn
+   * @param {Array} cards - Array of cards with globalCardId
+   * @returns {Object} Expression tree root node
+   */
+  buildExpressionTreeForGlobalCards(cards) {
+    if (cards.length === 0) {
+      return null;
+    }
+
+    if (cards.length === 1) {
+      return new PredicateNodeGlobal(
+        cards[0].globalCardId,
+        cards[0].minCopiesInHand,
+        cards[0].maxCopiesInHand
+      );
+    }
+
+    let root = new PredicateNodeGlobal(
+      cards[0].globalCardId,
+      cards[0].minCopiesInHand,
+      cards[0].maxCopiesInHand
+    );
+
+    // Chain all cards with AND operators only
+    for (let i = 1; i < cards.length; i++) {
+      const card = cards[i];
+      const predicate = new PredicateNodeGlobal(
+        card.globalCardId,
+        card.minCopiesInHand,
+        card.maxCopiesInHand
+      );
+      // Always use AND - no OR logic supported
+      root = new AndNode(root, predicate);
+    }
+
+    return root;
   }
 
   /**
@@ -305,13 +391,13 @@ class ProbabilityService {
       probability: this.monteCarloSimulation(combo, deckSize, handSize),
       cards: combo.cards
     }));
-    
+
     // Calculate combined probability only if there are multiple combos
     let combinedProbability = null;
     if (combos.length > 1) {
       combinedProbability = this.combinedMonteCarloSimulation(combos, deckSize, handSize);
     }
-    
+
     return {
       individual: individualResults,
       combined: combinedProbability
@@ -327,7 +413,7 @@ class ProbabilityService {
   binomial(n, k) {
     if (k > n || k < 0) return 0;
     if (k === 0 || k === n) return 1;
-    
+
     let result = 1;
     for (let i = 0; i < Math.min(k, n - k); i++) {
       result = result * (n - i) / (i + 1);
@@ -366,21 +452,21 @@ class ProbabilityService {
         metadata: { totalCards: deckSize, handSize }
       };
     }
-    
+
     const card = result.cards[0]; // For single card scenarios
-    
+
     if (result.cards.length === 1) {
       const N = deckSize; // Population size
       const K = card.startersInDeck; // Success states in population
       const n = handSize; // Sample size
       const k_min = card.minCopiesInHand;
       const k_max = card.maxCopiesInHand;
-      
+
       if (k_min === k_max) {
         // Exact probability - single line
         const k = k_min;
         const probability = this.calculateHypergeometricProbability(N, K, n, k);
-        
+
         return {
           type: 'exact',
           scenarios: [{
@@ -398,11 +484,11 @@ class ProbabilityService {
         // Range probability - multiple lines with sum
         const scenarios = [];
         let totalProbability = 0;
-        
+
         for (let k = k_min; k <= k_max; k++) {
           const probability = this.calculateHypergeometricProbability(N, K, n, k);
           totalProbability += probability;
-          
+
           scenarios.push({
             probability,
             n: K,
@@ -412,7 +498,7 @@ class ProbabilityService {
             percentage: `${probability.toFixed(2)}%`
           });
         }
-        
+
         return {
           type: 'range',
           scenarios,
@@ -423,14 +509,14 @@ class ProbabilityService {
     } else {
       // Multi-card combo - show individual card probabilities with full range expansion
       const scenarios = [];
-      
+
       result.cards.forEach((card, cardIndex) => {
         const N = deckSize;
         const K = card.startersInDeck;
         const n = handSize;
         const k_min = card.minCopiesInHand;
         const k_max = card.maxCopiesInHand;
-        
+
         // Add card header for multi-card display
         if (cardIndex > 0) {
           scenarios.push({
@@ -444,12 +530,12 @@ class ProbabilityService {
             cardName: card.starterCard
           });
         }
-        
+
         if (k_min === k_max) {
           // Exact probability for this card
           const k = k_min;
           const probability = this.calculateHypergeometricProbability(N, K, n, k);
-          
+
           scenarios.push({
             probability,
             n: K,
@@ -464,7 +550,7 @@ class ProbabilityService {
           // Range probability for this card - show ALL individual P(X=k) scenarios
           for (let k = k_min; k <= k_max; k++) {
             const probability = this.calculateHypergeometricProbability(N, K, n, k);
-            
+
             scenarios.push({
               probability,
               n: K,
@@ -478,13 +564,13 @@ class ProbabilityService {
           }
         }
       });
-      
+
       return {
         type: 'multi-card',
         scenarios,
         totalPercentage: `${result.probability.toFixed(2)}% (Monte Carlo)`,
-        metadata: { 
-          totalCards: deckSize, 
+        metadata: {
+          totalCards: deckSize,
           handSize,
           cardCount: result.cards.length,
           logicOperator: result.cards.length > 1 ? (result.cards[1].logicOperator || 'AND') : 'AND'
@@ -507,7 +593,7 @@ class ProbabilityService {
         metadata: { totalCards: 0, handSize: 0 }
       };
     }
-    
+
     if (results.length === 1) {
       return {
         type: 'combined',
@@ -523,10 +609,10 @@ class ProbabilityService {
         metadata: { totalCards: 0, handSize: 0 }
       };
     }
-    
+
     // Calculate combined probability using inclusion-exclusion principle
     const combinedProbability = results.reduce((sum, result) => sum + result.probability, 0);
-    
+
     return {
       type: 'combined',
       scenarios: [{
@@ -558,7 +644,7 @@ class ProbabilityService {
 
     // Get all hand-trap cards in the deck
     const handTrapCards = ydkCards.filter(card => HandTrapService.isHandTrap(card));
-    
+
     if (handTrapCards.length === 0) {
       return 0; // No hand-traps in deck
     }
@@ -606,6 +692,20 @@ class ProbabilityService {
     }
 
     return (successCount / simulations) * 100;
+  }
+}
+
+// Predicate node for global card IDs (used in combined simulation)
+class PredicateNodeGlobal {
+  constructor(globalCardId, minCopies, maxCopies) {
+    this.globalCardId = globalCardId;
+    this.minCopies = minCopies;
+    this.maxCopies = maxCopies;
+  }
+
+  eval(globalHandCounts) {
+    const count = globalHandCounts.get(this.globalCardId) || 0;
+    return count >= this.minCopies && count <= this.maxCopies;
   }
 }
 

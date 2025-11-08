@@ -1264,15 +1264,15 @@ useEffect(() => {
             <Icon name="star-four" ariaLabel="Top decks" size={16} />
             <h2 style={{...typography.h2, color: 'var(--text-main)'}}>Top Decks</h2>
           </div>
-          
+
           <div className="space-y-3">
             {topDecks.map((deck, index) => (
-              <div 
+              <div
                 key={index}
                 className="cursor-pointer hover:opacity-80 transition-opacity p-4 rounded-lg border"
-                style={{ 
-                  backgroundColor: 'var(--bg-secondary)', 
-                  borderColor: 'var(--border-secondary)' 
+                style={{
+                  backgroundColor: 'var(--bg-secondary)',
+                  borderColor: 'var(--border-secondary)'
                 }}
                 onClick={() => handleTopDeckClick(deck.link, deck.title)}
               >

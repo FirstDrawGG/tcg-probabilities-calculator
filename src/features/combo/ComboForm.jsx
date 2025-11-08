@@ -109,7 +109,7 @@ const ComboForm = ({
           <span className="button-text">Add card</span>
         </Button>
         <Tooltip text={canAddCard(combo)
-          ? "Add another card to create more complex combos"
+          ? "Add another card - all cards must be drawn (AND logic)"
           : "Your combo would exceed the defined Hand size"
         } />
       </div>

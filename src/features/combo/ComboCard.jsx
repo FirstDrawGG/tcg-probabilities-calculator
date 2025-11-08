@@ -21,33 +21,10 @@ const ComboCard = ({
   return (
     <div className={`${cardIndex > 0 ? 'border-t mt-4 pt-4' : ''}`} style={{ borderColor: 'var(--border-secondary)' }}>
       <div className="mb-3">
-        <div className="flex items-center justify-between" style={{marginBottom: 'var(--spacing-xs)'}}>
-          <label className="flex items-center font-medium" style={{...typography.body, color: 'var(--text-main)'}}>
-            Card name:
-            <Tooltip text="Search for any Yu-Gi-Oh card or create a custom placeholder (e.g. 'Any Dragon monster' or 'Any Unchained Card')" />
-          </label>
-          {/* AC #6: [X] remove option for each card except the first */}
-          {cardIndex > 0 && (
-            <Button
-              onClick={() => removeCard(comboId, cardIndex)}
-              variant="secondary"
-              size="small"
-              className="font-medium hover:opacity-80 transition-opacity w-8 h-8 flex items-center justify-center"
-              style={{
-                borderRadius: '50%',
-                fontSize: '18px',
-                fontWeight: 'bold',
-                width: '32px',
-                height: '32px',
-                padding: '0'
-              }}
-              title="Remove this card"
-              aria-label="Remove this card"
-            >
-              ×
-            </Button>
-          )}
-        </div>
+        <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
+          Card name:
+          <Tooltip text={cardIndex === 0 ? "Search for any Yu-Gi-Oh card or create a custom placeholder (e.g. 'Any Dragon monster' or 'Any Unchained Card')" : "All cards in this combo must be drawn (AND logic)"} />
+        </label>
         <SearchableCardInput
           value={card.starterCard}
           onChange={(value) => {
@@ -70,45 +47,6 @@ const ComboCard = ({
         )}
       </div>
 
-      {/* AND/OR toggle only for 3rd+ cards (cardIndex > 1) */}
-      {cardIndex > 1 && (
-        <div className="mb-3">
-          <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
-            Logic:
-            <Tooltip text="AND = need all cards, OR = need any of these cards" />
-          </label>
-          <div className="flex items-center space-x-2">
-            <Button
-              onClick={() => updateCombo(comboId, cardIndex, 'logicOperator', 'AND')}
-              variant={(card.logicOperator || 'AND') === 'AND' ? 'primary' : 'secondary'}
-              size="small"
-              className="rounded font-medium transition-colors"
-              style={{
-                borderRadius: '8px',
-                height: '28px',
-                minWidth: '60px',
-                ...typography.body
-              }}
-            >
-              AND
-            </Button>
-            <Button
-              onClick={() => updateCombo(comboId, cardIndex, 'logicOperator', 'OR')}
-              variant={(card.logicOperator || 'AND') === 'OR' ? 'primary' : 'secondary'}
-              size="small"
-              className="rounded font-medium transition-colors"
-              style={{
-                borderRadius: '8px',
-                height: '28px',
-                minWidth: '60px',
-                ...typography.body
-              }}
-            >
-              OR
-            </Button>
-          </div>
-        </div>
-      )}
 
       <div className="space-y-4">
         <div>
