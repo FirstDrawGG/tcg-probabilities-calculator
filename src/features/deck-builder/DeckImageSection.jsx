@@ -776,11 +776,7 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
                   <div
                     key={combo.id}
                     style={{
-                      marginBottom: '12px',
-                      padding: '12px',
-                      backgroundColor: 'var(--bg-secondary)',
-                      border: '1px solid var(--border-main)',
-                      borderRadius: '8px'
+                      marginBottom: '12px'
                     }}
                   >
                     {/* Main combo button */}
@@ -829,57 +825,57 @@ const DeckImageSection = ({ typography, cardDatabase, ydkCards, ydkCardCounts, s
               );
 
               return (
-                <>
-            <Button
-              disabled={!hasAnyCards}
-              onClick={() => {
-                // AC #6: Create new combo with this card (or populate first empty slot)
-                createNewComboWithCard(selectedCard);
-                showToast(`Added ${selectedCard.name} to combo`);
-                setShowComboOverlay(false);
-                setSelectedCard(null);
-              }}
-              variant="primary"
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '8px',
-                backgroundColor: '#000000',
-                color: '#ffffff',
-                border: '1px solid #333',
-                fontSize: typography.body.fontSize,
-                lineHeight: typography.body.lineHeight,
-                fontFamily: typography.body.fontFamily,
-                fontWeight: 'medium',
-                marginBottom: '12px'
-              }}
-              className="hover:bg-opacity-80 transition-all"
-            >
-              + New combo
-            </Button>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                  {/* New combo button - Left of Save */}
+                  <Button
+                    disabled={!hasAnyCards}
+                    onClick={() => {
+                      // AC #6: Create new combo with this card (or populate first empty slot)
+                      createNewComboWithCard(selectedCard);
+                      showToast(`Added ${selectedCard.name} to combo`);
+                      setShowComboOverlay(false);
+                      setSelectedCard(null);
+                    }}
+                    variant="primary"
+                    style={{
+                      width: '140px',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      backgroundColor: '#000000',
+                      color: '#ffffff',
+                      border: '1px solid #333',
+                      fontSize: typography.body.fontSize,
+                      lineHeight: typography.body.lineHeight,
+                      fontFamily: typography.body.fontFamily,
+                      fontWeight: 'medium'
+                    }}
+                    className="hover:bg-opacity-80 transition-all"
+                  >
+                    + New combo
+                  </Button>
 
-            {/* Save Button (closes modal) */}
-            <Button
-              disabled={!hasAnyCards}
-              onClick={() => {
-                setShowComboOverlay(false);
-                setSelectedCard(null);
-              }}
-              variant="primary"
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '8px',
-                fontSize: typography.body.fontSize,
-                lineHeight: typography.body.lineHeight,
-                fontFamily: typography.body.fontFamily,
-                fontWeight: 'medium'
-              }}
-              className="hover:bg-opacity-80 transition-all"
-            >
-              Save
-            </Button>
-                </>
+                  {/* Save Button - Right */}
+                  <Button
+                    disabled={!hasAnyCards}
+                    onClick={() => {
+                      setShowComboOverlay(false);
+                      setSelectedCard(null);
+                    }}
+                    variant="primary"
+                    style={{
+                      width: '140px',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      fontSize: typography.body.fontSize,
+                      lineHeight: typography.body.lineHeight,
+                      fontFamily: typography.body.fontFamily,
+                      fontWeight: 'medium'
+                    }}
+                    className="hover:bg-opacity-80 transition-all"
+                  >
+                    Save
+                  </Button>
+                </div>
               );
             })()}
           </div>
