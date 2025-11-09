@@ -135,16 +135,24 @@ export default function TCGCalculator() {
       // Extract the calc parameter from the URL
       const match = link.match(/#calc=(.+)/);
       if (!match) return;
-      
+
       // Decode the calculation data
       const decoded = atob(match[1]);
       const data = JSON.parse(decoded);
-      
+
+      // Clear deck zones and YDK file info before loading new deck
+      setDeckZones({
+        main: [],
+        extra: [],
+        side: []
+      });
+      setUploadedYdkFile(null);
+
       // Load the deck data into the app
       setDeckSize(data.d);
       setHandSize(data.h);
       setTestHandFromDecklist(data.testHandFromDecklist !== undefined ? data.testHandFromDecklist : true);
-      
+
       const loadedCombos = data.c.map(combo => ({
         id: combo.i,
         name: combo.n,
@@ -303,14 +311,21 @@ export default function TCGCalculator() {
 
     try {
       YdkParser.validateYdkFile(file);
-      
+
       const fileContent = await readFileAsText(file);
       const parseResult = YdkParser.parseYdkFile(fileContent, staticCardDatabase);
-      
+
+      // Clear existing deck data and combos from URL/Top Deck
+      setCombos([createCombo(1, 0)]);
+      setResults(null);
+      setDashboardValues({ deckSize: 40, handSize: 5, combos: [] });
+      setGeneratedTitle('');
+      setShareableUrl('');
+
       // Get unique card names (remove duplicates) for search dropdown
       const uniqueCards = [];
       const seenNames = new Set();
-      
+
       parseResult.cards.forEach(card => {
         if (!seenNames.has(card.name)) {
           seenNames.add(card.name);
@@ -321,7 +336,7 @@ export default function TCGCalculator() {
           });
         }
       });
-      
+
       // Update deck size to match total main deck cards (including duplicates)
       const mainDeckCardCount = parseResult.cards.length;
       setDeckSize(mainDeckCardCount);
@@ -370,15 +385,22 @@ export default function TCGCalculator() {
 
     try {
       const parseResult = YdkParser.parseYdkFile(content, staticCardDatabase);
-      
+
       if (parseResult.cards.length === 0) {
         alert("No main deck found in pasted text");
         return;
       }
 
+      // Clear existing deck data and combos from URL/Top Deck
+      setCombos([createCombo(1, 0)]);
+      setResults(null);
+      setDashboardValues({ deckSize: 40, handSize: 5, combos: [] });
+      setGeneratedTitle('');
+      setShareableUrl('');
+
       const uniqueCards = [];
       const seenNames = new Set();
-      
+
       parseResult.cards.forEach(card => {
         if (!seenNames.has(card.name)) {
           seenNames.add(card.name);
@@ -389,7 +411,7 @@ export default function TCGCalculator() {
           });
         }
       });
-      
+
       const mainDeckCardCount = parseResult.cards.length;
       setDeckSize(mainDeckCardCount);
       
@@ -1258,6 +1280,28 @@ useEffect(() => {
           </div>
         </div>
 
+        <div ref={calculationDashboardRef}>
+          <ResultsDisplay
+            results={results}
+            dashboardValues={dashboardValues}
+            openingHand={openingHand}
+            isRefreshing={isRefreshing}
+            refreshOpeningHand={refreshOpeningHand}
+            generatedTitle={generatedTitle}
+            shareableUrl={shareableUrl}
+            handleCopyLink={handleCopyLink}
+            showToast={showToast}
+            typography={typography}
+            testHandFromDecklist={testHandFromDecklist}
+            setTestHandFromDecklist={setTestHandFromDecklist}
+            ydkCards={ydkCards}
+            ydkCardCounts={ydkCardCounts}
+            deckSize={deckSize}
+            handSize={handSize}
+            combos={combos}
+          />
+        </div>
+
         {/* Top Decks Section */}
         <section className="px-0 mb-8">
           <div className="flex items-center mb-4" style={{ gap: '8px' }}>
@@ -1286,29 +1330,6 @@ useEffect(() => {
             ))}
           </div>
         </section>
-
-        <div ref={calculationDashboardRef}>
-          <ResultsDisplay 
-            results={results}
-            dashboardValues={dashboardValues}  
-            openingHand={openingHand}
-            isRefreshing={isRefreshing}
-            refreshOpeningHand={refreshOpeningHand}
-            generatedTitle={generatedTitle}
-            shareableUrl={shareableUrl}
-            handleCopyLink={handleCopyLink}
-            showToast={showToast}
-            typography={typography}
-            testHandFromDecklist={testHandFromDecklist}
-            setTestHandFromDecklist={setTestHandFromDecklist}
-            ydkCards={ydkCards}
-            ydkCardCounts={ydkCardCounts}
-            deckSize={deckSize}
-            handSize={handSize}
-            combos={combos}
-          />
-        </div>
-
 
         <div className="p-0" style={{ marginTop: 'var(--spacing-lg)' }}>
           <h2 className="mb-3" style={typography.h2}>Understanding Your Probability Results</h2>
