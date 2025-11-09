@@ -162,7 +162,8 @@ export default function TCGCalculator() {
           isCustom: card.iC || false,
           startersInDeck: card.deck,
           minCopiesInHand: card.min,
-          maxCopiesInHand: card.max
+          maxCopiesInHand: card.max,
+          logicOperator: card.logic || 'AND'
         }))
       }));
       
