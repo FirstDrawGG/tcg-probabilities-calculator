@@ -2,6 +2,7 @@ import React from 'react';
 import Icon from '../../components/Icon';
 import { Button, Tooltip } from '../../components/ui';
 import ComboCard from './ComboCard';
+import ComboCardDisplay from './ComboCardDisplay';
 
 const ComboForm = ({
   combo,
@@ -27,7 +28,8 @@ const ComboForm = ({
 }) => {
   return (
     <div key={combo.id} className="border-t pt-4 pb-4" style={{ borderColor: 'var(--border-secondary)' }}>
-      <div className="flex justify-between items-center mb-2">
+      {/* Combo Title */}
+      <div className="flex items-center mb-2">
         {editingComboId === combo.id ? (
           <div className="flex items-center gap-2">
             <Icon name="asterisk-simple" ariaLabel="Combo" size={16} variant="secondary" />
@@ -57,61 +59,52 @@ const ComboForm = ({
             </h3>
           </div>
         )}
-        {index > 0 && (
-          <Button
-            onClick={() => removeCombo(combo.id)}
-            variant="secondary"
-            size="small"
-            className="font-medium hover:opacity-80 transition-opacity"
-            style={{
-              ...typography.body,
-              backgroundColor: 'transparent',
-              border: 'none',
-              padding: '0',
-              height: 'auto'
-            }}
-          >
-            Remove
-          </Button>
-        )}
       </div>
 
       {errors[`combo-${combo.id}-name`] && (
         <p className="text-red-500 mb-2" style={typography.body}>{errors[`combo-${combo.id}-name`]}</p>
       )}
 
-      {combo.cards.map((card, cardIndex) => (
-        <ComboCard
-          key={cardIndex}
-          card={card}
-          cardIndex={cardIndex}
-          comboId={combo.id}
-          updateCombo={updateCombo}
-          validateAndUpdateCombo={validateAndUpdateCombo}
-          removeCard={removeCard}
-          errors={errors}
-          typography={typography}
-          SearchableCardInput={SearchableCardInput}
-          cardDatabase={cardDatabase}
-          ydkCards={ydkCards}
-          ydkCardCounts={ydkCardCounts}
-        />
-      ))}
+      {/* Card Display Area - Above card details */}
+      <div className="mb-4">
+        <ComboCardDisplay cards={combo.cards} cardDatabase={cardDatabase} />
+      </div>
 
-      {/* AC #1, #2, #3, #4: Dynamic Add Card button */}
-      <div className="flex items-center mt-4">
-        <Button
-          onClick={() => addCard(combo.id)}
-          disabled={!canAddCard(combo)}
-          className="enhanced-button enhanced-button-add"
-        >
-          <Icon name="stack-plus" ariaLabel="Add card" size={14} className="button-icon" style={{ color: '#141414' }} />
-          <span className="button-text">Add card</span>
-        </Button>
-        <Tooltip text={canAddCard(combo)
-          ? "Add another card - all cards must be drawn (AND logic)"
-          : "Your combo would exceed the defined Hand size"
-        } />
+      {/* Card Details Section */}
+      <div>
+        {combo.cards.map((card, cardIndex) => (
+          <ComboCard
+            key={cardIndex}
+            card={card}
+            cardIndex={cardIndex}
+            comboId={combo.id}
+            updateCombo={updateCombo}
+            validateAndUpdateCombo={validateAndUpdateCombo}
+            removeCard={removeCard}
+            errors={errors}
+            typography={typography}
+            SearchableCardInput={SearchableCardInput}
+            cardDatabase={cardDatabase}
+            ydkCards={ydkCards}
+            ydkCardCounts={ydkCardCounts}
+          />
+        ))}
+
+        {/* AC #1, #2, #3, #4: Dynamic Add Card button */}
+        <div className="flex items-center mt-4">
+          <Button
+            onClick={() => addCard(combo.id)}
+            disabled={!canAddCard(combo)}
+            className="enhanced-button enhanced-button-add"
+          >
+            <Icon name="stack-plus" ariaLabel="Add card" size={14} className="button-icon" style={{ color: '#141414' }} />
+            <span className="button-text">Add card</span>
+          </Button>
+          <Tooltip text={canAddCard(combo)
+            ? "Add another card - all cards must be drawn (AND logic)"
+            : "Your combo would exceed the defined Hand size"
+          } />
+        </div>
       </div>
     </div>
   );

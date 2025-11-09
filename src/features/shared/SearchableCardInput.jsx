@@ -306,17 +306,6 @@ const SearchableCardInput = ({
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                handleEdit();
-              }}
-              className="hover:opacity-80 transition-opacity"
-              style={{ fontSize: '12px' }}
-            >
-              Edit
-            </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
                 handleClear();
               }}
               className="hover:opacity-80 transition-opacity"

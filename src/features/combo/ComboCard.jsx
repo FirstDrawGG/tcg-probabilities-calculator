@@ -20,7 +20,7 @@ const ComboCard = ({
   const [focusedField, setFocusedField] = useState(null);
   return (
     <div className={`${cardIndex > 0 ? 'border-t mt-4 pt-4' : ''}`} style={{ borderColor: 'var(--border-secondary)' }}>
-      <div className="mb-3">
+      <div className="mb-3" style={{ width: '520px' }}>
         <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
           Card name:
           <Tooltip text={cardIndex === 0 ? "Search for any Yu-Gi-Oh card or create a custom placeholder (e.g. 'Any Dragon monster' or 'Any Unchained Card')" : "All cards in this combo must be drawn (AND logic)"} />
@@ -49,7 +49,7 @@ const ComboCard = ({
 
 
       <div className="space-y-4">
-        <div>
+        <div style={{ width: '200px' }}>
           <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
             Copies in deck:
             <Tooltip text="Total copies of this card in your deck. Max 3 for most, but remember banlist restrictions" />
@@ -110,7 +110,7 @@ const ComboCard = ({
         </div>
 
         <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
-          <div className="flex-1">
+          <div style={{ width: '200px' }}>
             <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
               Min in hand:
               <Tooltip text="Minimum copies needed in your opening hand for your combo to work" />
@@ -170,7 +170,7 @@ const ComboCard = ({
             )}
           </div>
 
-          <div className="flex-1">
+          <div style={{ width: '200px' }}>
             <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
               Max in hand:
               <Tooltip text="Upper limit of copies you want to see. Helps avoid dead multiples" />
