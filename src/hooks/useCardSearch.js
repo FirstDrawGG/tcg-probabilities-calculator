@@ -5,7 +5,7 @@ import { useState } from 'react';
  * @returns {Object} Card database state
  */
 const useCardSearch = () => {
-  const [cardDatabase, setCardDatabase] = useState({});
+  const [cardDatabase, setCardDatabase] = useState([]);
 
   return {
     cardDatabase,
