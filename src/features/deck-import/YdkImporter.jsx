@@ -47,7 +47,7 @@ const YdkImporter = ({
     try {
       // AC #2: Set loading state
       setIsLoadingDeck(true);
-      
+
       // Close clipboard field if it's open
       if (showClipboardField) {
         setShowClipboardField(false);
@@ -56,10 +56,10 @@ const YdkImporter = ({
 
       const content = await readFileAsText(file);
       const parseResult = YdkParser.parseYdkFile(content, cardDatabase);
-      
+
       const uniqueCards = [];
       const seenNames = new Set();
-      
+
       parseResult.cards.forEach(card => {
         if (!seenNames.has(card.name)) {
           seenNames.add(card.name);
@@ -70,15 +70,15 @@ const YdkImporter = ({
           });
         }
       });
-      
+
       const mainDeckCardCount = parseResult.cards.length;
-      
+
       // Set deck size first
       setDeckSize(mainDeckCardCount);
-      
+
       // Clear previous calculation data after setting deck size
       clearPreviousCalculationData(mainDeckCardCount);
-      
+
       setUploadedYdkFile({
         name: file.name,
         content: content
@@ -97,13 +97,15 @@ const YdkImporter = ({
       if (parseResult.unmatchedIds.length > 0) {
         alert("Some cards from your YDK file weren't matched");
       }
-      
+
     } catch (error) {
       console.error('YDK upload error:', error);
       alert(error.message);
     } finally {
       // AC #2: Clear loading state
       setIsLoadingDeck(false);
+      // Reset file input to allow re-uploading the same file
+      event.target.value = '';
     }
   };
 
