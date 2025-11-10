@@ -159,7 +159,7 @@ const DeckInputs = ({
             onClick={() => setHandSize(5)}
             disabled={5 < minHandSize}
             variant={handSize === 5 ? 'primary' : 'secondary'}
-            style={{ flex: 1, width: 'auto' }}
+            style={{ width: '140px' }}
           >
             5
           </Button>
@@ -167,7 +167,7 @@ const DeckInputs = ({
             onClick={() => setHandSize(6)}
             disabled={6 < minHandSize}
             variant={handSize === 6 ? 'primary' : 'secondary'}
-            style={{ flex: 1, width: 'auto' }}
+            style={{ width: '140px' }}
           >
             6
           </Button>
