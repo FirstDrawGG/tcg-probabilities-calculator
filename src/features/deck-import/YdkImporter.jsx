@@ -273,7 +273,7 @@ const YdkImporter = ({
               ...typography.body
             }}
           >
-            From clipboard
+            Paste YDK from clipboard
           </button>
           <div
             style={{
@@ -304,7 +304,7 @@ const YdkImporter = ({
               ...typography.body
             }}
           >
-            Upload
+            Upload YDK
           </label>
           <div
             style={{

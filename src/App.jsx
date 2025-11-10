@@ -1189,8 +1189,32 @@ useEffect(() => {
         <Header typography={typography} />
 
         <div className="p-0" style={{ margin: 0, paddingBottom: '16px' }}>
-          <h2 className="mb-4" style={{...typography.h2, color: 'var(--text-main)'}}>Define a Combo</h2>
-          
+          <div className="mb-6" style={{
+            padding: '16px',
+            border: '1px solid var(--border-main)',
+            borderRadius: '16px',
+            backgroundColor: 'var(--bg-secondary)'
+          }}>
+            <h2 className="mb-3" style={{...typography.h2, color: 'var(--text-main)'}}>How to use the app?</h2>
+            <ol style={{
+              ...typography.body,
+              color: 'var(--text-secondary)',
+              paddingLeft: '20px',
+              marginBottom: 0,
+              listStyleType: 'decimal',
+              listStylePosition: 'outside'
+            }}>
+              <li style={{marginBottom: '4px', display: 'list-item'}}>Upload a decklist via YDK</li>
+              <li style={{marginBottom: '4px', display: 'list-item'}}>Click on a card from your Main deck</li>
+              <li style={{marginBottom: '4px', display: 'list-item'}}>Select a Combo to add that card to (e.g. Combo 1)</li>
+              <li style={{marginBottom: '4px', display: 'list-item'}}>[Repeat for other cards]</li>
+              <li style={{marginBottom: '4px', display: 'list-item'}}>Click on "Calculate" when you finish combo definition</li>
+              <li style={{marginBottom: '4px', display: 'list-item'}}>Get results</li>
+            </ol>
+          </div>
+
+          <h2 className="mb-4" style={{...typography.h2, color: 'var(--text-main)'}}>Upload a decklist</h2>
+
           <DeckConfigInputs
             uploadedYdkFile={uploadedYdkFile}
             setUploadedYdkFile={setUploadedYdkFile}
@@ -1217,6 +1241,8 @@ useEffect(() => {
             initialDeckZones={initialDeckZones}
             typography={typography}
           />
+
+          <h2 className="mb-4" style={{...typography.h2, color: 'var(--text-main)'}}>Define combos</h2>
 
           {combos.map((combo, index) => (
             <ComboForm
