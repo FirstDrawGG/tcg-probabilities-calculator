@@ -185,7 +185,7 @@ export default function TCGCalculator() {
         });
         
         // Generate shareable URL
-        URLService.updateURL(data.d, data.h, loadedCombos, uploadedYdkFile, data.testHandFromDecklist);
+        URLService.updateURL(data.d, data.h, loadedCombos, uploadedYdkFile, data.testHandFromDecklist, deckZones);
         const url = window.location.href;
         setShareableUrl(url);
         
@@ -217,11 +217,11 @@ export default function TCGCalculator() {
         if (urlData.ydkFile && staticCardDatabase && Object.keys(staticCardDatabase).length > 0) {
           try {
             const parseResult = YdkParser.parseYdkFile(urlData.ydkFile.content, staticCardDatabase);
-            
+
             // Get unique card names (remove duplicates)
             const uniqueCards = [];
             const seenNames = new Set();
-            
+
             parseResult.cards.forEach(card => {
               if (!seenNames.has(card.name)) {
                 seenNames.add(card.name);
@@ -232,15 +232,15 @@ export default function TCGCalculator() {
                 });
               }
             });
-            
+
             // Update deck size to match YDK file main deck card count
             const mainDeckCardCount = parseResult.cards.length;
             setDeckSize(mainDeckCardCount);
-            
+
             setUploadedYdkFile(urlData.ydkFile);
             setYdkCards(uniqueCards);
             setYdkCardCounts(parseResult.cardCounts);
-            
+
             // Show error only for truly unmatched cards
             if (parseResult.unmatchedIds.length > 0) {
               alert("Some cards from your YDK file weren't matched");
@@ -248,6 +248,13 @@ export default function TCGCalculator() {
           } catch (error) {
             console.error('Failed to restore YDK file from URL:', error);
           }
+        }
+
+        // Restore deck zones if present
+        if (urlData.deckZones) {
+          console.log('Restoring deck zones from URL:', urlData.deckZones);
+          setDeckZones(urlData.deckZones);
+          setInitialDeckZones(urlData.deckZones);
         }
         
         setTimeout(() => {
@@ -609,6 +616,11 @@ export default function TCGCalculator() {
 
       // First, process cards that are in combos
       Object.entries(cardCountsFromCombos).forEach(([cardName, data]) => {
+        // Skip custom cards - they should not be added to deck zones
+        if (data.isCustom) {
+          return;
+        }
+
         const existingCards = currentMainDeck.filter(c =>
           c.name.toLowerCase() === cardName.toLowerCase()
         );
@@ -696,7 +708,7 @@ export default function TCGCalculator() {
         setResults(calculatedResults);
 
         // Generate shareable URL
-        URLService.updateURL(deckSize, handSize, combos, uploadedYdkFile, testHandFromDecklist);
+        URLService.updateURL(deckSize, handSize, combos, uploadedYdkFile, testHandFromDecklist, deckZones);
         const url = window.location.href;
         setShareableUrl(url);
 

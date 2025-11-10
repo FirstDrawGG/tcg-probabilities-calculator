@@ -4,7 +4,7 @@
  */
 
 const URLService = {
-  encodeCalculation: (deckSize, handSize, combos, ydkFile = null, testHandFromDecklist = true) => {
+  encodeCalculation: (deckSize, handSize, combos, ydkFile = null, testHandFromDecklist = true, deckZones = null) => {
     try {
       const data = {
         d: deckSize,
@@ -30,6 +30,33 @@ const URLService = {
         data.ydk = {
           name: ydkFile.name,
           content: ydkFile.content
+        };
+      }
+
+      // Add deck zones data if present
+      if (deckZones && (deckZones.main?.length > 0 || deckZones.extra?.length > 0 || deckZones.side?.length > 0)) {
+        data.zones = {
+          main: deckZones.main?.map(card => ({
+            cId: card.cardId,
+            n: card.name,
+            t: card.type,
+            l: card.level,
+            a: card.attribute
+          })) || [],
+          extra: deckZones.extra?.map(card => ({
+            cId: card.cardId,
+            n: card.name,
+            t: card.type,
+            l: card.level,
+            a: card.attribute
+          })) || [],
+          side: deckZones.side?.map(card => ({
+            cId: card.cardId,
+            n: card.name,
+            t: card.type,
+            l: card.level,
+            a: card.attribute
+          })) || []
         };
       }
 
@@ -82,6 +109,39 @@ const URLService = {
         };
       }
 
+      // Add deck zones data if present
+      if (data.zones) {
+        result.deckZones = {
+          main: data.zones.main?.map((card, index) => ({
+            id: `main_${card.cId}_${index}`,
+            cardId: card.cId,
+            name: card.n,
+            type: card.t,
+            level: card.l,
+            attribute: card.a,
+            zone: 'main'
+          })) || [],
+          extra: data.zones.extra?.map((card, index) => ({
+            id: `extra_${card.cId}_${index}`,
+            cardId: card.cId,
+            name: card.n,
+            type: card.t,
+            level: card.l,
+            attribute: card.a,
+            zone: 'extra'
+          })) || [],
+          side: data.zones.side?.map((card, index) => ({
+            id: `side_${card.cId}_${index}`,
+            cardId: card.cId,
+            name: card.n,
+            type: card.t,
+            level: card.l,
+            attribute: card.a,
+            zone: 'side'
+          })) || []
+        };
+      }
+
       return result;
     } catch (error) {
       console.error('Failed to decode calculation:', error);
@@ -89,8 +149,8 @@ const URLService = {
     }
   },
 
-  updateURL: (deckSize, handSize, combos, ydkFile = null, testHandFromDecklist = true) => {
-    const encoded = URLService.encodeCalculation(deckSize, handSize, combos, ydkFile, testHandFromDecklist);
+  updateURL: (deckSize, handSize, combos, ydkFile = null, testHandFromDecklist = true, deckZones = null) => {
+    const encoded = URLService.encodeCalculation(deckSize, handSize, combos, ydkFile, testHandFromDecklist, deckZones);
     if (encoded) {
       window.history.replaceState(null, '', `#calc=${encoded}`);
     }

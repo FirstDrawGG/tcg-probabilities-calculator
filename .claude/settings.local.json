@@ -15,7 +15,8 @@
       "Bash(cat:*)",
       "Bash(node:*)",
       "Bash(npm run validate:seo:*)",
-      "Bash(npm run build:sitemap:*)"
+      "Bash(npm run build:sitemap:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
