@@ -43,6 +43,11 @@
   --bg-error: #1f1414;
   --border-error: #450a0a;
 
+  /* Highlight colors for multi-starter combos */
+  --bg-highlight: #1a1f1a;
+  --border-highlight: #2a3f2a;
+  --text-highlight: #4ade80;
+
   /* Additional typography sizes */
   --font-h1-size: 32px;
   --font-h1-line-height: 40px;

@@ -394,7 +394,35 @@ const ResultsDisplay = ({
               </div>
             </div>
           )}
-          
+
+          {/* Multi-Starter probability - only show if 2+ independent starters exist */}
+          {results.multiStarter && results.multiStarter.twoPlus !== undefined && (
+            <div className="" style={{ marginBottom: '8px' }}>
+              <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-highlight)', border: `1px solid var(--border-highlight)` }}>
+                <div className="flex items-center">
+                  <p className="font-semibold" style={{...typography.body, color: 'var(--text-highlight)'}}>
+                    2+ Combo starters: {results.multiStarter.twoPlus.toFixed(2)}%
+                  </p>
+                  <Tooltip text="Chance of opening 2 or more independent combo starters in your opening hand. Independent starters are combos with different first cards, giving you backup options when your opponent disrupts your primary combo." />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 3+ Starter probability - only show if 3+ independent starters exist */}
+          {results.multiStarter && results.multiStarter.threePlus !== undefined && (
+            <div className="" style={{ marginBottom: '8px' }}>
+              <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-highlight)', border: `1px solid var(--border-highlight)` }}>
+                <div className="flex items-center">
+                  <p className="font-semibold" style={{...typography.body, color: 'var(--text-highlight)'}}>
+                    3+ Combo starters: {results.multiStarter.threePlus.toFixed(2)}%
+                  </p>
+                  <Tooltip text="Chance of opening 3 or more independent combo starters in your opening hand. This shows your deck's extreme resilience against multiple disruptions." />
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Hand-trap probability - only show if YDK deck loaded and contains hand-traps */}
           {handTrapProbability !== null && handTrapProbability > 0 && (
             <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-secondary)', border: `1px solid var(--border-secondary)` }}>

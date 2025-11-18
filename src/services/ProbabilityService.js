@@ -379,6 +379,91 @@ class ProbabilityService {
   }
 
   /**
+   * Identifies independent combo starters (unique first cards)
+   * @param {Array} combos - Array of combo configurations
+   * @returns {Array} Array of unique starter cards with their deck counts
+   */
+  getIndependentStarters(combos) {
+    const starterMap = new Map();
+
+    combos.forEach(combo => {
+      if (combo.cards && combo.cards.length > 0) {
+        const firstCard = combo.cards[0];
+        const cardKey = `${firstCard.starterCard}-${firstCard.cardId || 'custom'}`;
+
+        if (!starterMap.has(cardKey)) {
+          starterMap.set(cardKey, {
+            name: firstCard.starterCard,
+            cardId: firstCard.cardId,
+            copiesInDeck: firstCard.startersInDeck
+          });
+        } else {
+          // Use maximum copies across all combos
+          const existing = starterMap.get(cardKey);
+          existing.copiesInDeck = Math.max(existing.copiesInDeck, firstCard.startersInDeck);
+        }
+      }
+    });
+
+    return Array.from(starterMap.values());
+  }
+
+  /**
+   * Calculates probability of opening N or more independent combo starters
+   * @param {Array} independentStarters - Array of unique starter cards
+   * @param {number} minStarters - Minimum number of different starters required (2 or 3)
+   * @param {number} deckSize - Total deck size
+   * @param {number} handSize - Hand size to draw
+   * @param {number} simulations - Number of simulations to run (default: 100000)
+   * @returns {number} Probability percentage
+   */
+  calculateMultiStarterProbability(independentStarters, minStarters, deckSize, handSize, simulations = 100000) {
+    if (independentStarters.length < minStarters) {
+      return 0;
+    }
+
+    let successes = 0;
+
+    for (let i = 0; i < simulations; i++) {
+      const deck = [];
+
+      // Build deck with starter cards
+      independentStarters.forEach((starter, starterIndex) => {
+        for (let j = 0; j < starter.copiesInDeck; j++) {
+          deck.push(starterIndex);
+        }
+      });
+
+      // Fill remaining deck slots with "Other" cards
+      const otherCount = deckSize - deck.length;
+      for (let j = 0; j < otherCount; j++) {
+        deck.push(-1);
+      }
+
+      // Shuffle deck using Fisher-Yates algorithm
+      for (let j = deck.length - 1; j > 0; j--) {
+        const k = Math.floor(Math.random() * (j + 1));
+        [deck[j], deck[k]] = [deck[k], deck[j]];
+      }
+
+      // Count unique starters in hand
+      const startersInHand = new Set();
+      for (let j = 0; j < handSize; j++) {
+        if (deck[j] >= 0) {
+          startersInHand.add(deck[j]);
+        }
+      }
+
+      // Check if we have at least minStarters different starters
+      if (startersInHand.size >= minStarters) {
+        successes++;
+      }
+    }
+
+    return (successes / simulations) * 100;
+  }
+
+  /**
    * Calculates probabilities for multiple combos
    * @param {Array} combos - Array of combo configurations
    * @param {number} deckSize - Total deck size
@@ -398,9 +483,26 @@ class ProbabilityService {
       combinedProbability = this.combinedMonteCarloSimulation(combos, deckSize, handSize);
     }
 
+    // Calculate multi-starter probabilities
+    const independentStarters = this.getIndependentStarters(combos);
+    let multiStarter = null;
+
+    if (independentStarters.length >= 2) {
+      multiStarter = {
+        independentStarters: independentStarters.length,
+        twoPlus: this.calculateMultiStarterProbability(independentStarters, 2, deckSize, handSize)
+      };
+
+      // Only calculate 3+ if there are at least 3 independent starters
+      if (independentStarters.length >= 3) {
+        multiStarter.threePlus = this.calculateMultiStarterProbability(independentStarters, 3, deckSize, handSize);
+      }
+    }
+
     return {
       individual: individualResults,
-      combined: combinedProbability
+      combined: combinedProbability,
+      multiStarter: multiStarter
     };
   }
 
