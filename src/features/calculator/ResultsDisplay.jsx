@@ -429,9 +429,54 @@ const ResultsDisplay = ({
               <div className="flex items-center space-x-2">
                 <Icon name="bomb" style={{ fontSize: '16px', color: 'var(--icon-main)' }} />
                 <p className="font-semibold" style={{...typography.body, color: 'var(--icon-main)'}}>
-                  Opening Hand-Trap Probability: {handTrapProbability.toFixed(2)}%
+                  Hand-trap chances: {handTrapProbability.toFixed(2)}%
                 </p>
                 <Tooltip text="Chance of opening at least one hand-trap in your starting hand. Hand-traps are cards that can be activated from your hand during your opponent's turn." />
+              </div>
+            </div>
+          )}
+
+          {/* 2+ Different Hand-Traps probability - AC#1, AC#7 */}
+          {results.multiHandTrap && results.multiHandTrap.twoPlus !== undefined && (
+            <div className="" style={{ marginBottom: '8px' }}>
+              <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-secondary)', border: `1px solid var(--border-secondary)` }}>
+                <div className="flex items-center space-x-2">
+                  <Icon name="bomb" style={{ fontSize: '16px', color: 'var(--icon-main)' }} />
+                  <p className="font-semibold" style={{...typography.body, color: 'var(--icon-main)'}}>
+                    2+ Different Hand-Traps: {results.multiHandTrap.twoPlus.toFixed(2)}%
+                  </p>
+                  <Tooltip text="Chance of opening 2 or more different hand-trap cards in your starting hand. This shows your deck's defensive versatility - having multiple disruption options like both Ash Blossom AND Maxx C gives you flexibility to respond to different opponent strategies." />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 3+ Different Hand-Traps probability - AC#8 */}
+          {results.multiHandTrap && results.multiHandTrap.threePlus !== undefined && (
+            <div className="" style={{ marginBottom: '8px' }}>
+              <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-secondary)', border: `1px solid var(--border-secondary)` }}>
+                <div className="flex items-center space-x-2">
+                  <Icon name="bomb" style={{ fontSize: '16px', color: 'var(--icon-main)' }} />
+                  <p className="font-semibold" style={{...typography.body, color: 'var(--icon-main)'}}>
+                    3+ Different Hand-Traps: {results.multiHandTrap.threePlus.toFixed(2)}%
+                  </p>
+                  <Tooltip text="Chance of opening 3 or more different hand-trap cards in your starting hand. This indicates exceptional defensive flexibility with multiple disruption tools available." />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 4+ Different Hand-Traps probability - AC#9 */}
+          {results.multiHandTrap && results.multiHandTrap.fourPlus !== undefined && (
+            <div className="" style={{ marginBottom: '8px' }}>
+              <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--bg-secondary)', border: `1px solid var(--border-secondary)` }}>
+                <div className="flex items-center space-x-2">
+                  <Icon name="bomb" style={{ fontSize: '16px', color: 'var(--icon-main)' }} />
+                  <p className="font-semibold" style={{...typography.body, color: 'var(--icon-main)'}}>
+                    4+ Different Hand-Traps: {results.multiHandTrap.fourPlus.toFixed(2)}%
+                  </p>
+                  <Tooltip text="Chance of opening 4 or more different hand-trap cards in your starting hand. This shows maximum defensive versatility with numerous disruption options." />
+                </div>
               </div>
             </div>
           )}

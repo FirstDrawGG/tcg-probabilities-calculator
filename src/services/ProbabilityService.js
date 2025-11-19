@@ -468,9 +468,11 @@ class ProbabilityService {
    * @param {Array} combos - Array of combo configurations
    * @param {number} deckSize - Total deck size
    * @param {number} handSize - Hand size to draw
+   * @param {Array} ydkCards - Optional array of cards in the deck (for hand-trap calculations)
+   * @param {Object} ydkCardCounts - Optional card counts in the deck (for hand-trap calculations)
    * @returns {Object} Object containing individual and combined results
    */
-  calculateMultipleCombos(combos, deckSize, handSize) {
+  calculateMultipleCombos(combos, deckSize, handSize, ydkCards = null, ydkCardCounts = null) {
     const individualResults = combos.map(combo => ({
       id: combo.id,
       probability: this.monteCarloSimulation(combo, deckSize, handSize),
@@ -499,10 +501,35 @@ class ProbabilityService {
       }
     }
 
+    // Calculate multi-hand-trap probabilities (AC#1-AC#9)
+    let multiHandTrap = null;
+    if (ydkCards && ydkCardCounts) {
+      const uniqueHandTraps = this.getUniqueHandTraps(ydkCards, ydkCardCounts);
+
+      // AC#1: Only show if deck has 2+ unique hand-traps
+      if (uniqueHandTraps.length >= 2) {
+        multiHandTrap = {
+          uniqueHandTraps: uniqueHandTraps.length,
+          twoPlus: this.calculateMultiHandTrapProbability(ydkCards, ydkCardCounts, 2, deckSize, handSize)
+        };
+
+        // AC#8: Calculate 3+ if there are at least 3 unique hand-traps
+        if (uniqueHandTraps.length >= 3) {
+          multiHandTrap.threePlus = this.calculateMultiHandTrapProbability(ydkCards, ydkCardCounts, 3, deckSize, handSize);
+        }
+
+        // AC#9: Calculate 4+ if there are at least 4 unique hand-traps
+        if (uniqueHandTraps.length >= 4) {
+          multiHandTrap.fourPlus = this.calculateMultiHandTrapProbability(ydkCards, ydkCardCounts, 4, deckSize, handSize);
+        }
+      }
+    }
+
     return {
       individual: individualResults,
       combined: combinedProbability,
-      multiStarter: multiStarter
+      multiStarter: multiStarter,
+      multiHandTrap: multiHandTrap
     };
   }
 
@@ -794,6 +821,92 @@ class ProbabilityService {
     }
 
     return (successCount / simulations) * 100;
+  }
+
+  /**
+   * Get unique hand-trap cards from a deck
+   * @param {Array} ydkCards - Array of cards in the deck
+   * @param {Object} ydkCardCounts - Card counts in the deck
+   * @returns {Array} Array of unique hand-trap cards with their counts
+   */
+  getUniqueHandTraps(ydkCards, ydkCardCounts) {
+    if (!ydkCards || !ydkCardCounts) {
+      return [];
+    }
+
+    // Get all hand-trap cards in the deck
+    const handTrapCards = ydkCards.filter(card => HandTrapService.isHandTrap(card));
+
+    // Map to unique hand-trap cards with their counts
+    return handTrapCards.map(card => ({
+      name: card.name,
+      cardId: card.id,
+      copiesInDeck: ydkCardCounts[card.name] || 0
+    }));
+  }
+
+  /**
+   * Calculate probability of opening N or more different hand-trap cards
+   * @param {Array} ydkCards - Array of cards in the deck
+   * @param {Object} ydkCardCounts - Card counts in the deck
+   * @param {number} minDifferentHandTraps - Minimum number of different hand-traps required (2, 3, or 4)
+   * @param {number} deckSize - Total deck size
+   * @param {number} handSize - Hand size to draw
+   * @param {number} simulations - Number of simulations to run (default: 100000)
+   * @returns {number} Probability percentage
+   */
+  calculateMultiHandTrapProbability(ydkCards, ydkCardCounts, minDifferentHandTraps, deckSize, handSize, simulations = 100000) {
+    if (!ydkCards || !ydkCardCounts) {
+      return 0;
+    }
+
+    // Get unique hand-trap cards
+    const uniqueHandTraps = this.getUniqueHandTraps(ydkCards, ydkCardCounts);
+
+    // AC#2: If deck doesn't have enough unique hand-traps, return 0%
+    if (uniqueHandTraps.length < minDifferentHandTraps) {
+      return 0;
+    }
+
+    let successes = 0;
+
+    for (let i = 0; i < simulations; i++) {
+      const deck = [];
+
+      // Build deck with unique hand-trap cards (each gets a unique ID)
+      uniqueHandTraps.forEach((handTrap, handTrapIndex) => {
+        for (let j = 0; j < handTrap.copiesInDeck; j++) {
+          deck.push(handTrapIndex);
+        }
+      });
+
+      // Fill remaining deck slots with "Other" cards
+      const otherCount = deckSize - deck.length;
+      for (let j = 0; j < otherCount; j++) {
+        deck.push(-1);
+      }
+
+      // Shuffle deck using Fisher-Yates algorithm
+      for (let j = deck.length - 1; j > 0; j--) {
+        const k = Math.floor(Math.random() * (j + 1));
+        [deck[j], deck[k]] = [deck[k], deck[j]];
+      }
+
+      // Count unique hand-traps in opening hand
+      const uniqueHandTrapsInHand = new Set();
+      for (let j = 0; j < handSize; j++) {
+        if (deck[j] >= 0) {
+          uniqueHandTrapsInHand.add(deck[j]);
+        }
+      }
+
+      // Check if we have at least minDifferentHandTraps different hand-traps
+      if (uniqueHandTrapsInHand.size >= minDifferentHandTraps) {
+        successes++;
+      }
+    }
+
+    return (successes / simulations) * 100;
   }
 }
 

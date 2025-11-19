@@ -181,7 +181,7 @@ export default function TCGCalculator() {
       
       // Calculate results
       setTimeout(() => {
-        const calculatedResults = ProbabilityService.calculateMultipleCombos(loadedCombos, data.d, data.h);
+        const calculatedResults = ProbabilityService.calculateMultipleCombos(loadedCombos, data.d, data.h, ydkCards, ydkCardCounts);
         setResults(calculatedResults);
         setDashboardValues({
           deckSize: data.d,
@@ -263,7 +263,7 @@ export default function TCGCalculator() {
         }
         
         setTimeout(() => {
-          const calculatedResults = ProbabilityService.calculateMultipleCombos(urlData.combos, urlData.deckSize, urlData.handSize);
+          const calculatedResults = ProbabilityService.calculateMultipleCombos(urlData.combos, urlData.deckSize, urlData.handSize, ydkCards, ydkCardCounts);
           setResults(calculatedResults);
           setDashboardValues({
             deckSize: urlData.deckSize,
@@ -709,7 +709,7 @@ export default function TCGCalculator() {
     // Defer heavy calculation to next tick to unblock UI thread
     setTimeout(() => {
       try {
-        const calculatedResults = ProbabilityService.calculateMultipleCombos(combos, deckSize, handSize);
+        const calculatedResults = ProbabilityService.calculateMultipleCombos(combos, deckSize, handSize, ydkCards, ydkCardCounts);
         setResults(calculatedResults);
 
         // Generate shareable URL
