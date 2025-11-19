@@ -11,9 +11,18 @@ const Footer = ({ typography }) => {
       <p style={{
         ...typography.small,
         color: 'var(--text-secondary)',
-        margin: 0
+        margin: 0,
+        marginBottom: '8px'
       }}>
         Built with ❤️ for the Yu-Gi-Oh community
+      </p>
+      <p style={{
+        ...typography.small,
+        color: 'var(--text-secondary)',
+        margin: 0,
+        fontSize: '12px'
+      }}>
+        © 2025 FirstDrawGG. All rights reserved.
       </p>
     </footer>
   );
