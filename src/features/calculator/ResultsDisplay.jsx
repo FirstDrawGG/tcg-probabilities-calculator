@@ -164,7 +164,50 @@ const FormulaButton = ({ onClick, expanded }) => {
 
 
 
-const ResultsDisplay = ({ 
+/**
+ * Evaluates if a combo is "bricked" based on the opening hand
+ * A combo is bricked if not ALL required cards appear in the opening hand
+ */
+const evaluateComboForBrick = (combo, openingHand) => {
+  // Get all card names from opening hand (ignore blank cards)
+  const handCardNames = openingHand
+    .filter(card => card.type === 'card' && card.cardName)
+    .map(card => card.cardName.toLowerCase());
+
+  // Check if ALL cards from the combo are present in the opening hand
+  const allCardsPresent = combo.cards.every(card => {
+    if (!card.starterCard || card.starterCard.trim() === '') {
+      return true; // Empty cards don't count against the combo
+    }
+    return handCardNames.includes(card.starterCard.toLowerCase());
+  });
+
+  return !allCardsPresent; // Return true if bricked (not all cards present)
+};
+
+/**
+ * Evaluates if all combos are bricked
+ * Returns true if ALL combos are bricked, false if at least one is not bricked
+ */
+const evaluateAllCombosBricked = (combos, openingHand) => {
+  if (!combos || combos.length === 0) {
+    return false; // No combos means no brick message
+  }
+
+  // Filter out empty combos (combos with no valid cards)
+  const validCombos = combos.filter(combo =>
+    combo.cards && combo.cards.some(card => card.starterCard && card.starterCard.trim() !== '')
+  );
+
+  if (validCombos.length === 0) {
+    return false; // No valid combos means no brick message
+  }
+
+  // Check if ALL valid combos are bricked
+  return validCombos.every(combo => evaluateComboForBrick(combo, openingHand));
+};
+
+const ResultsDisplay = ({
   results,
   dashboardValues,
   openingHand,
@@ -184,10 +227,13 @@ const ResultsDisplay = ({
   combos
 }) => {
   console.log('📊 ResultsDisplay rendered with openingHand:', openingHand);
-  
+
   // State for managing formula visibility (AC#5, AC#6, AC#7)
   const [expandedFormulas, setExpandedFormulas] = useState(new Set());
   const [combinedFormulaExpanded, setCombinedFormulaExpanded] = useState(false);
+
+  // Evaluate if user bricked (all combos are unplayable)
+  const userBricked = evaluateAllCombosBricked(combos, openingHand);
   
   // Auto-collapse formulas when new calculations are performed (AC#9)
   useEffect(() => {
@@ -342,39 +388,78 @@ const ResultsDisplay = ({
           style={{
             display: 'flex',
             gap: '8px',
-            flexWrap: 'wrap',
-            justifyContent: 'flex-start',
+            alignItems: 'center',
             minHeight: '112px'
           }}
         >
-          {/* AC#7: Lazy-load opening hand display */}
-          {isRefreshing ? (
-            // Show loading placeholders during refresh
-            Array(5).fill(null).map((_, index) => (
-              <div
-                key={`loading-${index}`}
+          <div
+            style={{
+              display: 'flex',
+              gap: '8px',
+              flexWrap: 'wrap',
+              justifyContent: 'flex-start'
+            }}
+          >
+            {/* AC#7: Lazy-load opening hand display */}
+            {isRefreshing ? (
+              // Show loading placeholders during refresh
+              Array(5).fill(null).map((_, index) => (
+                <div
+                  key={`loading-${index}`}
+                  style={{
+                    width: '80px',
+                    height: '112px',
+                    backgroundColor: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-main)',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    animation: 'pulse 1.5s ease-in-out infinite'
+                  }}
+                >
+                  <span style={{...typography.body, color: 'var(--text-secondary)', fontSize: '12px'}}>
+                    ...
+                  </span>
+                </div>
+              ))
+            ) : (
+              openingHand.map((cardData, index) => {
+                console.log(`🎴 Rendering card ${index}:`, cardData);
+                return <CardImage key={index} cardData={cardData} size="small" />;
+              })
+            )}
+          </div>
+
+          {/* "You Bricked!" message display - AC#5, AC#6 */}
+          {!isRefreshing && userBricked && (
+            <div
+              style={{
+                marginLeft: '12px',
+                padding: '12px 16px',
+                backgroundColor: 'var(--bg-secondary)',
+                border: '2px solid var(--border-main)',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                whiteSpace: 'nowrap',
+                height: '87px',
+                flex: 1
+              }}
+            >
+              <p
                 style={{
-                  width: '80px',
-                  height: '112px',
-                  backgroundColor: 'var(--bg-secondary)',
-                  border: '1px solid var(--border-main)',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  animation: 'pulse 1.5s ease-in-out infinite'
+                  ...typography.h3,
+                  color: '#ff4444',
+                  margin: 0,
+                  fontWeight: 'bold',
+                  fontSize: '16px'
                 }}
               >
-                <span style={{...typography.body, color: 'var(--text-secondary)', fontSize: '12px'}}>
-                  ...
-                </span>
-              </div>
-            ))
-          ) : (
-            openingHand.map((cardData, index) => {
-              console.log(`🎴 Rendering card ${index}:`, cardData);
-              return <CardImage key={index} cardData={cardData} size="small" />;
-            })
+                You Bricked!
+              </p>
+            </div>
           )}
         </div>
       </div>
