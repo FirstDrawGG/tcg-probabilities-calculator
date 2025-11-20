@@ -30884,7 +30884,7 @@
     "isExtraDeck": false
   },
   "31286915": {
-    "name": "K9-X \"Ripper/Millennia\"",
+    "name": "K9-X \"Ripper/M\"",
     "type": "XYZ Monster",
     "level": 9,
     "attribute": "WIND",
@@ -73015,6 +73015,13 @@
     "level": null,
     "attribute": null,
     "isExtraDeck": false
+  },
+  "74405783": {
+    "name": "The Three Brave Swordsouls",
+    "type": "Synchro Monster",
+    "level": 8,
+    "attribute": "LIGHT",
+    "isExtraDeck": true
   },
   "74414885": {
     "name": "NEXT",
