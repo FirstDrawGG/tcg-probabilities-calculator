@@ -115,7 +115,7 @@ describe('YdkParser', () => {
       const result = YdkParser.parseYdkFile(ydkContent, mockDatabase);
 
       expect(result.cards).toHaveLength(6); // 3 Blue-Eyes + 2 Dark Magician + 1 Polymerization
-      expect(result.extraDeckCards).toHaveLength(1); // 1 Ultimate Dragon
+      expect(result.deckZones.extra).toHaveLength(1); // 1 Ultimate Dragon
       expect(result.cardCounts['Blue-Eyes White Dragon']).toBe(3);
       expect(result.cardCounts['Dark Magician']).toBe(2);
       expect(result.cardCounts['Polymerization']).toBe(1);
@@ -161,7 +161,7 @@ describe('YdkParser', () => {
       const result = YdkParser.parseYdkFile(ydkContent, mockDatabase);
 
       expect(result.cards).toHaveLength(2); // Main deck only
-      expect(result.extraDeckCards).toHaveLength(2); // Extra deck cards tracked separately
+      expect(result.deckZones.extra).toHaveLength(2); // Extra deck cards tracked separately
       expect(result.cardCounts).not.toHaveProperty('Blue-Eyes Ultimate Dragon');
     });
 
@@ -179,7 +179,7 @@ describe('YdkParser', () => {
       const result = YdkParser.parseYdkFile(ydkContent, mockDatabase);
 
       expect(result.cards).toHaveLength(2);
-      expect(result.extraDeckCards).toHaveLength(1);
+      expect(result.deckZones.extra).toHaveLength(1);
     });
 
     it('should handle invalid card IDs gracefully', () => {
@@ -219,13 +219,19 @@ abc123
       const mockDatabase = {
         '12345': { name: 'Test Card', isExtraDeck: false }
       };
-      
+
       const content = `#main\n12345\n12345`;
-      
+
       const result1 = YdkParser.parseYdkFile(content, mockDatabase);
       const result2 = YdkParser.parseYdkContent(content, mockDatabase);
-      
-      expect(result1).toEqual(result2);
+
+      // Compare the important parts (deckZones have unique IDs so we compare counts)
+      expect(result1.cards).toEqual(result2.cards);
+      expect(result1.cardCounts).toEqual(result2.cardCounts);
+      expect(result1.unmatchedIds).toEqual(result2.unmatchedIds);
+      expect(result1.deckZones.main.length).toBe(result2.deckZones.main.length);
+      expect(result1.deckZones.extra.length).toBe(result2.deckZones.extra.length);
+      expect(result1.deckZones.side.length).toBe(result2.deckZones.side.length);
     });
   });
 });
