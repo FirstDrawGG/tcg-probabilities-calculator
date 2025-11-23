@@ -1217,7 +1217,27 @@ useEffect(() => {
             borderRadius: '16px',
             backgroundColor: 'var(--bg-secondary)'
           }}>
-            <h2 className="mb-3" style={{...typography.h2, color: 'var(--text-main)'}}>How to use the app?</h2>
+            <div className="mb-3" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2 style={{...typography.h2, color: 'var(--text-main)', margin: 0}}>How to use the app?</h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ ...typography.body, color: 'var(--text-main)' }}>Need help?</span>
+                <a
+                  href="https://www.loom.com/share/7900e94d94534a3ab2751a58e6712a12"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="enhanced-button"
+                  style={{
+                    width: 'auto',
+                    paddingLeft: '12px',
+                    paddingRight: '12px',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <Icon name="video" ariaLabel="Watch video" size={14} className="button-icon" style={{ color: '#141414' }} />
+                  <span className="button-text">Watch video</span>
+                </a>
+              </div>
+            </div>
             <ol style={{
               ...typography.body,
               color: 'var(--text-secondary)',
