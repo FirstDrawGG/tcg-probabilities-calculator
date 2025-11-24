@@ -1217,7 +1217,7 @@ useEffect(() => {
             borderRadius: '16px',
             backgroundColor: 'var(--bg-secondary)'
           }}>
-            <div className="mb-3" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="mb-3 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
               <h2 style={{...typography.h2, color: 'var(--text-main)', margin: 0}}>How to use the app?</h2>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ ...typography.body, color: 'var(--text-main)' }}>Need help?</span>

@@ -20,7 +20,7 @@ const ComboCard = ({
   const [focusedField, setFocusedField] = useState(null);
   return (
     <div className={`${cardIndex > 0 ? 'border-t mt-4 pt-4' : ''}`} style={{ borderColor: 'var(--border-secondary)' }}>
-      <div className="mb-3" style={{ width: '520px' }}>
+      <div className="mb-3" style={{ width: '100%', maxWidth: '520px' }}>
         <label className="flex items-center font-medium" style={{...typography.body, marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)'}}>
           Card name:
           <Tooltip text={cardIndex === 0 ? "Search for any Yu-Gi-Oh card or create a custom placeholder (e.g. 'Any Dragon monster' or 'Any Unchained Card')" : "All cards in this combo must be drawn (AND logic)"} />

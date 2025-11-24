@@ -237,7 +237,7 @@ const SearchableCardInput = ({
   };
   
   return (
-    <div ref={dropdownRef} style={{ position: 'relative' }}>
+    <div ref={dropdownRef} style={{ position: 'relative', width: '100%', minWidth: 0 }}>
       {isEditing ? (
         <input
           ref={inputRef}
@@ -247,26 +247,28 @@ const SearchableCardInput = ({
           onClick={handleInputClick}
           placeholder={placeholder}
           className={`enhanced-input w-full ${errors ? 'border-red-500' : ''}`}
+          style={{ minWidth: 0 }}
         />
       ) : (
-        <div 
+        <div
           className={`w-full px-3 border ${errors ? 'border-red-500' : ''} flex justify-between items-center`}
-          style={{ 
-            backgroundColor: 'var(--bg-secondary)', 
+          style={{
+            backgroundColor: 'var(--bg-secondary)',
             border: `1px solid var(--border-main)`,
             color: 'var(--text-main)',
             borderRadius: '8px',
             height: '28px',
             cursor: 'text',
+            minWidth: 0,
             ...typography.body
           }}
-          onClick={(e) => {     
-            e.stopPropagation(); 
-            handleEdit();        
-          }}      
+          onClick={(e) => {
+            e.stopPropagation();
+            handleEdit();
+          }}
         >
-          <div className="flex items-center space-x-2">
-            <span>{value}</span>
+          <div className="flex items-center space-x-2" style={{ minWidth: 0, overflow: 'hidden' }}>
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{value}</span>
             {isHandTrap && (
               <div 
                 className="relative"

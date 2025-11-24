@@ -6236,6 +6236,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "6195332": {
+    "name": "Exstellarknight Constellar Ptolemy Ω7",
+    "type": "XYZ Monster",
+    "level": 7,
+    "attribute": "LIGHT",
+    "isExtraDeck": true
+  },
   "6203182": {
     "name": "Two Toads with One Sting",
     "type": "Spell Card",
@@ -7867,6 +7874,13 @@
     "attribute": "LIGHT",
     "isExtraDeck": false
   },
+  "7917970": {
+    "name": "Dragunity Divine Wind",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "7922915": {
     "name": "Magician Navigation",
     "type": "Trap Card",
@@ -7956,6 +7970,13 @@
     "type": "Trap Card",
     "level": null,
     "attribute": null,
+    "isExtraDeck": false
+  },
+  "8039562": {
+    "name": "Dragunity Falchion",
+    "type": "Tuner Monster",
+    "level": 2,
+    "attribute": "WIND",
     "isExtraDeck": false
   },
   "8041569": {
@@ -8167,6 +8188,13 @@
     "level": null,
     "attribute": null,
     "isExtraDeck": false
+  },
+  "8252010": {
+    "name": "X-Saber Gottoms",
+    "type": "Synchro Monster",
+    "level": 7,
+    "attribute": "EARTH",
+    "isExtraDeck": true
   },
   "8264361": {
     "name": "Dharc the Dark Charmer, Gloomy",
@@ -8790,6 +8818,13 @@
     "level": null,
     "attribute": null,
     "isExtraDeck": false
+  },
+  "8852158": {
+    "name": "Reeshaddoll Wendikurhu",
+    "type": "Fusion Monster",
+    "level": 6,
+    "attribute": "WIND",
+    "isExtraDeck": true
   },
   "8868767": {
     "name": "Dice It",
@@ -9909,6 +9944,13 @@
     "type": "Spell Card",
     "level": null,
     "attribute": null,
+    "isExtraDeck": false
+  },
+  "9978697": {
+    "name": "X-Saber Perina",
+    "type": "Tuner Monster",
+    "level": 4,
+    "attribute": "EARTH",
     "isExtraDeck": false
   },
   "9989792": {
@@ -31933,6 +31975,13 @@
     "attribute": "DARK",
     "isExtraDeck": false
   },
+  "32289031": {
+    "name": "Tellarknight Constellar Delteros",
+    "type": "XYZ Monster",
+    "level": 4,
+    "attribute": "LIGHT",
+    "isExtraDeck": true
+  },
   "32295838": {
     "name": "Digitron",
     "type": "Normal Monster",
@@ -32114,6 +32163,13 @@
     "level": 3,
     "attribute": "LIGHT",
     "isExtraDeck": false
+  },
+  "32467459": {
+    "name": "El Shaddoll Meshahrail",
+    "type": "Fusion Monster",
+    "level": 10,
+    "attribute": "EARTH",
+    "isExtraDeck": true
   },
   "32472237": {
     "name": "Metalrokket Dragon",
@@ -33009,6 +33065,13 @@
     "type": "Spell Card",
     "level": null,
     "attribute": null,
+    "isExtraDeck": false
+  },
+  "33302589": {
+    "name": "Constellar Castor",
+    "type": "Effect Monster",
+    "level": 4,
+    "attribute": "LIGHT",
     "isExtraDeck": false
   },
   "33314479": {
@@ -34250,6 +34313,13 @@
     "attribute": "EARTH",
     "isExtraDeck": false
   },
+  "34528176": {
+    "name": "Dragunity Knight - Areus",
+    "type": "Synchro Monster",
+    "level": 8,
+    "attribute": "WIND",
+    "isExtraDeck": true
+  },
   "34536276": {
     "name": "Ganigumo",
     "type": "Normal Monster",
@@ -34670,6 +34740,13 @@
     "attribute": "DARK",
     "isExtraDeck": true
   },
+  "34950192": {
+    "name": "Lev Shaddoll Fusion",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "34959756": {
     "name": "Living Fossil",
     "type": "Spell Card",
@@ -34966,6 +35043,13 @@
   },
   "35224440": {
     "name": "Gladiator Proving Ground",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
+  "35240714": {
+    "name": "Saber Combination",
     "type": "Spell Card",
     "level": null,
     "attribute": null,
@@ -45092,6 +45176,13 @@
     "level": null,
     "attribute": "LIGHT",
     "isExtraDeck": true
+  },
+  "45462306": {
+    "name": "X-Saber Bruno",
+    "type": "Tuner Monster",
+    "level": 3,
+    "attribute": "EARTH",
+    "isExtraDeck": false
   },
   "45462639": {
     "name": "Dark Red Enchanter",
@@ -60003,6 +60094,13 @@
     "attribute": "LIGHT",
     "isExtraDeck": false
   },
+  "60700283": {
+    "name": "Tellarknight Cygnian",
+    "type": "Effect Monster",
+    "level": 4,
+    "attribute": "LIGHT",
+    "isExtraDeck": false
+  },
   "60709218": {
     "name": "Bond Between Teacher and Student",
     "type": "Spell Card",
@@ -60597,6 +60695,13 @@
     "level": 4,
     "attribute": "LIGHT",
     "isExtraDeck": true
+  },
+  "61345801": {
+    "name": "Void Liberation",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
   },
   "61370518": {
     "name": "Skull Archfiend of Lightning",
@@ -68480,6 +68585,13 @@
     "attribute": "DARK",
     "isExtraDeck": false
   },
+  "69678646": {
+    "name": "Stellarnova Bonds",
+    "type": "Spell Card",
+    "level": null,
+    "attribute": null,
+    "isExtraDeck": false
+  },
   "69680031": {
     "name": "Dogmatika Fleurdelis, the Knighted",
     "type": "Effect Monster",
@@ -69308,6 +69420,13 @@
   },
   "70514456": {
     "name": "Ragnaraika Mantis Monk",
+    "type": "Link Monster",
+    "level": null,
+    "attribute": "WIND",
+    "isExtraDeck": true
+  },
+  "70522875": {
+    "name": "Dragunity Lord - Georgius",
     "type": "Link Monster",
     "level": null,
     "attribute": "WIND",
@@ -70440,6 +70559,13 @@
     "attribute": null,
     "isExtraDeck": false
   },
+  "71645463": {
+    "name": "Dragunity Quirinus",
+    "type": "Effect Monster",
+    "level": 4,
+    "attribute": "WIND",
+    "isExtraDeck": false
+  },
   "71650854": {
     "name": "Magical Mid-Breaker Field",
     "type": "Spell Card",
@@ -71544,6 +71670,13 @@
     "type": "Link Monster",
     "level": null,
     "attribute": "DARK",
+    "isExtraDeck": true
+  },
+  "72867001": {
+    "name": "Commander Souza, Swordmaster",
+    "type": "Synchro Monster",
+    "level": 10,
+    "attribute": "EARTH",
     "isExtraDeck": true
   },
   "72869010": {
@@ -92425,6 +92558,13 @@
     "type": "Spell Card",
     "level": null,
     "attribute": null,
+    "isExtraDeck": false
+  },
+  "95072744": {
+    "name": "Tohushaddoll Grysta",
+    "type": "Flip Effect Monster",
+    "level": 7,
+    "attribute": "EARTH",
     "isExtraDeck": false
   },
   "95081386": {

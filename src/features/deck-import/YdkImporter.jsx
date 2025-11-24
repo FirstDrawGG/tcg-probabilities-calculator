@@ -252,37 +252,15 @@ const YdkImporter = ({
 
   return (
     <div>
-      <div className="flex items-center mb-4" style={{ gap: '24px' }}>
-        <div className="flex items-center" style={{ gap: '8px' }}>
+      <div className="mb-4">
+        {/* YDK file label on its own row */}
+        <div className="flex items-center mb-3" style={{ gap: '8px' }}>
           <Icon name="tray-arrow-up" ariaLabel="Upload YDK file" size={16} />
           <h3 style={{...typography.h3, color: 'var(--text-main)', margin: 0}}>YDK file</h3>
         </div>
 
-        <div className="flex items-center" style={{ gap: '8px' }}>
-          <button
-            onClick={handleFromClipboard}
-            disabled={isLoadingDeck}
-            className="inline-flex items-center px-0 py-2 hover:opacity-80 transition-opacity"
-            style={{
-              backgroundColor: 'transparent',
-              border: 'none',
-              color: 'var(--text-secondary)',
-              borderRadius: '999px',
-              userSelect: 'none',
-              cursor: isLoadingDeck ? 'not-allowed' : 'pointer',
-              ...typography.body
-            }}
-          >
-            Paste YDK from clipboard
-          </button>
-          <div
-            style={{
-              width: '1px',
-              height: '16px',
-              backgroundColor: 'var(--text-secondary)',
-              opacity: 0.3
-            }}
-          />
+        {/* Action buttons in a horizontal row with mobile responsiveness */}
+        <div className="flex flex-wrap items-center" style={{ gap: '8px' }}>
           <input
             type="file"
             accept=".ydk"
@@ -304,7 +282,7 @@ const YdkImporter = ({
               ...typography.body
             }}
           >
-            Upload YDK
+            Upload YDK file
           </label>
           <div
             style={{
@@ -315,7 +293,8 @@ const YdkImporter = ({
             }}
           />
           <button
-            onClick={() => setShowCardSearch(!showCardSearch)}
+            onClick={handleFromClipboard}
+            disabled={isLoadingDeck}
             className="inline-flex items-center px-0 py-2 hover:opacity-80 transition-opacity"
             style={{
               backgroundColor: 'transparent',
@@ -323,11 +302,35 @@ const YdkImporter = ({
               color: 'var(--text-secondary)',
               borderRadius: '999px',
               userSelect: 'none',
-              cursor: 'pointer',
+              cursor: isLoadingDeck ? 'not-allowed' : 'pointer',
               ...typography.body
             }}
           >
-            Search Cards
+            From clipboard
+          </button>
+          <div
+            style={{
+              width: '1px',
+              height: '16px',
+              backgroundColor: 'var(--text-secondary)',
+              opacity: 0.3
+            }}
+          />
+          <button
+            onClick={() => setShowCardSearch(!showCardSearch)}
+            disabled={isLoadingDeck}
+            className="inline-flex items-center px-0 py-2 hover:opacity-80 transition-opacity"
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              color: 'var(--text-secondary)',
+              borderRadius: '999px',
+              userSelect: 'none',
+              cursor: isLoadingDeck ? 'not-allowed' : 'pointer',
+              ...typography.body
+            }}
+          >
+            Search cards
           </button>
         </div>
       </div>
